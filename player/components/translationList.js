@@ -41,8 +41,7 @@ export default {
 
     <ul>
       <li v-for="translation in filteredTranslations" :key="translation.id">
-      {{translation.type}}
-        <a :href="translation.url">{{translation.authorsSummary || 'Неизвестный'}}</a>
+        <a :href="translation.url" @click.prevent="setTranslation(translation)">{{translation.authorsSummary || 'Неизвестный'}}</a>
       </li>
     </ul>
 
@@ -72,6 +71,9 @@ export default {
   },
 
   methods: {
+    async setTranslation(translation) {
+      await this.$store.dispatch('player/setTranslation', translation)
+    }
   }
 
 

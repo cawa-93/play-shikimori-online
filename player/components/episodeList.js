@@ -5,7 +5,6 @@ export default {
   <ul v-if="episodes" class="">
     <li v-for="episode in episodes" :key="episode.id" class="">
       <a href="#" @click.prevent="setEpisode(episode)">
-        <i class="mdl-list__item-icon">{{episode.episodeInt}}</i>
         {{episode.episodeTitle || episode.episodeFull}}
       </a>
     </li>
@@ -27,9 +26,7 @@ export default {
 
   methods: {
     async setEpisode(episode) {
-
       await this.$store.dispatch('player/setCurrentEpisode', episode.id)
-
     }
   }
 

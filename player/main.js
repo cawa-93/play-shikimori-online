@@ -4,6 +4,7 @@ import store from './store/index.js'
 
 import episodeList from './components/episodeList.js'
 import translationList from './components/translationList.js'
+import player from './components/player.js'
 
 new Vue({
   el: '#app',
@@ -11,6 +12,7 @@ new Vue({
   components: {
     episodeList,
     translationList,
+    player,
   },
 
   mounted() {

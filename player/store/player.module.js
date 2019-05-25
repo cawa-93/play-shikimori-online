@@ -5,6 +5,7 @@ export const namespaced = true
 export const state = {
   series: null,
   currentEpisodeID: null,
+  currentTranslationID: null,
 }
 
 export const getters = {
@@ -15,7 +16,12 @@ export const getters = {
   currentEpisode(state, getters) {
     if (!state.currentEpisodeID) return undefined
     return getters.episodes.find(episode => episode.id === state.currentEpisodeID)
-  }
+  },
+
+  currentTranslation(state, getters) {
+    if (!state.currentTranslationID || !getters.currentEpisode || !getters.currentEpisode.translations) return undefined
+    return getters.currentEpisode.translations.find(translation => translation.id === state.currentTranslationID)
+  },
 }
 
 
@@ -32,8 +38,12 @@ export const mutations = {
   setTranslations(state, { episodeID, translations }) {
     const episode = state.series.episodes.find(episode => episode.id === episodeID)
     Vue.set(episode, 'translations', translations)
+  },
 
-  }
+
+  setCurrentTranslation(state, playload) {
+    state.currentTranslationID = playload
+  },
 }
 
 
@@ -53,5 +63,9 @@ export const actions = {
       commit('setTranslations', { episodeID, translations: data.translations })
 
     }
+  },
+
+  async setTranslation({ commit }, translation) {
+    commit('setCurrentTranslation', translation.id)
   }
 }
