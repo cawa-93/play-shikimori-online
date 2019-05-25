@@ -74,7 +74,7 @@ async function getOnlineServiceID(extendServices) {
 			continue
 		}
 
-		const { data } = await apiCall(`/series/?${service.query}=${serviceID}`)
+		const { data } = await api.anime365(`/series/?${service.query}=${serviceID}`)
 
 		if (data.length) {
 			return data[0]
