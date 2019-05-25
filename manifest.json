@@ -1,7 +1,29 @@
 {
 	"manifest_version": 2,
 	"name": "Play Shikimori",
-	"version": "0.0.1 Beta",
+	"version": "0.0.1",
 	"description": "Добавляет онлайн-кинотеатр на shikimori.one",
-	"homepage_url": "https://github.com/cawa-93/play-shikimori"
+	"homepage_url": "https://github.com/cawa-93/play-shikimori",
+	"background": {
+		"scripts": [
+			"background.js"
+		],
+		"persistent": false
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://shikimori.org/animes/*",
+				"https://shikimori.one/animes/*"
+			],
+			"js": [
+				"helpers/anime-365-api.js",
+				"contest_scripts/watch_button.js"
+			],
+			"run_at": "document_idle"
+		}
+	],
+	"permissions": [
+		"<all_urls>"
+	]
 }
