@@ -11,7 +11,7 @@ async function main() {
 	WatchButtonSection.classList.add('watch-online-block')
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
-		<a href="#" id="watch-online-button" class="b-link_button dark">Загрузка</a>
+		<a href="#" target="_blank" id="watch-online-button" class="b-link_button dark">Загрузка</a>
 		`
 	document.querySelector('.c-info-right').appendChild(WatchButtonSection)
 

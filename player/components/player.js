@@ -5,7 +5,9 @@ export default {
     <iframe 
       :src="$store.getters['player/currentTranslation'].embedUrl" 
       :height="$store.getters['player/currentTranslation'].height"
-      :width="$store.getters['player/currentTranslation'].width"
+      width="100%"
+      frameborder="0"
+      allowfullscreen
       ></iframe>
   </div>`
 }
