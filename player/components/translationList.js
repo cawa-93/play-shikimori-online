@@ -13,45 +13,34 @@ export default {
 
   template: `<section class="translation-list" v-if="translations && translations.length">
 
-    <ul>
-      <li>
-        <label for="typeKind-voiceRu">Озвучка</label>
-        <input type="radio" name="typeKind" v-model="filters.type" value="voiceRu" id="typeKind-voiceRu">
-      </li>
+    <select v-model="filters.type.value">
+      <option v-for="option in filters.type.options" :key="option.value" :value="option.value">{{option.label}}</option>
+    </select>
 
-      <li>
-        <label for="typeKind-subRu">Русские Субтиитры</label>
-        <input type="radio" name="typeKind" v-model="filters.type" value="subRu" id="typeKind-subRu">
-      </li>
-
-      <li>
-        <label for="typeKind-subEn">Английские Субтиитры</label>
-        <input type="radio" name="typeKind" v-model="filters.type" value="subEn" id="typeKind-subEn">
-      </li>
-      <li>
-        <label for="typeKind-subJa">Японские Субтиитры</label>
-        <input type="radio" name="typeKind" v-model="filters.type" value="subJa" id="typeKind-subJa">
-      </li>
-      <li>
-        <label for="typeKind-raw">Оригинал</label>
-        <input type="radio" name="typeKind" v-model="filters.type" value="raw" id="typeKind-raw">
-      </li>
-    </ul>
-
-
-    <ul>
-      <li v-for="translation in filteredTranslations" :key="translation.id">
-        <a :href="translation.url" @click.prevent="setTranslation(translation)">{{translation.authorsSummary || 'Неизвестный'}}</a>
-      </li>
-    </ul>
-
+    <select v-model="currentTranslationID">
+      <option
+        v-for="translation in filteredTranslations" 
+        :key="translation.id" 
+        v-if="translation.isActive"
+        :value="translation.id"
+      >{{translation.authorsSummary || 'Неизвестный'}}</option>
+    </select>
   
   </section>`,
 
   data() {
     return {
       filters: {
-        type: 'voiceRu',
+        type: {
+          value: 'voiceRu',
+          options: [
+            { value: 'voiceRu', label: 'Озвучка' },
+            { value: 'subRu', label: 'Русские Субтиитры' },
+            { value: 'subEn', label: 'Английские Субтиитры' },
+            { value: 'subJa', label: 'Японские Субтиитры' },
+            { value: 'raw', label: 'Оригинал' },
+          ]
+        }
       }
     }
   },
@@ -66,15 +55,17 @@ export default {
 
     filteredTranslations() {
       return this.translations
-        .filter(translation => translation.type === this.filters.type)
+        .filter(translation => translation.type === this.filters.type.value)
+    },
+
+    currentTranslationID: {
+      get() {
+        return this.$store.state.player.currentTranslationID
+      },
+      set(id) {
+        const translation = this.filteredTranslations.find(translation => translation.id === id)
+        this.$store.dispatch('player/setTranslation', translation)
+      }
     }
   },
-
-  methods: {
-    async setTranslation(translation) {
-      await this.$store.dispatch('player/setTranslation', translation)
-    }
-  }
-
-
 }

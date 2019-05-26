@@ -13,9 +13,31 @@ export const getters = {
     return state.series && state.series.episodes ? state.series.episodes : []
   },
 
+  closestEpisodes(state, getters) {
+    if (!state.currentEpisodeID) return [undefined, undefined, undefined]
+
+    const currentEpisodeIndex = getters.episodes.findIndex(episode => episode.id === state.currentEpisodeID)
+
+    if (currentEpisodeIndex < 0) return [undefined, undefined, undefined]
+
+    return [
+      getters.episodes[currentEpisodeIndex - 1],
+      getters.episodes[currentEpisodeIndex],
+      getters.episodes[currentEpisodeIndex + 1],
+    ]
+  },
+
+  previosEpisode(state, getters) {
+    return getters.closestEpisodes[0]
+  },
+
   currentEpisode(state, getters) {
-    if (!state.currentEpisodeID) return undefined
-    return getters.episodes.find(episode => episode.id === state.currentEpisodeID)
+    return getters.closestEpisodes[1]
+  },
+
+
+  nextEpisode(state, getters) {
+    return getters.closestEpisodes[2]
   },
 
   currentTranslation(state, getters) {
@@ -48,24 +70,42 @@ export const mutations = {
 
 
 export const actions = {
-  async initSeries({ state, commit }, seriesID) {
+
+
+  async initSeries({ state, commit, dispatch }, seriesID) {
     if (!state.series) {
       const { data } = await window.api.anime365(`/series/${seriesID}`)
       commit('setSeries', data)
+
+      const startEpisode = data.episodes.find(episode => episode.episodeInt === '1')
+      dispatch('setCurrentEpisode', startEpisode.id)
     }
   },
 
-  async setCurrentEpisode({ state, commit, getters }, episodeID) {
+
+  async setCurrentEpisode({ state, commit, getters, dispatch }, episodeID) {
     commit('setCurrentEpisode', episodeID)
 
     if (!getters.currentEpisode.translations) {
       const { data } = await window.api.anime365(`/episodes/${getters.currentEpisode.id}`)
       commit('setTranslations', { episodeID, translations: data.translations })
-
     }
+
+    dispatch('setTranslation', getters.currentEpisode.translations[0])
   },
+
 
   async setTranslation({ commit }, translation) {
     commit('setCurrentTranslation', translation.id)
+  },
+
+
+  initPreviosEpisode({ getters, dispatch }) {
+    dispatch('setCurrentEpisode', getters.previosEpisode.id)
+  },
+
+
+  initNextEpisode({ getters, dispatch }) {
+    dispatch('setCurrentEpisode', getters.nextEpisode.id)
   }
 }

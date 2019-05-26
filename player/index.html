@@ -8,16 +8,22 @@
   <title>Document</title>
 
   <link rel="stylesheet" href="material.min.css">
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
-  <section id="app" style="max-width: 80%; margin: 20px auto">
-    <player></player>
+  <section id="app">
+
     <div style="display: flex">
       <episode-list></episode-list>
       <translation-list></translation-list>
     </div>
+
+    <player></player>
+    <player-controls></player-controls>
   </section>
+
+
   <script src="material.min.js"></script>
   <script src="/helpers/anime-365-api.js"></script>
   <script type="module" src="main.js"></script>
