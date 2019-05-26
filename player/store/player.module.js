@@ -77,8 +77,11 @@ export const actions = {
       const { data } = await window.api.anime365(`/series/${seriesID}`)
       commit('setSeries', data)
 
-      const startEpisode = data.episodes.find(episode => episode.episodeInt === '1')
-      dispatch('setCurrentEpisode', startEpisode.id)
+      let startEpisode = (new URL(location.href)).searchParams.get('episode')
+      if (!startEpisode) {
+        startEpisode = data.episodes.find(episode => episode.episodeInt === '1').id
+      }
+      return dispatch('setCurrentEpisode', parseInt(startEpisode))
     }
   },
 
@@ -91,7 +94,7 @@ export const actions = {
       commit('setTranslations', { episodeID, translations: data.translations })
     }
 
-    dispatch('setTranslation', getters.currentEpisode.translations[0])
+    return dispatch('setTranslation', getters.currentEpisode.translations[0])
   },
 
 

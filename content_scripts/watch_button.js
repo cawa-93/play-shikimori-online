@@ -7,6 +7,8 @@ main()
 
 
 
+
+
 async function main() {
 	const infoSection = document.querySelector('body#animes_show .c-info-right')
 	const WatchOnlineButton = document.querySelector('#watch-online-button')
@@ -23,22 +25,36 @@ async function main() {
 		`
 	infoSection.appendChild(WatchButtonSection)
 
+	// Загрузка метаданных аниме
+	const anime = await getAnime()
 
-	// Поиск сериала сопостовляя ссылки на сторонние источники
-	const extendServices = [
-		{ class: 'myanimelist', query: 'myAnimeListId' },
-		{ class: 'anime_news_network', query: 'animeNewsNetworkId' },
-		{ class: 'anime_db', query: 'aniDbId' },
-		{ class: 'world_art', query: 'worldArtId' },
-	]
+	if (!anime) {
+		WatchButtonSection.querySelector('#watch-online-button').textContent = 'Нет видео'
+		return
+	}
 
-	const series = await getOnlineServiceID(extendServices)
+	// 
+	const { data } = await api.anime365(`/series/?myAnimeListId=${anime.myanimelist_id}`)
+	const series = data[0]
 
 	if (series && series.episodes && series.episodes.length) {
 		/** @type {HTMLAnchorElement} */
 		const link = WatchButtonSection.querySelector('#watch-online-button')
 		link.textContent = 'Смотреть онлайн'
-		link.href = chrome.runtime.getURL(`player/index.html?series=${series.id}`)
+
+		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
+		playerURL.searchParams.append('series', series.id)
+
+		if (anime.user_rate) {
+			const startFromEpisode =
+				series.episodes.find(episode => episode.episodeInt == anime.user_rate.episodes + 1)
+				|| series.episodes.find(episode => episode.episodeInt == anime.user_rate.episodes)
+				|| series.episodes.find(episode => episode.episodeInt == 1)
+
+			playerURL.searchParams.append('episode', startFromEpisode.id)
+		}
+
+		link.href = playerURL.toString()
 	} else {
 		WatchButtonSection.querySelector('#watch-online-button').textContent = 'Нет видео'
 	}
@@ -46,50 +62,15 @@ async function main() {
 }
 
 
-async function getOnlineServiceID(extendServices) {
-	for (const service of extendServices) {
-		/** @type {HTMLAnchorElement} */
-		const link = document.querySelector(`.b-external_link.${service.class} a`)
-		if (!link || !link.href) {
-			continue
-		}
 
-		let serviceID = null
-		let match = null
-
-		switch (service.class) {
-			case 'myanimelist':
-				match = link.href.match(/[0-9]+$/)
-				if (match) serviceID = match[0]
-				break;
-
-			case 'anime_news_network':
-				match = link.href.match(/[0-9]+$/)
-				if (match) serviceID = match[0]
-				break;
-
-			case 'anime_db':
-				match = link.href.match(/[0-9]+$/)
-				if (match) serviceID = match[0]
-				break;
-
-			case 'world_art':
-				match = link.href.match(/[0-9]+$/)
-				if (match) serviceID = match[0]
-				break;
-		}
-
-		if (!serviceID) {
-			continue
-		}
-
-		const { data } = await api.anime365(`/series/?${service.query}=${serviceID}`)
-
-		if (data.length) {
-			return data[0]
-		}
-
+async function getAnime() {
+	const idMatch = location.pathname.match('animes/([0-9]+)')
+	if (!idMatch || !idMatch[1]) {
+		return undefined
 	}
 
-	return null
+	const response = await fetch(`${location.protocol}//${location.host}/api/animes/${idMatch[1]}`)
+	const data = await response.json()
+
+	return data
 }
