@@ -17,7 +17,6 @@
 				"https://shikimori.one/*"
 			],
 			"js": [
-				"content_scripts/history-events/dist/history-events.min.js",
 				"helpers/anime-365-api.js",
 				"content_scripts/watch_button.js"
 			],
