@@ -1,9 +1,17 @@
 // Запуск главной функции
+const mainObserver = new MutationObserver(main)
+const observerConfig = { attributes: true, subtree: true, childList: true }
+mainObserver.observe(document, observerConfig)
 main()
 
 
-async function main() {
 
+
+async function main() {
+	const infoSection = document.querySelector('body#animes_show .c-info-right')
+	const WatchOnlineButton = document.querySelector('#watch-online-button')
+
+	if (!infoSection || WatchOnlineButton) return
 
 	// Созданиие кнопки для перехода к плееру
 	const WatchButtonSection = document.createElement('section')
@@ -13,7 +21,7 @@ async function main() {
 		<div class="subheadline m10">Онлайн просмотр</div>
 		<a href="#" target="_blank" id="watch-online-button" class="b-link_button dark">Загрузка</a>
 		`
-	document.querySelector('.c-info-right').appendChild(WatchButtonSection)
+	infoSection.appendChild(WatchButtonSection)
 
 
 	// Поиск сериала сопостовляя ссылки на сторонние источники
@@ -34,6 +42,7 @@ async function main() {
 	} else {
 		WatchButtonSection.querySelector('#watch-online-button').textContent = 'Нет видео'
 	}
+
 }
 
 

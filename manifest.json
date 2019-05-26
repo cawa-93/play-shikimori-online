@@ -13,12 +13,13 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://shikimori.org/animes/*",
-				"https://shikimori.one/animes/*"
+				"https://shikimori.org/*",
+				"https://shikimori.one/*"
 			],
 			"js": [
+				"content_scripts/history-events/dist/history-events.min.js",
 				"helpers/anime-365-api.js",
-				"contest_scripts/watch_button.js"
+				"content_scripts/watch_button.js"
 			],
 			"run_at": "document_idle"
 		}
