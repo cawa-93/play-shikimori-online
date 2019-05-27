@@ -2,6 +2,7 @@
 	"manifest_version": 2,
 	"name": "Play Shikimori",
 	"version": "0.0.1",
+	"minimum_chrome_version": "74.0.3729.169",
 	"description": "Добавляет онлайн-кинотеатр на shikimori.one",
 	"homepage_url": "https://github.com/cawa-93/play-shikimori",
 	"background": {

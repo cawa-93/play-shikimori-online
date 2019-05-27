@@ -27,7 +27,7 @@ export const getters = {
     ]
   },
 
-  previosEpisode(state, getters) {
+  previousEpisode(state, getters) {
     return getters.closestEpisodes[0]
   },
 
@@ -103,8 +103,8 @@ export const actions = {
   },
 
 
-  initPreviosEpisode({ getters, dispatch }) {
-    dispatch('setCurrentEpisode', getters.previosEpisode.id)
+  initpreviousEpisode({ getters, dispatch }) {
+    dispatch('setCurrentEpisode', getters.previousEpisode.id)
   },
 
 

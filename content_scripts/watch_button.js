@@ -69,7 +69,15 @@ async function getAnime() {
 		return undefined
 	}
 
-	const response = await fetch(`${location.protocol}//${location.host}/api/animes/${idMatch[1]}`)
+	let headers = new Headers({
+		"Accept": "application/json",
+		"Content-Type": "application/json",
+		"User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
+	});
+
+	const response = await fetch(`${location.protocol}//${location.host}/api/animes/${idMatch[1]}`, {
+		headers
+	})
 	const data = await response.json()
 
 	return data

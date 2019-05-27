@@ -17,6 +17,15 @@ new Vue({
     playerControls
   },
 
+  computed: {
+    translations() {
+      if (!this.$store.getters['player/currentEpisode'] || !this.$store.getters['player/currentEpisode'].translations) {
+        return []
+      }
+      return this.$store.getters['player/currentEpisode'].translations
+    },
+  },
+
   mounted() {
     this.$store.dispatch('player/initSeries', (new URL(location.href)).searchParams.get('series'))
   }

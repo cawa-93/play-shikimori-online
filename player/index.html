@@ -16,7 +16,7 @@
 
     <div style="display: flex">
       <episode-list></episode-list>
-      <translation-list></translation-list>
+      <translation-list v-if="translations && translations.length"></translation-list>
     </div>
 
     <player></player>

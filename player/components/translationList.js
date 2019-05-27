@@ -1,11 +1,4 @@
-{/* <ul v-if="series && series.episodes" class="">
-<li v-for="episode in series.episodes" :key="episode.id" class="">
-  <a href="#" @click.prevent="setEpisode(episode)">
-    <i class="mdl-list__item-icon">{{episode.episodeInt}}</i>
-    {{episode.episodeTitle || episode.episodeFull}}
-  </a>
-</li>
-</ul> */}
+import { storage } from 'std:kv-storage';
 
 
 export default {
@@ -17,13 +10,16 @@ export default {
       <option v-for="option in filters.type.options" :key="option.value" :value="option.value">{{option.label}}</option>
     </select>
 
-    <select v-model="currentTranslationID">
+    <select v-model="currentTranslationID" @change="saveTranslationPreference">
+      <option disabled value="" v-if="!filteredTranslations || !filteredTranslations.length">Нет видео</option>
       <option
-        v-for="translation in filteredTranslations" 
-        :key="translation.id" 
+        v-for="translation in filteredTranslations"
+        :key="translation.id"
         v-if="translation.isActive"
         :value="translation.id"
-      >{{translation.authorsSummary || 'Неизвестный'}}</option>
+      >
+        {{translation.authorsSummary || 'Неизвестный'}}
+      </option>
     </select>
   
   </section>`,
@@ -64,8 +60,113 @@ export default {
       },
       set(id) {
         const translation = this.filteredTranslations.find(translation => translation.id === id)
-        this.$store.dispatch('player/setTranslation', translation)
+        if (translation) {
+          this.$store.dispatch('player/setTranslation', translation)
+        }
       }
     }
   },
+
+  watch: {
+    async translations() {
+      const preference = await storage.get('translationPreference')
+
+      if (!preference) {
+        await storage.set('translationPreference', {
+          bySeries: new Map()
+        })
+      }
+
+      /** ID Текущего тайтла */
+      const seriesId = this.$store.getters['player/currentEpisode'].seriesId
+
+      /**
+       * Последний установленный перевод для текущего тайтла
+       */
+      const preferenceForSeries = preference.bySeries.get(seriesId)
+
+      if (preferenceForSeries) {
+        const primaryTranslation = this.getPrimaryTranslation(this.filteredTranslations, preferenceForSeries)
+
+        this.currentTranslationID = primaryTranslation.id
+      }
+    },
+  },
+
+  methods: {
+    async saveTranslationPreference() {
+      // this.lastSavedTranslation = this.$store.getters['player/currentTranslation']
+
+      const preference = await storage.get('translationPreference')
+      preference.bySeries.set(
+        this.$store.getters['player/currentEpisode'].seriesId,
+        this.$store.getters['player/currentTranslation']
+      )
+
+      await storage.set('translationPreference', preference)
+    },
+
+    getPrimaryTranslation(translationForSearch, preferedTranslation) {
+      // Сохранённый перевод применим к текущей серии
+      if (translationForSearch.find(translation => translation.id == preferedTranslation.id)) {
+        return preferedTranslation
+      }
+
+      // Сохранённый перевод не применим к текущей серии
+      // Поиск альтернативы по названию автора
+      const savedAuthor = preferedTranslation.authorsSummary.replace(/[^\p{L}\d]/igu, '').trim().toLowerCase()
+
+      if (!savedAuthor) {
+        return translationForSearch[0]
+      }
+
+      // Сопоставление переводов по имении автора
+      const translationFromSameAuthor = translationForSearch.find(
+        translation => {
+          const translationAuthor = translation.authorsSummary.replace(/[^\p{L}\d]/igu, '').trim().toLowerCase()
+          if (!translationAuthor) return false
+          return new RegExp(translationAuthor).test(savedAuthor) || new RegExp(savedAuthor).test(translationAuthor)
+        })
+
+      // Перевод того же автора найден
+      if (translationFromSameAuthor) {
+        return translationFromSameAuthor
+
+      }
+
+      // Перевода от того же автора не найдено
+      return translationForSearch[0]
+
+    },
+
+  },
+
+  async mounted() {
+    let preference = await storage.get('translationPreference')
+
+    if (!preference || !preference.bySeries) {
+      (preference = preference || {}).bySeries = new Map()
+
+      await storage.set('translationPreference', preference)
+    }
+
+    /** ID Текущего тайтла */
+    const seriesId = this.$store.getters['player/currentEpisode'].seriesId
+
+    /**
+     * Последний установленный перевод для текущего тайтла
+     */
+    const preferenceForSeries = preference.bySeries.get(seriesId)
+
+    if (preferenceForSeries) {
+      // Устанавливаем в фильтрах тиип перевода
+      this.filters.type.value = preferenceForSeries.type
+
+      const primaryTranslation = this.getPrimaryTranslation(this.filteredTranslations, preferenceForSeries)
+
+      this.currentTranslationID = primaryTranslation.id
+    } else {
+      this.currentTranslationID = this.filteredTranslations[0].id
+    }
+  }
 }
