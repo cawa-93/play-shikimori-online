@@ -6,6 +6,7 @@ import episodeList from './components/episodeList.js'
 import translationList from './components/translationList.js'
 import player from './components/player.js'
 import playerControls from './components/player-controls.js'
+import userListControls from './components/user-list-controls.js'
 
 new Vue({
   el: '#app',
@@ -14,7 +15,8 @@ new Vue({
     episodeList,
     translationList,
     player,
-    playerControls
+    playerControls,
+    userListControls,
   },
 
   computed: {
@@ -28,5 +30,6 @@ new Vue({
 
   mounted() {
     this.$store.dispatch('player/initSeries', (new URL(location.href)).searchParams.get('series'))
+    this.$store.dispatch('user/initUser')
   }
 })

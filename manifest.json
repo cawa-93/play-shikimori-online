@@ -18,6 +18,7 @@
 				"https://shikimori.one/*"
 			],
 			"js": [
+				"helpers/shikimori-api.js",
 				"helpers/anime-365-api.js",
 				"content_scripts/watch_button.js"
 			],

@@ -1,4 +1,4 @@
-(window.api = window.api || {}).anime365 = function (path) {
+(window.api = window.api || {}).anime365 = function (path, options = {}) {
 
   return new Promise((resolve, reject) => {
     const url = 'https://smotretanime.ru/api' + path
@@ -8,10 +8,12 @@
       "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
     });
 
+    options.headers = headers
+
     chrome.runtime.sendMessage({
       contentScriptQuery: 'fetchUrl',
       url,
-      options: { headers }
+      options,
     },
       ({ response, error }) => {
         if (error) {
