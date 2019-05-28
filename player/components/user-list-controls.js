@@ -41,18 +41,21 @@ export default {
     },
 
     async markAsWached() {
-      const url =
-        this.shikimori.userRate
-          ? `/v2/user_rates/${this.shikimori.userRate.id}?user_rate[target_type]=Anime&user_rate[episodes]=${this.currentEpisodeInt}&user_rate[status]=watching&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`
-          : `/v2/user_rates/?user_rate[target_type]=Anime&user_rate[episodes]=${this.currentEpisodeInt}&user_rate[status]=watching&user_rate[target_id]=${this.shikimori.animeId}&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`
 
-      const method = this.shikimori.userRate
-        ? 'PATCH'
-        : 'POST'
+      if (this.$store.state.user.UserInfo) {
+        const url =
+          this.shikimori.userRate
+            ? `/v2/user_rates/${this.shikimori.userRate.id}?user_rate[target_type]=Anime&user_rate[episodes]=${this.currentEpisodeInt}&user_rate[status]=watching&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`
+            : `/v2/user_rates/?user_rate[target_type]=Anime&user_rate[episodes]=${this.currentEpisodeInt}&user_rate[status]=watching&user_rate[target_id]=${this.shikimori.animeId}&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`
 
-      const newUserRate = await api.shikimori(url, { method })
+        const method = this.shikimori.userRate
+          ? 'PATCH'
+          : 'POST'
 
-      this.shikimori.userRate = newUserRate
+        const newUserRate = await api.shikimori(url, { method })
+
+        this.shikimori.userRate = newUserRate
+      }
 
       this.$store.dispatch('player/initNextEpisode')
     }
