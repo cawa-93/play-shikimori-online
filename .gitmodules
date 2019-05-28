@@ -1,0 +1,3 @@
+[submodule "player/kv-storage-polyfill"]
+	path = player/kv-storage-polyfill
+	url = git@github.com:GoogleChromeLabs/kv-storage-polyfill.git

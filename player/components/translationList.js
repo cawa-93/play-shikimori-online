@@ -1,4 +1,4 @@
-import { storage } from 'std:kv-storage';
+import { storage } from '/node_modules/kv-storage-polyfill/dist/kv-storage-polyfill.mjs';
 
 
 export default {

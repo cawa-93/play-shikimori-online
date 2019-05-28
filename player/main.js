@@ -1,5 +1,5 @@
 
-import Vue from './vue.esm.browser.js'
+import Vue from '../node_modules/vue/dist/vue.esm.browser.min.js'
 import store from './store/index.js'
 
 import episodeList from './components/episodeList.js'
@@ -7,6 +7,9 @@ import translationList from './components/translationList.js'
 import player from './components/player.js'
 import playerControls from './components/player-controls.js'
 import userListControls from './components/user-list-controls.js'
+
+
+
 
 new Vue({
   el: '#app',

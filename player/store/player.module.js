@@ -1,4 +1,4 @@
-import Vue from "../vue.esm.browser.js";
+import Vue from "../../node_modules/vue/dist/vue.esm.browser.min.js";
 
 export const namespaced = true
 
@@ -104,11 +104,15 @@ export const actions = {
 
 
   initpreviousEpisode({ getters, dispatch }) {
-    dispatch('setCurrentEpisode', getters.previousEpisode.id)
+    if (getters.previousEpisode) {
+      dispatch('setCurrentEpisode', getters.previousEpisode.id)
+    }
   },
 
 
   initNextEpisode({ getters, dispatch }) {
-    dispatch('setCurrentEpisode', getters.nextEpisode.id)
+    if (getters.nextEpisode) {
+      dispatch('setCurrentEpisode', getters.nextEpisode.id)
+    }
   }
 }

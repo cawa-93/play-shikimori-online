@@ -1,4 +1,4 @@
-import Vue from "../vue.esm.browser.js";
+import Vue from "../../node_modules/vue/dist/vue.esm.browser.min.js";
 
 export const namespaced = true
 
