@@ -26,6 +26,8 @@ export default {
       const { data: series } = await api.anime365(`/series/${this.$store.getters['player/currentEpisode'].seriesId}`)
       const anime = await api.shikimori(`/animes/${series.myAnimeListId}`)
 
+      document.title = `${anime.russian || anime.name} — онлайн просмотр`
+
       this.shikimori.animeId = anime.id
       this.shikimori.userRate = anime.user_rate
 
@@ -65,5 +67,14 @@ export default {
 
   async mounted() {
     this.init()
+
+    window.addEventListener('message', ({ data: event }) => {
+      if (event.name === 'ended' || event.name === 'mark-as-watched') {
+        this.markAsWached()
+      }
+
+    })
   }
+
+
 }

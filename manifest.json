@@ -23,6 +23,19 @@
 				"content_scripts/watch_button.js"
 			],
 			"run_at": "document_idle"
+		},
+		{
+			"matches": [
+				"https://smotretanime.ru/translations/embed/*"
+			],
+			"js": [
+				"content_scripts/player-events.js"
+			],
+			"css": [
+				"player/player-embbeded-styles.css"
+			],
+			"all_frames": true,
+			"run_at": "document_idle"
 		}
 	],
 	"permissions": [
