@@ -11,7 +11,7 @@ module.exports = [{
   output: {
     file: 'dist/background/background.js',
     format: 'esm',
-    sourcemap: 'inline'
+    // sourcemap: 'inline'
   },
   plugins: [
     resolve(),
@@ -28,7 +28,7 @@ module.exports = [{
   output: {
     file: 'dist/content-scripts/anime365-player-events.js',
     format: 'esm',
-    sourcemap: 'inline'
+    // sourcemap: 'inline'
   },
   plugins: [
     resolve(),
@@ -45,7 +45,7 @@ module.exports = [{
   output: {
     file: 'dist/content-scripts/watch-button.js',
     format: 'esm',
-    sourcemap: 'inline'
+    // sourcemap: 'inline'
   },
   plugins: [
     resolve(),
@@ -58,7 +58,7 @@ module.exports = [{
   output: {
     file: 'dist/player/bundle.js',
     format: 'esm',
-    sourcemap: 'inline'
+    // sourcemap: 'inline'
   },
   plugins: [
     commonjs(),
@@ -70,7 +70,8 @@ module.exports = [{
     VuePlugin(),
     copy({
       targets: {
-        'src/player/index.html': 'dist/player/index.html'
+        'src/player/index.html': 'dist/player/index.html',
+        'node_modules/vuetify/dist/vuetify.min.css': 'dist/player/vuetify.min.css',
       }
     })
   ],

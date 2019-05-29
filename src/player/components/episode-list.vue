@@ -1,20 +1,14 @@
 <template>
   <section class="episode-list">
     <div class="mdc-select" v-if="episodes">
-      <i class="mdc-select__dropdown-icon"></i>
-      <select class="mdc-select__native-control" v-model="currentEpisodeID">
-        <option value disabled selected>Выберите эпизод</option>
-        <option
-          v-for="episode in episodes"
-          :key="episode.id"
-          v-if="episode.isActive"
-          :value="episode.id"
-        >{{episode.episodeTitle || episode.episodeFull}}</option>
-      </select>
-      <label
-        class="mdc-floating-label"
-      >{{$store.getters['player/currentEpisode'].episodeTitle || $store.getters['player/currentEpisode'].episodeFull}}</label>
-      <div class="mdc-line-ripple"></div>
+      <v-select
+        item-text="episodeFull"
+        item-value="id"
+        :items="filteredEpisodes"
+        box
+        label="Епизод"
+        v-model="currentEpisodeID"
+      ></v-select>
     </div>
   </section>
 </template>
@@ -26,6 +20,10 @@ export default {
   computed: {
     episodes() {
       return this.$store.getters["player/episodes"];
+    },
+
+    filteredEpisodes() {
+      return this.episodes.filter(e => e.isActive);
     },
 
     currentEpisodeID: {
@@ -42,3 +40,6 @@ export default {
   mounted() {}
 };
 </script>
+
+<style>
+</style>

@@ -1,15 +1,36 @@
 <template>
-  <section id="app">
-    <template v-if="$store.getters['player/currentEpisode']">
-      <div>
-        <episode-list></episode-list>
-        <translation-list v-if="translations && translations.length"></translation-list>
-      </div>
+  <section>
+    <v-app id="app">
+      <v-container v-if="$store.getters['player/currentEpisode']">
+        <v-layout column>
+          <v-flex>
+            <v-layout row>
+              <v-flex xs6 mr-3>
+                <episode-list></episode-list>
+              </v-flex>
+              <v-flex xs6>
+                <translation-list v-if="translations && translations.length"></translation-list>
+              </v-flex>
+            </v-layout>
+          </v-flex>
 
-      <player></player>
-      <player-controls></player-controls>
-      <user-list-controls></user-list-controls>
-    </template>
+          <v-flex>
+            <player></player>
+          </v-flex>
+
+          <v-flex>
+            <v-layout row>
+              <v-flex xs6>
+                <player-controls></player-controls>
+              </v-flex>
+              <v-flex xs6>
+                <user-list-controls></user-list-controls>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-app>
   </section>
 </template>
 
@@ -52,18 +73,27 @@ export default {
 </script>
 
 <style>
-#app {
+.v-select__selections {
+  overflow: hidden;
+}
+
+.v-select__selection.v-select__selection--comma {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+}
+/* #app {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 80%;
   margin: 0 auto;
   padding-top: 1rem;
   padding-bottom: 1rem;
   box-sizing: border-box;
-}
+} */
 
-.player-container {
+/* .player-container {
   position: relative;
   overflow: hidden;
   flex: 1;
@@ -79,5 +109,5 @@ export default {
   width: 100%;
   height: 100%;
   border: 0;
-}
+} */
 </style>

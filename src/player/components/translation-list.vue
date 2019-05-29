@@ -1,23 +1,26 @@
 
 <template>
   <section class="translation-list" v-if="translations && translations.length">
-    <select v-model="filters.type.value">
-      <option
-        v-for="option in filters.type.options"
-        :key="option.value"
-        :value="option.value"
-      >{{option.label}}</option>
-    </select>
-
-    <select v-model="currentTranslationID" @change="saveTranslationPreference">
-      <option disabled value v-if="!filteredTranslations || !filteredTranslations.length">Нет видео</option>
-      <option
-        v-for="translation in filteredTranslations"
-        :key="translation.id"
-        v-if="translation.isActive"
-        :value="translation.id"
-      >{{translation.authorsSummary || 'Неизвестный'}}</option>
-    </select>
+    <v-select
+      item-text="authorsSummary"
+      item-value="id"
+      :items="groupedTranslations"
+      box
+      label="Перевод"
+      v-model="currentTranslationID"
+      @change="saveTranslationPreference"
+    >
+      <template v-slot:item="data">
+        <template v-if="data.item.label">
+          <v-subheader>{{data.item.label}}</v-subheader>
+        </template>
+        <template v-else>
+          <v-list-tile-content class="inset">
+            <v-list-tile-title>{{data.item.authorsSummary || 'Неизвестный'}}</v-list-tile-title>
+          </v-list-tile-content>
+        </template>
+      </template>
+    </v-select>
   </section>
 </template>
 
@@ -33,13 +36,7 @@ export default {
       filters: {
         type: {
           value: "voiceRu",
-          options: [
-            { value: "voiceRu", label: "Озвучка" },
-            { value: "subRu", label: "Русские Субтиитры" },
-            { value: "subEn", label: "Английские Субтиитры" },
-            { value: "subJa", label: "Японские Субтиитры" },
-            { value: "raw", label: "Оригинал" }
-          ]
+          options: []
         }
       }
     };
@@ -57,9 +54,41 @@ export default {
     },
 
     filteredTranslations() {
-      return this.translations.filter(
-        translation => translation.type === this.filters.type.value
-      );
+      return this.translations.filter(t => t.isActive);
+    },
+
+    groupedTranslations() {
+      const groups = [
+        { type: "voiceRu", label: "Озвучка" },
+        { type: "subRu", label: "Русские Субтиитры" },
+        { type: "subEn", label: "Английские Субтиитры" },
+        { type: "subJa", label: "Японские Субтиитры" },
+        { type: "raw", label: "Оригинал" }
+      ];
+
+      const items = [];
+
+      groups.forEach(({ type, label }) => {
+        const translations = this.filteredTranslations.filter(
+          t => t.type === type
+        );
+
+        if (translations.length) {
+          items.push({
+            label,
+            disabled: true
+          });
+
+          items.push(...translations);
+
+          items.push({
+            divider: true,
+            disabled: true
+          });
+        }
+      });
+
+      return items;
     },
 
     currentTranslationID: {
@@ -198,3 +227,10 @@ export default {
   }
 };
 </script>
+
+
+<style>
+.v-list__tile__content.inset {
+  padding-left: 30px;
+}
+</style>
