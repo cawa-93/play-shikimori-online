@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="player-container mdl-card mdl-shadow--2dp"
-    v-if="$store.getters['player/currentTranslation']"
-  >
+  <v-card class="player-container" v-if="$store.getters['player/currentTranslation']">
     <iframe
       :src="$store.getters['player/currentTranslation'].embedUrl + '?autoplay=1'"
       height="100%"
@@ -10,7 +7,7 @@
       frameborder="0"
       allowfullscreen
     ></iframe>
-  </div>
+  </v-card>
 </template>
 
 

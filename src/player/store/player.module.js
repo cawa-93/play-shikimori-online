@@ -104,7 +104,7 @@ export const actions = {
   },
 
 
-  initpreviousEpisode({ getters, dispatch }) {
+  initPreviousEpisode({ getters, dispatch }) {
     if (getters.previousEpisode) {
       dispatch('setCurrentEpisode', getters.previousEpisode.id)
     }

@@ -34944,7 +34944,7 @@ const actions = {
   },
 
 
-  initpreviousEpisode({ getters, dispatch }) {
+  initPreviousEpisode({ getters, dispatch }) {
     if (getters.previousEpisode) {
       dispatch('setCurrentEpisode', getters.previousEpisode.id);
     }
@@ -35558,9 +35558,6 @@ __vue_render__$1._withStripped = true;
 //
 //
 //
-//
-//
-//
 
 var script$2 = {
   name: "player"
@@ -35575,7 +35572,7 @@ var __vue_render__$2 = function() {
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
   return _vm.$store.getters["player/currentTranslation"]
-    ? _c("div", { staticClass: "player-container mdl-card mdl-shadow--2dp" }, [
+    ? _c("v-card", { staticClass: "player-container" }, [
         _c("iframe", {
           attrs: {
             src:
@@ -35619,96 +35616,12 @@ __vue_render__$2._withStripped = true;
   );
 
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 var script$3 = {
-  name: "player-controls"
-};
-
-/* script */
-const __vue_script__$3 = script$3;
-
-/* template */
-var __vue_render__$3 = function() {
-  var _vm = this;
-  var _h = _vm.$createElement;
-  var _c = _vm._self._c || _h;
-  return _c("div", [
-    _vm.$store.getters["player/previousEpisode"]
-      ? _c(
-          "button",
-          {
-            on: {
-              click: function($event) {
-                return _vm.$store.dispatch("player/initpreviousEpisode")
-              }
-            }
-          },
-          [_vm._v("previous")]
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    _vm.$store.getters["player/nextEpisode"]
-      ? _c(
-          "button",
-          {
-            on: {
-              click: function($event) {
-                return _vm.$store.dispatch("player/initNextEpisode")
-              }
-            }
-          },
-          [_vm._v("Next")]
-        )
-      : _vm._e()
-  ])
-};
-var __vue_staticRenderFns__$3 = [];
-__vue_render__$3._withStripped = true;
-
-  /* style */
-  const __vue_inject_styles__$3 = undefined;
-  /* scoped */
-  const __vue_scope_id__$3 = undefined;
-  /* module identifier */
-  const __vue_module_identifier__$3 = undefined;
-  /* functional template */
-  const __vue_is_functional_template__$3 = false;
-  /* style inject */
-  
-  /* style inject SSR */
-  
-
-  
-  var playerControls = normalizeComponent_1(
-    { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
-    __vue_inject_styles__$3,
-    __vue_script__$3,
-    __vue_scope_id__$3,
-    __vue_is_functional_template__$3,
-    __vue_module_identifier__$3,
-    undefined,
-    undefined
-  );
-
-//
-var script$4 = {
-  name: "user-list-controls",
+  name: "video-controls",
 
   data() {
     return {
-      text: "Смотреть",
       shikimori: {
         animeId: null,
         userRate: null
@@ -35733,15 +35646,6 @@ var script$4 = {
 
       this.shikimori.animeId = anime.id;
       this.shikimori.userRate = anime.user_rate;
-
-      if (
-        anime.user_rate &&
-        this.currentEpisodeInt <= anime.user_rate.episodes
-      ) {
-        this.text = "Просмотрено";
-      } else {
-        this.text = "Смотреть";
-      }
     },
 
     async markAsWached() {
@@ -35768,6 +35672,31 @@ var script$4 = {
       }
 
       this.$store.dispatch("player/initNextEpisode");
+    },
+
+    async saveRate(value) {
+      console.log(value);
+      if (!this.$store.state.user.UserInfo) {
+        return;
+      }
+
+      value *= 2;
+
+      const url = this.shikimori.userRate
+        ? `/v2/user_rates/${
+            this.shikimori.userRate.id
+          }?user_rate[target_type]=Anime&user_rate[score]=${value}&user_rate[status]=watching&user_rate[user_id]=${
+            this.$store.state.user.UserInfo.id
+          }`
+        : `/v2/user_rates/?user_rate[target_type]=Anime&user_rate[score]=${value}&user_rate[status]=watching&user_rate[target_id]=${
+            this.shikimori.animeId
+          }&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`;
+
+      const method = this.shikimori.userRate ? "PATCH" : "POST";
+
+      const newUserRate = await shikimoriAPI(url, { method });
+
+      this.shikimori.userRate = newUserRate;
     }
   },
 
@@ -35789,56 +35718,139 @@ var script$4 = {
 };
 
 /* script */
-const __vue_script__$4 = script$4;
+const __vue_script__$3 = script$3;
 
 /* template */
-var __vue_render__$4 = function() {
+var __vue_render__$3 = function() {
   var _vm = this;
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
-  return _c("section", [
-    _c("button", { on: { click: _vm.markAsWached } }, [
-      _vm._v(_vm._s(_vm.text))
-    ])
-  ])
+  return _c(
+    "v-layout",
+    { attrs: { row: "" } },
+    [
+      _c(
+        "v-flex",
+        [
+          _c(
+            "v-btn",
+            {
+              staticClass: "ma-0",
+              attrs: {
+                outline: "",
+                disabled: !_vm.$store.getters["player/previousEpisode"]
+              },
+              on: {
+                click: function($event) {
+                  return _vm.$store.dispatch("player/initPreviousEpisode")
+                }
+              }
+            },
+            [
+              _c("v-icon", { attrs: { left: "" } }, [_vm._v("skip_previous")]),
+              _vm._v("Предыдущий эпизод\n    ")
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-center" },
+        [
+          _c("v-rating", {
+            attrs: {
+              value: _vm.shikimori.userRate
+                ? _vm.shikimori.userRate.score / 2
+                : 0,
+              "half-increments": "",
+              hover: "",
+              readonly: !_vm.shikimori.userRate
+            },
+            on: { input: _vm.saveRate }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-right" },
+        [
+          _c(
+            "v-btn",
+            {
+              staticClass: "ma-0",
+              attrs: { disabled: !_vm.$store.getters["player/nextEpisode"] },
+              on: { click: _vm.markAsWached }
+            },
+            [
+              _vm._v("\n      Следующий эпизод\n      "),
+              _c("v-icon", { attrs: { right: "" } }, [_vm._v("skip_next")])
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
 };
-var __vue_staticRenderFns__$4 = [];
-__vue_render__$4._withStripped = true;
+var __vue_staticRenderFns__$3 = [];
+__vue_render__$3._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$4 = undefined;
+  const __vue_inject_styles__$3 = undefined;
   /* scoped */
-  const __vue_scope_id__$4 = undefined;
+  const __vue_scope_id__$3 = undefined;
   /* module identifier */
-  const __vue_module_identifier__$4 = undefined;
+  const __vue_module_identifier__$3 = undefined;
   /* functional template */
-  const __vue_is_functional_template__$4 = false;
+  const __vue_is_functional_template__$3 = false;
   /* style inject */
   
   /* style inject SSR */
   
 
   
-  var userListControls = normalizeComponent_1(
-    { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
-    __vue_inject_styles__$4,
-    __vue_script__$4,
-    __vue_scope_id__$4,
-    __vue_is_functional_template__$4,
-    __vue_module_identifier__$4,
+  var videoControls = normalizeComponent_1(
+    { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
+    __vue_inject_styles__$3,
+    __vue_script__$3,
+    __vue_scope_id__$3,
+    __vue_is_functional_template__$3,
+    __vue_module_identifier__$3,
     undefined,
     undefined
   );
 
 //
 
-var script$5 = {
+var script$4 = {
   components: {
     episodeList,
     translationList,
     player: player$1,
-    playerControls,
-    userListControls
+    videoControls
+  },
+
+  data() {
+    let darkMode = true;
+
+    if (window.matchMedia) {
+      darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (!darkMode) {
+        darkMode = !window.matchMedia("(prefers-color-scheme: light)").matches;
+      }
+    }
+
+    return {
+      darkMode
+    };
   },
 
   computed: {
@@ -35863,10 +35875,10 @@ var script$5 = {
 };
 
 /* script */
-const __vue_script__$5 = script$5;
+const __vue_script__$4 = script$4;
 
 /* template */
-var __vue_render__$5 = function() {
+var __vue_render__$4 = function() {
   var _vm = this;
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
@@ -35875,11 +35887,12 @@ var __vue_render__$5 = function() {
     [
       _c(
         "v-app",
-        { attrs: { id: "app" } },
+        { attrs: { id: "app", dark: _vm.darkMode } },
         [
           _vm.$store.getters["player/currentEpisode"]
             ? _c(
                 "v-container",
+                { staticClass: "layout" },
                 [
                   _c(
                     "v-layout",
@@ -35887,6 +35900,7 @@ var __vue_render__$5 = function() {
                     [
                       _c(
                         "v-flex",
+                        { staticClass: "flex-grow-unset" },
                         [
                           _c(
                             "v-layout",
@@ -35920,28 +35934,8 @@ var __vue_render__$5 = function() {
                       _vm._v(" "),
                       _c(
                         "v-flex",
-                        [
-                          _c(
-                            "v-layout",
-                            { attrs: { row: "" } },
-                            [
-                              _c(
-                                "v-flex",
-                                { attrs: { xs6: "" } },
-                                [_c("player-controls")],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-flex",
-                                { attrs: { xs6: "" } },
-                                [_c("user-list-controls")],
-                                1
-                              )
-                            ],
-                            1
-                          )
-                        ],
+                        { staticClass: "flex-grow-unset mt-3" },
+                        [_c("video-controls")],
                         1
                       )
                     ],
@@ -35958,32 +35952,32 @@ var __vue_render__$5 = function() {
     1
   )
 };
-var __vue_staticRenderFns__$5 = [];
-__vue_render__$5._withStripped = true;
+var __vue_staticRenderFns__$4 = [];
+__vue_render__$4._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$5 = function (inject) {
+  const __vue_inject_styles__$4 = function (inject) {
     if (!inject) return
-    inject("data-v-b850a68e_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n/* #app {\n  display: flex;\n  flex-direction: column;\n  height: 100vh;\n  margin: 0 auto;\n  padding-top: 1rem;\n  padding-bottom: 1rem;\n  box-sizing: border-box;\n} */\n\n/* .player-container {\n  position: relative;\n  overflow: hidden;\n  flex: 1;\n  margin-top: 1rem;\n  margin-bottom: 1rem;\n  width: 100%;\n}\n\n.player-container > iframe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  border: 0;\n} */\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA2EA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AACA;;;;;;;;GAQA;;AAEA;;;;;;;;;;;;;;;;GAgBA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\">\n      <v-container v-if=\"$store.getters['player/currentEpisode']\">\n        <v-layout column>\n          <v-flex>\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list v-if=\"translations && translations.length\"></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player></player>\n          </v-flex>\n\n          <v-flex>\n            <v-layout row>\n              <v-flex xs6>\n                <player-controls></player-controls>\n              </v-flex>\n              <v-flex xs6>\n                <user-list-controls></user-list-controls>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport playerControls from \"./player-controls.vue\";\nimport userListControls from \"./user-list-controls.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    playerControls,\n    userListControls\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  mounted() {\n    this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n    this.$store.dispatch(\"user/initUser\");\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n/* #app {\n  display: flex;\n  flex-direction: column;\n  height: 100vh;\n  margin: 0 auto;\n  padding-top: 1rem;\n  padding-bottom: 1rem;\n  box-sizing: border-box;\n} */\n\n/* .player-container {\n  position: relative;\n  overflow: hidden;\n  flex: 1;\n  margin-top: 1rem;\n  margin-bottom: 1rem;\n  width: 100%;\n}\n\n.player-container > iframe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  border: 0;\n} */\n</style>\n"]}, media: undefined });
+    inject("data-v-f70f028e_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AAkFA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container v-if=\"$store.getters['player/currentEpisode']\" class=\"layout\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list v-if=\"translations && translations.length\"></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player></player>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls></video-controls>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  mounted() {\n    this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n    this.$store.dispatch(\"user/initUser\");\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
-  const __vue_scope_id__$5 = undefined;
+  const __vue_scope_id__$4 = undefined;
   /* module identifier */
-  const __vue_module_identifier__$5 = undefined;
+  const __vue_module_identifier__$4 = undefined;
   /* functional template */
-  const __vue_is_functional_template__$5 = false;
+  const __vue_is_functional_template__$4 = false;
   /* style inject SSR */
   
 
   
   var App = normalizeComponent_1(
-    { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
-    __vue_inject_styles__$5,
-    __vue_script__$5,
-    __vue_scope_id__$5,
-    __vue_is_functional_template__$5,
-    __vue_module_identifier__$5,
+    { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
+    __vue_inject_styles__$4,
+    __vue_script__$4,
+    __vue_scope_id__$4,
+    __vue_is_functional_template__$4,
+    __vue_module_identifier__$4,
     browser,
     undefined
   );

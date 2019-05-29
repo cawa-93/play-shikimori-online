@@ -1,18 +1,42 @@
-
 <template>
-  <section>
-    <button @click="markAsWached">{{text}}</button>
-  </section>
+  <v-layout row>
+    <v-flex>
+      <v-btn
+        class="ma-0"
+        outline
+        :disabled="!$store.getters['player/previousEpisode']"
+        @click="$store.dispatch('player/initPreviousEpisode')"
+      >
+        <v-icon left>skip_previous</v-icon>Предыдущий эпизод
+      </v-btn>
+    </v-flex>
+    <v-flex class="text-xs-center">
+      <v-rating
+        :value="shikimori.userRate ? shikimori.userRate.score / 2 : 0"
+        @input="saveRate"
+        half-increments
+        hover
+        :readonly="!shikimori.userRate"
+      ></v-rating>
+    </v-flex>
+    <v-flex class="text-xs-right">
+      <v-btn class="ma-0" :disabled="!$store.getters['player/nextEpisode']" @click="markAsWached">
+        Следующий эпизод
+        <v-icon right>skip_next</v-icon>
+      </v-btn>
+    </v-flex>
+  </v-layout>
 </template>
+
 
 <script>
 import { shikimoriAPI, anime365API } from "../../helpers";
+
 export default {
-  name: "user-list-controls",
+  name: "video-controls",
 
   data() {
     return {
-      text: "Смотреть",
       shikimori: {
         animeId: null,
         userRate: null
@@ -37,15 +61,6 @@ export default {
 
       this.shikimori.animeId = anime.id;
       this.shikimori.userRate = anime.user_rate;
-
-      if (
-        anime.user_rate &&
-        this.currentEpisodeInt <= anime.user_rate.episodes
-      ) {
-        this.text = "Просмотрено";
-      } else {
-        this.text = "Смотреть";
-      }
     },
 
     async markAsWached() {
@@ -72,6 +87,31 @@ export default {
       }
 
       this.$store.dispatch("player/initNextEpisode");
+    },
+
+    async saveRate(value) {
+      console.log(value);
+      if (!this.$store.state.user.UserInfo) {
+        return;
+      }
+
+      value *= 2;
+
+      const url = this.shikimori.userRate
+        ? `/v2/user_rates/${
+            this.shikimori.userRate.id
+          }?user_rate[target_type]=Anime&user_rate[score]=${value}&user_rate[status]=watching&user_rate[user_id]=${
+            this.$store.state.user.UserInfo.id
+          }`
+        : `/v2/user_rates/?user_rate[target_type]=Anime&user_rate[score]=${value}&user_rate[status]=watching&user_rate[target_id]=${
+            this.shikimori.animeId
+          }&user_rate[user_id]=${this.$store.state.user.UserInfo.id}`;
+
+      const method = this.shikimori.userRate ? "PATCH" : "POST";
+
+      const newUserRate = await shikimoriAPI(url, { method });
+
+      this.shikimori.userRate = newUserRate;
     }
   },
 
