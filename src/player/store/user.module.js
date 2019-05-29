@@ -1,4 +1,4 @@
-import Vue from "../../node_modules/vue/dist/vue.esm.browser.min.js";
+import { shikimoriAPI } from "../../helpers";
 
 export const namespaced = true
 
@@ -14,7 +14,7 @@ export const mutations = {
 
 export const actions = {
   async initUser({ commit }) {
-    const info = await api.shikimori('/users/whoami')
+    const info = await shikimoriAPI('/users/whoami')
 
     commit('setUserInfo', info)
   }

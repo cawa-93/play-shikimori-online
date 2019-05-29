@@ -1,7 +1,7 @@
-(window.api = window.api || {}).anime365 = function (path, options = {}) {
+function shikimoriAPI(path, options = {}) {
 
   return new Promise((resolve, reject) => {
-    const url = 'https://smotretanime.ru/api' + path
+    const url = 'https://shikimori.org/api' + path
     let headers = new Headers({
       "Accept": "application/json",
       "Content-Type": "application/json",
@@ -26,3 +26,6 @@
 
   })
 }
+
+export { shikimoriAPI }
+export default shikimoriAPI

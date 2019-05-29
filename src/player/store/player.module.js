@@ -1,4 +1,5 @@
-import Vue from "../../node_modules/vue/dist/vue.esm.browser.min.js";
+import Vue from "vue";
+import { anime365API } from "../../helpers";
 
 export const namespaced = true
 
@@ -74,7 +75,7 @@ export const actions = {
 
   async initSeries({ state, commit, dispatch }, seriesID) {
     if (!state.series) {
-      const { data } = await window.api.anime365(`/series/${seriesID}`)
+      const { data } = await anime365API(`/series/${seriesID}`)
       commit('setSeries', data)
 
       let startEpisode = (new URL(location.href)).searchParams.get('episode')
@@ -90,7 +91,7 @@ export const actions = {
     commit('setCurrentEpisode', episodeID)
 
     if (!getters.currentEpisode.translations) {
-      const { data } = await window.api.anime365(`/episodes/${getters.currentEpisode.id}`)
+      const { data } = await anime365API(`/episodes/${getters.currentEpisode.id}`)
       commit('setTranslations', { episodeID, translations: data.translations })
     }
 

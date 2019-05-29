@@ -2,12 +2,11 @@
 	"manifest_version": 2,
 	"name": "Play Shikimori",
 	"version": "0.0.2",
-	"minimum_chrome_version": "63",
 	"description": "Добавляет онлайн-кинотеатр на shikimori.one",
 	"homepage_url": "https://github.com/cawa-93/play-shikimori",
 	"background": {
 		"scripts": [
-			"background.js"
+			"background/background.js"
 		],
 		"persistent": false
 	},
@@ -18,24 +17,17 @@
 				"https://shikimori.one/*"
 			],
 			"js": [
-				"helpers/shikimori-api.js",
-				"helpers/anime-365-api.js",
-				"content_scripts/watch_button.js"
-			],
-			"run_at": "document_idle"
+				"content-scripts/watch-button.js"
+			]
 		},
 		{
 			"matches": [
 				"https://smotretanime.ru/translations/embed/*"
 			],
 			"js": [
-				"content_scripts/player-events.js"
+				"content-scripts/player-events.js"
 			],
-			"css": [
-				"player/player-embbeded-styles.css"
-			],
-			"all_frames": true,
-			"run_at": "document_idle"
+			"all_frames": true
 		}
 	],
 	"permissions": [

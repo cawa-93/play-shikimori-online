@@ -1,12 +1,10 @@
+import { anime365API, shikimoriAPI } from '../helpers'
+
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)
 const observerConfig = { attributes: true, subtree: true, childList: true }
 mainObserver.observe(document, observerConfig)
 main()
-
-
-
-
 
 
 async function main() {
@@ -34,7 +32,7 @@ async function main() {
 	}
 
 	// 
-	const { data } = await api.anime365(`/series/?myAnimeListId=${anime.myanimelist_id}`)
+	const { data } = await anime365API(`/series/?myAnimeListId=${anime.myanimelist_id}`)
 	const series = data[0]
 
 	if (series && series.episodes && series.episodes.length) {
@@ -75,10 +73,9 @@ async function getAnime() {
 		"User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
 	});
 
-	const response = await fetch(`${location.protocol}//${location.host}/api/animes/${idMatch[1]}`, {
+	const data = await shikimoriAPI(`/animes/${idMatch[1]}`, {
 		headers
 	})
-	const data = await response.json()
 
 	return data
 }
