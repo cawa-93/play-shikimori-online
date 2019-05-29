@@ -10,7 +10,8 @@ module.exports = [{
   input: 'src/background/background.js',
   output: {
     file: 'dist/background/background.js',
-    format: 'esm'
+    format: 'esm',
+    sourcemap: 'inline'
   },
   plugins: [
     resolve(),
@@ -23,13 +24,19 @@ module.exports = [{
 },
 
 {
-  input: 'src/content-scripts/player-events.js',
+  input: 'src/content-scripts/anime365-player-events.js',
   output: {
-    file: 'dist/content-scripts/player-events.js',
-    format: 'esm'
+    file: 'dist/content-scripts/anime365-player-events.js',
+    format: 'esm',
+    sourcemap: 'inline'
   },
   plugins: [
     resolve(),
+    copy({
+      targets: {
+        'src/content-scripts/anime365-player-styles.css': 'dist/content-scripts/anime365-player-styles.css'
+      }
+    })
   ]
 },
 
@@ -37,7 +44,8 @@ module.exports = [{
   input: 'src/content-scripts/watch-button.js',
   output: {
     file: 'dist/content-scripts/watch-button.js',
-    format: 'esm'
+    format: 'esm',
+    sourcemap: 'inline'
   },
   plugins: [
     resolve(),
@@ -49,7 +57,8 @@ module.exports = [{
   input: 'src/player/index.js',
   output: {
     file: 'dist/player/bundle.js',
-    format: 'esm'
+    format: 'esm',
+    sourcemap: 'inline'
   },
   plugins: [
     commonjs(),

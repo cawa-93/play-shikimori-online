@@ -1,6 +1,6 @@
 if (window.parent) {
   /** @type {HTMLVideoElement} */
-  const video = document.querySelector('video#main-video_html5_api')
+  const video = document.querySelector('video#main-video')
 
   if (video) {
     const events = ["abort", "canplay", "canplaythrough", "durationchange", "emptied", "ended", "error", "loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange", "seeked ", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"]

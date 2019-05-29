@@ -50,3 +50,34 @@ export default {
   }
 };
 </script>
+
+<style>
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 80%;
+  margin: 0 auto;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.player-container {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.player-container > iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+</style>

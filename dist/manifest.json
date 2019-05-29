@@ -18,15 +18,20 @@
 			],
 			"js": [
 				"content-scripts/watch-button.js"
-			]
+			],
+			"run_at": "document_idle"
 		},
 		{
 			"matches": [
 				"https://smotretanime.ru/translations/embed/*"
 			],
 			"js": [
-				"content-scripts/player-events.js"
+				"content-scripts/anime365-player-events.js"
 			],
+			"css": [
+				"content-scripts/anime365-player-styles.css"
+			],
+			"run_at": "document_idle",
 			"all_frames": true
 		}
 	],

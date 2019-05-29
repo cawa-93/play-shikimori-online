@@ -18,7 +18,7 @@
     "vue-template-compiler": "^2.6.10"
   },
   "scripts": {
-    "dev": "rollup -c rollup.config.js --watch"
+    "build": "rollup -c rollup.config.js"
   },
   "keywords": [],
   "author": "",
