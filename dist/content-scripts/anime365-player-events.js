@@ -38,10 +38,11 @@ if (window.parent && extensionId === chrome.runtime.id) {
     function timeupdateHandler() {
       const currentTime = video.currentTime;
       const duration = video.duration;
+      const endingTime = duration > 600 ? 120 : duration * 0.1;
       /** @type {HTMLButtonElement} */
       let nextEpisodeButton = document.querySelector('.next-episode');
 
-      if (duration - currentTime < 120) {
+      if (duration - currentTime <= endingTime) {
         if (!nextEpisodeButton) {
           nextEpisodeButton = document.createElement('button');
           nextEpisodeButton.innerText = "Следующий епизод";

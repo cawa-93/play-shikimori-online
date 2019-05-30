@@ -1,7 +1,7 @@
-import devtools from '@vue/devtools'
-if (process.env.NODE_ENV === 'development') {
-  devtools.connect(/* host, port */)
-}
+// import devtools from '@vue/devtools'
+// if (process.env.NODE_ENV === 'development') {
+//   devtools.connect(/* host, port */)
+// }
 
 import Vue from 'vue';
 import Vuetify from 'vuetify'
