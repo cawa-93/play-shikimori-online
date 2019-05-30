@@ -1,12 +1,12 @@
 <template>
   <section>
     <v-app id="app" :dark="darkMode">
-      <v-container v-if="$store.getters['player/currentEpisode']" class="layout">
+      <v-container class="layout" v-if="$store.state.shikimori.anime">
         <v-layout column>
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
-                <episode-list></episode-list>
+                <episode-list v-if="$store.getters['player/episodes']"></episode-list>
               </v-flex>
               <v-flex xs6>
                 <translation-list v-if="translations && translations.length"></translation-list>
@@ -15,11 +15,11 @@
           </v-flex>
 
           <v-flex>
-            <player></player>
+            <player v-if="$store.getters['player/currentTranslation']"></player>
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls></video-controls>
+            <video-controls v-if="$store.getters['player/currentTranslation']"></video-controls>
           </v-flex>
         </v-layout>
       </v-container>
@@ -74,7 +74,8 @@ export default {
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
-    this.$store.dispatch("user/initUser");
+    this.$store.dispatch("shikimori/initUser");
+    this.$store.dispatch("shikimori/initAnime");
   }
 };
 </script>

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Play Shikimori",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Добавляет онлайн-кинотеатр на shikimori.one",
 	"homepage_url": "https://github.com/cawa-93/play-shikimori",
 	"background": {

@@ -77,12 +77,6 @@ export const actions = {
     if (!state.series) {
       const { data } = await anime365API(`/series/${seriesID}`)
       commit('setSeries', data)
-
-      let startEpisode = (new URL(location.href)).searchParams.get('episode')
-      if (!startEpisode) {
-        startEpisode = data.episodes.find(episode => episode.episodeInt === '1').id
-      }
-      return dispatch('setCurrentEpisode', parseInt(startEpisode))
     }
   },
 

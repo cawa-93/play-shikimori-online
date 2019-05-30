@@ -2,13 +2,14 @@ function anime365API(path, options = {}) {
 
   return new Promise((resolve, reject) => {
     const url = 'https://smotretanime.ru/api' + path;
-    let headers = new Headers({
+    let headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",
       "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-    });
+    };
 
     options.headers = headers;
+    options.credentials = 'include';
 
     chrome.runtime.sendMessage({
       contentScriptQuery: 'fetchUrl',
@@ -31,13 +32,14 @@ function shikimoriAPI(path, options = {}) {
 
   return new Promise((resolve, reject) => {
     const url = 'https://shikimori.org/api' + path;
-    let headers = new Headers({
+    let headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",
       "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-    });
+    };
 
     options.headers = headers;
+    options.credentials = 'include';
 
     chrome.runtime.sendMessage({
       contentScriptQuery: 'fetchUrl',
@@ -98,15 +100,7 @@ async function main() {
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`));
 		playerURL.searchParams.append('series', series.id);
-
-		if (anime.user_rate) {
-			const startFromEpisode =
-				series.episodes.find(episode => episode.episodeInt == anime.user_rate.episodes + 1)
-				|| series.episodes.find(episode => episode.episodeInt == anime.user_rate.episodes)
-				|| series.episodes.find(episode => episode.episodeInt == 1);
-
-			playerURL.searchParams.append('episode', startFromEpisode.id);
-		}
+		playerURL.searchParams.append('anime', anime.id);
 
 		link.href = playerURL.toString();
 	} else {
