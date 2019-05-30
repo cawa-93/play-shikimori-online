@@ -34543,7 +34543,7 @@ var script$3 = {
 const __vue_script__$3 = script$3;
 
 /* template */
-var __vue_render__$3 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('v-layout',{attrs:{"row":""}},[_c('v-flex',[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/previousEpisode']},on:{"click":function($event){return _vm.$store.dispatch('player/initPreviousEpisode')}}},[_c('v-icon',{attrs:{"left":""}},[_vm._v("skip_previous")]),_vm._v("Предыдущий эпизод\n    ")],1)],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-center"},[_c('v-rating',{attrs:{"value":_vm.$store.state.shikimori.anime ? (_vm.$store.state.shikimori.anime.user_rate ? _vm.$store.state.shikimori.anime.user_rate.score / 2 : _vm.$store.state.shikimori.anime.score / 2) : 0,"half-increments":"","hover":"","readonly":!_vm.$store.state.shikimori.user || !_vm.$store.state.shikimori.anime},on:{"input":_vm.saveRate}})],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-right"},[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/nextEpisode']},on:{"click":_vm.nextEpisode}},[_vm._v("\n      Следующий эпизод\n      "),_c('v-icon',{attrs:{"right":""}},[_vm._v("skip_next")])],1)],1)],1)};
+var __vue_render__$3 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('v-layout',{attrs:{"row":""}},[_c('v-flex',[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/previousEpisode']},on:{"click":function($event){return _vm.$store.dispatch('player/initPreviousEpisode')}}},[_c('v-icon',{attrs:{"left":""}},[_vm._v("skip_previous")]),_vm._v("Предыдущий эпизод\n    ")],1)],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-center"},[_c('v-rating',{attrs:{"value":_vm.$store.state.shikimori.anime ? (_vm.$store.state.shikimori.anime.user_rate && _vm.$store.state.shikimori.anime.user_rate.score ? _vm.$store.state.shikimori.anime.user_rate.score / 2 : _vm.$store.state.shikimori.anime.score / 2) : 0,"half-increments":"","hover":"","readonly":!_vm.$store.state.shikimori.user || !_vm.$store.state.shikimori.anime},on:{"input":_vm.saveRate}})],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-right"},[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/nextEpisode']},on:{"click":_vm.nextEpisode}},[_vm._v("\n      Следующий эпизод\n      "),_c('v-icon',{attrs:{"right":""}},[_vm._v("skip_next")])],1)],1)],1)};
 var __vue_staticRenderFns__$3 = [];
 
   /* style */
@@ -34644,7 +34644,6 @@ var script$4 = {
     this.setTitle();
 
     _listener$1 = ({ data: event }) => {
-      console.info("Origin message", { event });
       if (event.name === "play" || event.name === "pause") {
         document.head.querySelector('link[rel="icon"]').href = `/icons/${
           event.name
@@ -34747,13 +34746,13 @@ var script$5 = {
 const __vue_script__$5 = script$5;
 
 /* template */
-var __vue_render__$5 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',[_c('v-app',{attrs:{"id":"app","dark":_vm.darkMode}},[(_vm.$store.state.shikimori.anime)?_c('v-container',{staticClass:"layout"},[_c('v-layout',{attrs:{"column":""}},[_c('v-flex',{staticClass:"flex-grow-unset"},[_c('v-layout',{attrs:{"row":""}},[_c('v-flex',{attrs:{"xs6":"","mr-3":""}},[(_vm.$store.getters['player/episodes'])?_c('episode-list'):_vm._e()],1),_vm._v(" "),_c('v-flex',{attrs:{"xs6":""}},[(_vm.translations && _vm.translations.length)?_c('translation-list'):_vm._e()],1)],1)],1),_vm._v(" "),_c('v-flex',[(_vm.$store.getters['player/currentTranslation'])?_c('player'):_c('p',[_vm._v("Выбкрите эпизод")])],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.getters['player/currentTranslation'])?_c('video-controls'):_vm._e()],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[_c('origins')],1)],1)],1):_vm._e()],1)],1)};
+var __vue_render__$5 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',[_c('v-app',{attrs:{"id":"app","dark":_vm.darkMode}},[(_vm.$store.state.shikimori.anime)?_c('v-container',{staticClass:"layout"},[_c('v-layout',{attrs:{"column":""}},[_c('v-flex',{staticClass:"flex-grow-unset"},[_c('v-layout',{attrs:{"row":""}},[_c('v-flex',{attrs:{"xs6":"","mr-3":""}},[(_vm.$store.getters['player/episodes'].length)?_c('episode-list'):_vm._e()],1),_vm._v(" "),_c('v-flex',{attrs:{"xs6":""}},[(_vm.translations && _vm.translations.length)?_c('translation-list'):_vm._e()],1)],1)],1),_vm._v(" "),_c('v-flex',[(_vm.$store.getters['player/currentTranslation'])?_c('player'):_c('p',[_vm._v("Выбкрите эпизод")])],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.getters['player/currentTranslation'])?_c('video-controls'):_vm._e()],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[_c('origins')],1)],1)],1):_vm._e()],1)],1)};
 var __vue_staticRenderFns__$5 = [];
 
   /* style */
   const __vue_inject_styles__$5 = function (inject) {
     if (!inject) return
-    inject("data-v-0981d700_0", { source: ".v-select__selections{overflow:hidden}.v-select__selection.v-select__selection--comma{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}.flex-grow-unset{flex-grow:unset}.player-container{height:100%}", map: undefined, media: undefined });
+    inject("data-v-11510400_0", { source: ".v-select__selections{overflow:hidden}.v-select__selection.v-select__selection--comma{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}.flex-grow-unset{flex-grow:unset}.player-container{height:100%}", map: undefined, media: undefined });
 
   };
   /* scoped */

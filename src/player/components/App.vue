@@ -6,7 +6,7 @@
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
-                <episode-list v-if="$store.getters['player/episodes']"></episode-list>
+                <episode-list v-if="$store.getters['player/episodes'].length"></episode-list>
               </v-flex>
               <v-flex xs6>
                 <translation-list v-if="translations && translations.length"></translation-list>

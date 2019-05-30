@@ -71,7 +71,6 @@ export default {
     this.setTitle();
 
     _listener = ({ data: event }) => {
-      console.info("Origin message", { event });
       if (event.name === "play" || event.name === "pause") {
         document.head.querySelector('link[rel="icon"]').href = `/icons/${
           event.name
