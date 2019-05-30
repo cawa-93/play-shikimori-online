@@ -1,6 +1,6 @@
 <template>
   <section>
-    <v-app id="app">
+    <v-app id="app" :dark="darkMode">
       <v-container class="layout" v-if="$store.state.shikimori.anime">
         <v-layout column>
           <v-flex class="flex-grow-unset">

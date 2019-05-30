@@ -60316,7 +60316,12 @@ __vue_render__$1._withStripped = true;
 //
 
 var script$2 = {
-  name: "player"
+  name: "player",
+  data() {
+    return {
+      extensionId: chrome.runtime.id
+    };
+  }
 };
 
 /* script */
@@ -60333,7 +60338,8 @@ var __vue_render__$2 = function() {
           attrs: {
             src:
               _vm.$store.getters["player/currentTranslation"].embedUrl +
-              "?autoplay=1",
+              "?autoplay=1&extension-id=" +
+              _vm.extensionId,
             height: "100%",
             width: "100%",
             frameborder: "0",
@@ -60812,7 +60818,7 @@ var __vue_render__$5 = function() {
     [
       _c(
         "v-app",
-        { attrs: { id: "app" } },
+        { attrs: { id: "app", dark: _vm.darkMode } },
         [
           _vm.$store.state.shikimori.anime
             ? _c(
@@ -60906,7 +60912,7 @@ __vue_render__$5._withStripped = true;
   /* style */
   const __vue_inject_styles__$5 = function (inject) {
     if (!inject) return
-    inject("data-v-ed79dde0_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA0FA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\">\n      <v-container class=\"layout\" v-if=\"$store.state.shikimori.anime\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list v-if=\"$store.getters['player/episodes']\"></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list v-if=\"translations && translations.length\"></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player v-if=\"$store.getters['player/currentTranslation']\"></player>\n            <p v-else>Выбкрите эпизод</p>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\"></video-controls>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <origins></origins>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\nimport origins from \"./origins.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    origins\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  mounted() {\n    this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n    this.$store.dispatch(\"shikimori/initUser\");\n    this.$store.dispatch(\"shikimori/initAnime\");\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
+    inject("data-v-0af1300c_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA0FA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"layout\" v-if=\"$store.state.shikimori.anime\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list v-if=\"$store.getters['player/episodes']\"></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list v-if=\"translations && translations.length\"></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player v-if=\"$store.getters['player/currentTranslation']\"></player>\n            <p v-else>Выбкрите эпизод</p>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\"></video-controls>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <origins></origins>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\nimport origins from \"./origins.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    origins\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  mounted() {\n    this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n    this.$store.dispatch(\"shikimori/initUser\");\n    this.$store.dispatch(\"shikimori/initAnime\");\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */

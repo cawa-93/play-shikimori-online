@@ -1,4 +1,6 @@
-if (window.parent) {
+const extensionId = (new URL(location.href)).searchParams.get('extension-id');
+
+if (window.parent && extensionId === chrome.runtime.id) {
   /** @type {HTMLVideoElement} */
   const video = document.querySelector('video#main-video');
 
