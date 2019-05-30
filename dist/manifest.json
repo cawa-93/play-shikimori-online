@@ -4,6 +4,9 @@
 	"version": "0.0.3",
 	"description": "Добавляет онлайн-кинотеатр на shikimori.one",
 	"homepage_url": "https://github.com/cawa-93/play-shikimori",
+	"icons": {
+		"192": "icons/play.png"
+	},
 	"background": {
 		"scripts": [
 			"background/background.js"

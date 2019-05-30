@@ -3,7 +3,7 @@
     <v-flex>
       <v-btn
         class="ma-0"
-        outline
+        flat
         :disabled="!$store.getters['player/previousEpisode']"
         @click="$store.dispatch('player/initPreviousEpisode')"
       >
@@ -20,7 +20,12 @@
       ></v-rating>
     </v-flex>
     <v-flex class="text-xs-right">
-      <v-btn class="ma-0" :disabled="!$store.getters['player/nextEpisode']" @click="nextEpisode">
+      <v-btn
+        class="ma-0"
+        flat
+        :disabled="!$store.getters['player/nextEpisode']"
+        @click="nextEpisode"
+      >
         Следующий эпизод
         <v-icon right>skip_next</v-icon>
       </v-btn>

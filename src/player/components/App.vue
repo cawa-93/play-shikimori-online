@@ -1,6 +1,6 @@
 <template>
   <section>
-    <v-app id="app" :dark="darkMode">
+    <v-app id="app">
       <v-container class="layout" v-if="$store.state.shikimori.anime">
         <v-layout column>
           <v-flex class="flex-grow-unset">
@@ -16,10 +16,15 @@
 
           <v-flex>
             <player v-if="$store.getters['player/currentTranslation']"></player>
+            <p v-else>Выбкрите эпизод</p>
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
             <video-controls v-if="$store.getters['player/currentTranslation']"></video-controls>
+          </v-flex>
+
+          <v-flex class="flex-grow-unset mt-3">
+            <origins></origins>
           </v-flex>
         </v-layout>
       </v-container>
@@ -32,13 +37,15 @@ import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
+import origins from "./origins.vue";
 
 export default {
   components: {
     episodeList,
     translationList,
     player,
-    videoControls
+    videoControls,
+    origins
   },
 
   data() {

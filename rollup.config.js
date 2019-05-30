@@ -17,7 +17,9 @@ module.exports = [{
     resolve(),
     copy({
       targets: {
-        'src/manifest.json': 'dist/manifest.json'
+        'src/manifest.json': 'dist/manifest.json',
+        'src/icons/play.png': 'dist/icons/play.png',
+        'src/icons/pause.png': 'dist/icons/pause.png',
       }
     })
   ]

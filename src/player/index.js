@@ -1,5 +1,5 @@
+import devtools from '@vue/devtools'
 if (process.env.NODE_ENV === 'development') {
-  import devtools from '@vue/devtools'
   devtools.connect(/* host, port */)
 }
 
