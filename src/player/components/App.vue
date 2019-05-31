@@ -9,14 +9,14 @@
                 <episode-list v-if="$store.getters['player/episodes'].length"></episode-list>
               </v-flex>
               <v-flex xs6>
-                <translation-list v-if="translations && translations.length"></translation-list>
+                <translation-list></translation-list>
               </v-flex>
             </v-layout>
           </v-flex>
 
           <v-flex>
-            <player v-if="$store.getters['player/currentTranslation']"></player>
-            <p v-else>Выбкрите эпизод</p>
+            <player></player>
+            <!-- <p v-else>Выберите эпизод</p> -->
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">

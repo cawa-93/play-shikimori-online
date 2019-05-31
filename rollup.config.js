@@ -77,4 +77,21 @@ module.exports = [{
       }
     })
   ],
+},
+
+{
+  input: 'src/player/worker.js',
+  output: {
+    file: 'dist/player/worker.js',
+    format: 'esm',
+    // sourcemap: process.env.NODE_ENV !== 'production' ? 'inline' : false
+  },
+  plugins: [
+    resolve(),
+    commonjs(),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.VUE_ENV': JSON.stringify('browser')
+    }),
+  ],
 }]

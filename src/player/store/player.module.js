@@ -1,5 +1,10 @@
 import Vue from "vue";
 import { anime365API } from "../../helpers";
+import { storage } from "kv-storage-polyfill";
+
+const worker = new Worker('/player/worker.js')
+worker.onmessage = console.log
+
 
 export const namespaced = true
 
@@ -71,8 +76,6 @@ export const mutations = {
 
 
 export const actions = {
-
-
   async initSeries({ state, commit, dispatch }, seriesID) {
     if (!state.series) {
       const { data } = await anime365API(`/series/${seriesID}`)
@@ -82,19 +85,48 @@ export const actions = {
 
 
   async setCurrentEpisode({ state, commit, getters, dispatch }, episodeID) {
-    commit('setCurrentEpisode', episodeID)
+    const targetEpisode = getters.episodes.find(e => e.id === episodeID)
+    commit('setCurrentEpisode', targetEpisode.id)
 
-    if (!getters.currentEpisode.translations) {
-      const { data } = await anime365API(`/episodes/${getters.currentEpisode.id}`)
-      commit('setTranslations', { episodeID, translations: data.translations })
+    await dispatch('loadTranslations', targetEpisode)
+    const priorityTranslation = await dispatch('getPriorityTranslation', targetEpisode)
+
+    dispatch('setCurrentTranslation', priorityTranslation)
+
+    // Предварительная загрузка переводов для следующей серии
+    Vue.nextTick(() => {
+      dispatch('loadTranslations', getters.nextEpisode)
+    })
+  },
+
+  async loadTranslations({ getters, commit }, episode) {
+    if (!episode.translations) {
+      const { data } = await anime365API(`/episodes/${episode.id}`)
+      data.translations = data.translations.map(translation => {
+        if (!translation.authorsSummary) {
+          translation.authorsSummary = 'Неизвестный'
+        }
+
+        return translation
+      })
+      commit('setTranslations', { episodeID: episode.id, translations: data.translations })
     }
-
-    return dispatch('setTranslation', getters.currentEpisode.translations[0])
   },
 
 
-  async setTranslation({ commit }, translation) {
+  async setCurrentTranslation({ commit }, translation) {
     commit('setCurrentTranslation', translation.id)
+
+    let lastSelectedTranslations = await storage.get("lastSelectedTranslations");
+
+    // Если ранее хранилище переводов не создавалось — инициализировать его
+    if (!lastSelectedTranslations) {
+      lastSelectedTranslations = new Map()
+    }
+
+    lastSelectedTranslations.set(translation.seriesId, translation)
+
+    await storage.set("lastSelectedTranslations", lastSelectedTranslations);
   },
 
 
@@ -109,5 +141,21 @@ export const actions = {
     if (getters.nextEpisode) {
       dispatch('setCurrentEpisode', getters.nextEpisode.id)
     }
+  },
+
+
+
+
+
+  getPriorityTranslation({ }, episode) {
+
+    return new Promise(resolve => {
+
+      worker.onmessage = ({ data: { translation } }) => {
+        worker.onmessage = null
+        resolve(translation)
+      }
+      worker.postMessage({ episode })
+    })
   }
 }

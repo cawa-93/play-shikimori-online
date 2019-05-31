@@ -46,11 +46,11 @@ export default {
     const episode = this.$store.getters["player/episodes"].find(
       episode => parseInt(episode.episodeInt) === episodeInt
     );
-    console.log({
-      episodeInt,
-      episode,
-      episodes: this.$store.getters["player/episodes"]
-    });
+    // console.log({
+    //   episodeInt,
+    //   episode,
+    //   episodes: this.$store.getters["player/episodes"]
+    // });
 
     if (episode) {
       this.$store.dispatch("player/setCurrentEpisode", episode.id);

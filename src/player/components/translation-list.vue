@@ -1,14 +1,14 @@
 
 <template>
-  <section class="translation-list" v-if="translations && translations.length">
+  <section class="translation-list">
+    {{currentTranslationID}}
     <v-select
       item-text="authorsSummary"
       item-value="id"
       :items="groupedTranslations"
       box
-      label="Перевод"
+      :label="label"
       v-model="currentTranslationID"
-      @change="saveTranslationPreference"
     >
       <template v-slot:item="data">
         <template v-if="data.item.label">
@@ -16,7 +16,7 @@
         </template>
         <template v-else>
           <v-list-tile-content class="inset">
-            <v-list-tile-title>{{data.item.authorsSummary || 'Неизвестный'}}</v-list-tile-title>
+            <v-list-tile-title>{{data.item.authorsSummary}}</v-list-tile-title>
           </v-list-tile-content>
         </template>
       </template>
@@ -26,8 +26,6 @@
 
 
 <script>
-import { storage } from "kv-storage-polyfill";
-
 export default {
   name: "translation-list",
 
@@ -100,129 +98,27 @@ export default {
           translation => translation.id === id
         );
         if (translation) {
-          this.$store.dispatch("player/setTranslation", translation);
+          this.$store.dispatch("player/setCurrentTranslation", translation);
         }
       }
-    }
-  },
-
-  watch: {
-    async translations() {
-      const preference = await storage.get("translationPreference");
-
-      if (!preference) {
-        await storage.set("translationPreference", {
-          bySeries: new Map()
-        });
-      }
-
-      /** ID Текущего тайтла */
-      const seriesId = this.$store.getters["player/currentEpisode"].seriesId;
-
-      /**
-       * Последний установленный перевод для текущего тайтла
-       */
-      const preferenceForSeries = preference.bySeries.get(seriesId);
-
-      if (preferenceForSeries) {
-        const primaryTranslation = this.getPrimaryTranslation(
-          this.filteredTranslations,
-          preferenceForSeries
-        );
-
-        this.currentTranslationID = primaryTranslation.id;
-      }
-    }
-  },
-
-  methods: {
-    async saveTranslationPreference() {
-      // this.lastSavedTranslation = this.$store.getters['player/currentTranslation']
-
-      const preference = await storage.get("translationPreference");
-      preference.bySeries.set(
-        this.$store.getters["player/currentEpisode"].seriesId,
-        this.$store.getters["player/currentTranslation"]
-      );
-
-      await storage.set("translationPreference", preference);
     },
 
-    getPrimaryTranslation(translationForSearch, preferedTranslation) {
-      // Сохранённый перевод применим к текущей серии
-      if (
-        translationForSearch.find(
-          translation => translation.id == preferedTranslation.id
-        )
-      ) {
-        return preferedTranslation;
+    label() {
+      if (!this.$store.getters["player/currentTranslation"]) {
+        return "Выберите перевод";
       }
-
-      // Сохранённый перевод не применим к текущей серии
-      // Поиск альтернативы по названию автора
-      const savedAuthor = preferedTranslation.authorsSummary
-        .replace(/[^\p{L}\d]/giu, "")
-        .trim()
-        .toLowerCase();
-
-      if (!savedAuthor) {
-        return translationForSearch[0];
+      switch (this.$store.getters["player/currentTranslation"].type) {
+        case "voiceRu":
+          return "Озвучка";
+        case "subRu":
+          return "Русские Субтиитры";
+        case "subEn":
+          return "Английские Субтиитры";
+        case "subJa":
+          return "Японские Субтиитры";
+        case "raw":
+          return "Оригинал";
       }
-
-      // Сопоставление переводов по имении автора
-      const translationFromSameAuthor = translationForSearch.find(
-        translation => {
-          const translationAuthor = translation.authorsSummary
-            .replace(/[^\p{L}\d]/giu, "")
-            .trim()
-            .toLowerCase();
-          if (!translationAuthor) return false;
-          return (
-            new RegExp(translationAuthor).test(savedAuthor) ||
-            new RegExp(savedAuthor).test(translationAuthor)
-          );
-        }
-      );
-
-      // Перевод того же автора найден
-      if (translationFromSameAuthor) {
-        return translationFromSameAuthor;
-      }
-
-      // Перевода от того же автора не найдено
-      return translationForSearch[0];
-    }
-  },
-
-  async mounted() {
-    let preference = await storage.get("translationPreference");
-
-    if (!preference || !preference.bySeries) {
-      (preference = preference || {}).bySeries = new Map();
-
-      await storage.set("translationPreference", preference);
-    }
-
-    /** ID Текущего тайтла */
-    const seriesId = this.$store.getters["player/currentEpisode"].seriesId;
-
-    /**
-     * Последний установленный перевод для текущего тайтла
-     */
-    const preferenceForSeries = preference.bySeries.get(seriesId);
-
-    if (preferenceForSeries) {
-      // Устанавливаем в фильтрах тиип перевода
-      this.filters.type.value = preferenceForSeries.type;
-
-      const primaryTranslation = this.getPrimaryTranslation(
-        this.filteredTranslations,
-        preferenceForSeries
-      );
-
-      this.currentTranslationID = primaryTranslation.id;
-    } else {
-      this.currentTranslationID = this.filteredTranslations[0].id;
     }
   }
 };

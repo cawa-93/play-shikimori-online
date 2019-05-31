@@ -9,7 +9,8 @@ main()
 
 async function main() {
 	const infoSection = document.querySelector('body#animes_show .c-info-right')
-	const WatchOnlineButton = document.querySelector('#watch-online-button')
+	/** @type {HTMLAnchorElement} */
+	let WatchOnlineButton = document.querySelector('#watch-online-button')
 
 	if (!infoSection || WatchOnlineButton) return
 
@@ -19,15 +20,17 @@ async function main() {
 	WatchButtonSection.classList.add('watch-online-block')
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
-		<a href="#" target="_blank" id="watch-online-button" class="b-link_button dark">Загрузка</a>
+		<a href="#" target="_blank" id="watch-online-button" class="b-link_button dark b-ajax"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		`
 	infoSection.appendChild(WatchButtonSection)
+	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button')
 
 	// Загрузка метаданных аниме
 	const anime = await getAnime()
 
 	if (!anime) {
-		WatchButtonSection.querySelector('#watch-online-button').textContent = 'Нет видео'
+		WatchOnlineButton.textContent = 'Нет видео'
+		WatchOnlineButton.classList.remove('b-ajax')
 		return
 	}
 
@@ -36,18 +39,24 @@ async function main() {
 	const series = data[0]
 
 	if (series && series.episodes && series.episodes.length) {
-		/** @type {HTMLAnchorElement} */
-		const link = WatchButtonSection.querySelector('#watch-online-button')
-		link.textContent = 'Смотреть онлайн'
+		if (!anime.user_rate || anime.user_rate.episodes === 0) {
+			WatchOnlineButton.textContent = 'Начать просмотр'
+		} else if (anime.user_rate.episodes >= anime.episodes) {
+			WatchOnlineButton.textContent = 'Пересмотреть'
+		} else {
+			WatchOnlineButton.textContent = 'Продолжить просмотр'
+		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
 		playerURL.searchParams.append('series', series.id)
 		playerURL.searchParams.append('anime', anime.id)
 
-		link.href = playerURL.toString()
+		WatchOnlineButton.href = playerURL.toString()
 	} else {
-		WatchButtonSection.querySelector('#watch-online-button').textContent = 'Нет видео'
+		WatchOnlineButton.textContent = 'Нет видео'
 	}
+
+	WatchOnlineButton.classList.remove('b-ajax')
 
 }
 
@@ -59,15 +68,7 @@ async function getAnime() {
 		return undefined
 	}
 
-	let headers = new Headers({
-		"Accept": "application/json",
-		"Content-Type": "application/json",
-		"User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-	});
-
-	const data = await shikimoriAPI(`/animes/${idMatch[1]}`, {
-		headers
-	})
+	const data = await shikimoriAPI(`/animes/${idMatch[1]}`)
 
 	return data
 }

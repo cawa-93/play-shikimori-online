@@ -1,7 +1,9 @@
 <template>
-  <v-card class="player-container" v-if="$store.getters['player/currentTranslation']">
+  <v-card class="player-container">
     <iframe
-      :src="$store.getters['player/currentTranslation'].embedUrl + '?autoplay=1&extension-id=' + extensionId"
+      key="main-player"
+      v-show="currentTranslation.embedUrl"
+      :src="currentTranslation.embedUrl + '?autoplay=1&extension-id=' + extensionId"
       height="100%"
       width="100%"
       frameborder="0"
@@ -16,8 +18,23 @@ export default {
   name: "player",
   data() {
     return {
-      extensionId: chrome.runtime.id
+      extensionId: chrome.runtime.id,
+      displayFrame: false
     };
+  },
+
+  computed: {
+    currentTranslation() {
+      return this.$store.getters["player/currentTranslation"]
+        ? this.$store.getters["player/currentTranslation"]
+        : {};
+    }
+  },
+
+  watch: {
+    currentTranslation() {
+      console.log(this.currentTranslation.embedUrl);
+    }
   }
 };
 </script>
