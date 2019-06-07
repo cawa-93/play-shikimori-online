@@ -95,7 +95,7 @@ onmessage = async ({ data: { episode } }) => {
     }
 
     // Среди доступных переводов выбираем один по свойству priority (получено от smotret-anime-365.ru)
-    lastSelectedTranslation = getPriority(mostSelectedTranslations)
+    lastSelectedTranslation = getMostPriority(mostSelectedTranslations)
   }
 
   if (lastSelectedTranslation) {
