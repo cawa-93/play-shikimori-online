@@ -13,6 +13,7 @@ window.onload = function () {
 
 			setCuttentTime();
 			initSaveCurrentTime();
+			initSaveFullScreenState();
 			initEventProxy();
 			createNextEpisedeButton();
 		}
@@ -96,12 +97,21 @@ window.onload = function () {
 			});
 		}
 
+		function initSaveFullScreenState() {
+			playerGlobal.on('fullscreenchange', () => {
+				localStorage.setItem(`play-fullscreen-state`, playerGlobal.isFullscreen());
+			});
+		}
+
 		/**
 		 * Функция автоматически запускает воспроизведение, если нет рекламной вставки
 		 */
 		function autoPlay() {
 			if (!playerGlobal.concatenate.activated) return
 
+			if (localStorage.getItem(`play-fullscreen-state`) === 'true') {
+				playerGlobal.requestFullscreen();
+			}
 			playerGlobal.play();
 		}
 
