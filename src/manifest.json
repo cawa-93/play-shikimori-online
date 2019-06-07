@@ -1,11 +1,12 @@
 {
 	"manifest_version": 2,
 	"name": "Play Shikimori Online",
-	"version": "0.2.0",
-	"description": "Расширение позволяет смотреть аниме онлайн и автоматическии синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
+	"version": "0.3.0",
+	"description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
 	"homepage_url": "https://github.com/cawa-93/play-shikimori",
 	"icons": {
-		"192": "icons/play.png"
+		"192": "icons/play.png",
+		"128": "icons/play-128.png"
 	},
 	"background": {
 		"scripts": [
