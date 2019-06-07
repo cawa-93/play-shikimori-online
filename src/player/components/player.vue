@@ -4,7 +4,7 @@
       id="player"
       ref="player"
       v-if="$store.state.player.currentTranslationID"
-      :src="'https://smotret-anime-365.ru/translations/embed/' + $store.state.player.currentTranslationID + '?&extension-id=' + extensionId"
+      :src="src"
       height="100%"
       width="100%"
       frameborder="0"
@@ -19,14 +19,30 @@ let _listener = null;
 
 export default {
   name: "player",
-  data() {
-    return {
-      extensionId: chrome.runtime.id
-    };
-  },
 
   computed: {
-    src() {}
+    src() {
+      const base = new URL(
+        `https://smotret-anime-365.ru/translations/embed/${
+          this.$store.state.player.currentTranslationID
+        }`
+      );
+      base.searchParams.append("extension-id", chrome.runtime.id);
+      base.searchParams.append(
+        "play-shikimori[seriesId]",
+        this.$store.getters["player/currentTranslation"].seriesId
+      );
+      base.searchParams.append(
+        "play-shikimori[episodeId]",
+        this.$store.getters["player/currentTranslation"].episodeId
+      );
+      base.searchParams.append(
+        "play-shikimori[id]",
+        this.$store.getters["player/currentTranslation"].id
+      );
+
+      return base.toString();
+    }
   },
 
   created() {

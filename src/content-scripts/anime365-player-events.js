@@ -1,41 +1,118 @@
 window.onload = function () {
-  window.playerGlobal.ready(function () {
-    const events = ['play', 'pause', 'ended', 'timeupdate']
-    events.forEach(name => {
-      playerGlobal.on(name, () => {
-        const message = {
-          name,
-          currentTime: playerGlobal.currentTime(),
-          duration: playerGlobal.duration(),
-        }
-        window.parent.postMessage(message, '*')
-      })
-    })
-  })
+	window.playerGlobal.ready(function () {
+
+		/**
+		 * Главная функция
+		 * Запускается один раз, при первом запуске видео после рекламы
+		 */
+		function main() {
+			// console.log('firstActivatedHandler', playerGlobal.concatenate.activated)
+			if (!playerGlobal.concatenate.activated) return
+			playerGlobal.off('play', main)
+
+
+			setCuttentTime()
+			initSaveCurrentTime()
+			initEventProxy()
+			createNextEpisedeButton()
+		}
+
+		playerGlobal.on('play', main)
+
+
+		/**
+		 * Инициализирует отправку событий плеера к родительскому окну
+		 */
+		function initEventProxy() {
+			const events = ['play', 'pause', 'ended', 'timeupdate']
+			events.forEach(name => {
+				playerGlobal.on(name, () => {
+					if (!playerGlobal.concatenate.activated) return
+					const message = {
+						name,
+						currentTime: playerGlobal.currentTime(),
+						duration: playerGlobal.duration(),
+					}
+					window.parent.postMessage(message, '*')
+				})
+			})
+		}
+
+
+		/**
+		 * Создаёт кнопку переключения эпизода и инизиализурует обработчик собитий на ней
+		 */
+		function createNextEpisedeButton() {
+			const nextEpisodeButton = document.createElement('button')
+			nextEpisodeButton.innerText = "Следующий епизод"
+			nextEpisodeButton.classList.add('next-episode')
+			nextEpisodeButton.hidden = true
+			document.querySelector('#main-video').appendChild(nextEpisodeButton)
+			nextEpisodeButton.addEventListener('click', function () {
+				const message = {
+					name: 'mark-as-watched',
+					currentTime: playerGlobal.currentTime(),
+					duration: playerGlobal.duration(),
+				}
+				window.parent.postMessage(message, '*')
+			})
+
+			window.addEventListener("message", function ({ data: event }) {
+				if (event && event.button === 'next-episode') {
+					nextEpisodeButton.hidden = event.hidden
+				}
+			});
+		}
+
+		/**
+		 * 
+		 */
+		function setCuttentTime() {
+			const currentURL = new URL(location.href)
+			const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
+			const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
+			let savedTime = localStorage.getItem(`play-${seriesId}-time`)
+			if (!seriesId || !episodeId || !savedTime) return
+
+			savedTime = JSON.parse(savedTime)
+			if (savedTime.episodeId === episodeId) {
+				playerGlobal.currentTime(Math.max(0, savedTime.time - 10))
+			}
+		}
+
+		function initSaveCurrentTime() {
+			const currentURL = new URL(location.href)
+			const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
+			const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
+			if (!seriesId || !episodeId) return
+
+			playerGlobal.on('timeupdate', () => {
+				let savedTime = JSON.stringify({
+					episodeId,
+					time: playerGlobal.currentTime()
+				})
+				localStorage.setItem(`play-${seriesId}-time`, savedTime)
+
+			})
+		}
+
+		/**
+		 * Функция автоматически запускает воспроизведение, если нет рекламной вставки
+		 */
+		function autoPlay() {
+			if (!playerGlobal.concatenate.activated) return
+
+			playerGlobal.play()
+		}
+
+		autoPlay()
+	})
 
 
 
 
-  const nextEpisodeButton = document.createElement('button')
-  nextEpisodeButton.innerText = "Следующий епизод"
-  nextEpisodeButton.classList.add('next-episode')
-  nextEpisodeButton.hidden = true
-  document.querySelector('#main-video').appendChild(nextEpisodeButton)
-  nextEpisodeButton.addEventListener('click', function () {
-    const message = {
-      name: 'mark-as-watched',
-      currentTime: playerGlobal.currentTime(),
-      duration: playerGlobal.duration(),
-    }
-    window.parent.postMessage(message, '*')
-  })
 
-  window.addEventListener("message", function ({ data: event }) {
-    this.console.log({ frame: event })
-    if (event && event.button === 'next-episode') {
-      nextEpisodeButton.hidden = event.hidden
-    }
-  });
+
 
 };
 

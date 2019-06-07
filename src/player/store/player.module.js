@@ -47,8 +47,22 @@ export const getters = {
   },
 
   currentTranslation(state, getters) {
-    if (!state.currentTranslationID || !getters.currentEpisode || !getters.currentEpisode.translations) return undefined
-    return getters.currentEpisode.translations.find(translation => translation.id === state.currentTranslationID)
+    if (!state.currentTranslationID) return undefined
+    const episodesOrder = [
+      getters.currentEpisode,
+      getters.nextEpisode,
+      getters.previousEpisode,
+      ...getters.episodes,
+    ]
+
+    for (const episode of episodesOrder) {
+      if (!episode || !episode.translations || !episode.translations.length) continue
+      const translation = episode.translations.find(translation => translation.id === state.currentTranslationID)
+      if (translation) return translation
+
+    }
+
+    return undefined
   },
 }
 
