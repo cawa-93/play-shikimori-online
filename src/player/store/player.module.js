@@ -106,6 +106,19 @@ export const actions = {
     const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
     if (startEpisode) {
       dispatch('setCurrentEpisode', startEpisode.id)
+    } else if (episodeInt !== 1) {
+
+      episodeInt =
+        rootState.shikimori.anime &&
+          rootState.shikimori.anime.user_rate
+          ? rootState.shikimori.anime.user_rate.episodes
+          : 1
+
+
+      const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
+      if (startEpisode) {
+        dispatch('setCurrentEpisode', startEpisode.id)
+      }
     }
   },
 

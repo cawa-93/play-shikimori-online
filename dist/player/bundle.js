@@ -34949,6 +34949,19 @@ const actions = {
     const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt);
     if (startEpisode) {
       dispatch('setCurrentEpisode', startEpisode.id);
+    } else if (episodeInt !== 1) {
+
+      episodeInt =
+        rootState.shikimori.anime &&
+          rootState.shikimori.anime.user_rate
+          ? rootState.shikimori.anime.user_rate.episodes
+          : 1;
+
+
+      const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt);
+      if (startEpisode) {
+        dispatch('setCurrentEpisode', startEpisode.id);
+      }
     }
   },
 
@@ -35154,7 +35167,7 @@ var script = {
     },
 
     filteredEpisodes() {
-      return this.episodes.filter(e => e.isActive).reverse();
+      return this.episodes.filter(e => e.isActive);
     },
 
     currentEpisodeID: {
@@ -35408,7 +35421,7 @@ __vue_render__._withStripped = true;
   /* style */
   const __vue_inject_styles__ = function (inject) {
     if (!inject) return
-    inject("data-v-a9908d5e_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"episode-list.vue"}, media: undefined });
+    inject("data-v-2cb46434_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"episode-list.vue"}, media: undefined });
 
   };
   /* scoped */
@@ -35432,6 +35445,13 @@ __vue_render__._withStripped = true;
     undefined
   );
 
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -35583,17 +35603,25 @@ var __vue_render__$1 = function() {
         scopedSlots: _vm._u([
           {
             key: "item",
-            fn: function(data) {
+            fn: function(ref) {
+              var item = ref.item;
               return [
-                data.item.label
-                  ? [_c("v-subheader", [_vm._v(_vm._s(data.item.label))])]
+                item.label
+                  ? [_c("v-subheader", [_vm._v(_vm._s(item.label))])]
                   : [
+                      _c("v-list-tile-action", [
+                        item.qualityType !== "tv"
+                          ? _c("span", { staticClass: "qualityType" }, [
+                              _vm._v(_vm._s(item.qualityType.toUpperCase()))
+                            ])
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
                       _c(
                         "v-list-tile-content",
-                        { staticClass: "inset" },
                         [
                           _c("v-list-tile-title", [
-                            _vm._v(_vm._s(data.item.authorsSummary))
+                            _vm._v(_vm._s(item.authorsSummary))
                           ])
                         ],
                         1
@@ -35621,7 +35649,7 @@ __vue_render__$1._withStripped = true;
   /* style */
   const __vue_inject_styles__$1 = function (inject) {
     if (!inject) return
-    inject("data-v-483669cb_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"translation-list.vue"}, media: undefined });
+    inject("data-v-28f791c3_0", { source: "\n.qualityType {\n  text-align: center;\n  flex: 1;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/translation-list.vue"],"names":[],"mappings":";AAyIA;EACA,kBAAA;EACA,OAAA;AACA","file":"translation-list.vue","sourcesContent":["\n<template>\n  <section class=\"translation-list\">\n    <v-select\n      item-text=\"authorsSummary\"\n      item-value=\"id\"\n      :items=\"groupedTranslations\"\n      box\n      :label=\"label\"\n      v-model=\"currentTranslationID\"\n      :loading=\"filteredTranslations.length === 0\"\n    >\n      <template v-slot:item=\"{item}\">\n        <template v-if=\"item.label\">\n          <v-subheader>{{item.label}}</v-subheader>\n        </template>\n        <template v-else>\n          <v-list-tile-action>\n            <span\n              class=\"qualityType\"\n              v-if=\"item.qualityType !== 'tv'\"\n            >{{item.qualityType.toUpperCase()}}</span>\n          </v-list-tile-action>\n\n          <v-list-tile-content>\n            <v-list-tile-title>{{item.authorsSummary}}</v-list-tile-title>\n          </v-list-tile-content>\n        </template>\n      </template>\n    </v-select>\n  </section>\n</template>\n\n\n<script>\nexport default {\n  name: \"translation-list\",\n\n  data() {\n    return {\n      filters: {\n        type: {\n          value: \"voiceRu\",\n          options: []\n        }\n      }\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    },\n\n    filteredTranslations() {\n      return this.translations.filter(t => t.isActive);\n    },\n\n    groupedTranslations() {\n      const groups = [\n        { type: \"voiceRu\", label: \"Озвучка\" },\n        { type: \"subRu\", label: \"Русские Субтиитры\" },\n        { type: \"subEn\", label: \"Английские Субтиитры\" },\n        { type: \"subJa\", label: \"Японские Субтиитры\" },\n        { type: \"raw\", label: \"Оригинал\" }\n      ];\n\n      const items = [];\n\n      groups.forEach(({ type, label }) => {\n        const translations = this.filteredTranslations.filter(\n          t => t.type === type\n        );\n\n        if (translations.length) {\n          items.push({\n            label,\n            disabled: true\n          });\n\n          items.push(...translations);\n\n          items.push({\n            divider: true,\n            disabled: true\n          });\n        }\n      });\n\n      return items;\n    },\n\n    currentTranslationID: {\n      get() {\n        return this.$store.state.player.currentTranslationID;\n      },\n      set(id) {\n        const translation = this.filteredTranslations.find(\n          translation => translation.id === id\n        );\n        if (translation) {\n          this.$store.dispatch(\"player/setCurrentTranslation\", translation);\n        }\n      }\n    },\n\n    label() {\n      if (!this.$store.getters[\"player/currentTranslation\"]) {\n        return this.filteredTranslations.length\n          ? \"Выберите перевод\"\n          : \"Загрузка...\";\n      }\n      switch (this.$store.getters[\"player/currentTranslation\"].type) {\n        case \"voiceRu\":\n          return \"Озвучка\";\n        case \"subRu\":\n          return \"Русские Субтиитры\";\n        case \"subEn\":\n          return \"Английские Субтиитры\";\n        case \"subJa\":\n          return \"Японские Субтиитры\";\n        case \"raw\":\n          return \"Оригинал\";\n      }\n    }\n  }\n};\n</script>\n\n\n<style>\n.qualityType {\n  text-align: center;\n  flex: 1;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */

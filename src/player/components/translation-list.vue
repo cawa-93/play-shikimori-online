@@ -10,13 +10,20 @@
       v-model="currentTranslationID"
       :loading="filteredTranslations.length === 0"
     >
-      <template v-slot:item="data">
-        <template v-if="data.item.label">
-          <v-subheader>{{data.item.label}}</v-subheader>
+      <template v-slot:item="{item}">
+        <template v-if="item.label">
+          <v-subheader>{{item.label}}</v-subheader>
         </template>
         <template v-else>
-          <v-list-tile-content class="inset">
-            <v-list-tile-title>{{data.item.authorsSummary}}</v-list-tile-title>
+          <v-list-tile-action>
+            <span
+              class="qualityType"
+              v-if="item.qualityType !== 'tv'"
+            >{{item.qualityType.toUpperCase()}}</span>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{item.authorsSummary}}</v-list-tile-title>
           </v-list-tile-content>
         </template>
       </template>
@@ -128,4 +135,8 @@ export default {
 
 
 <style>
+.qualityType {
+  text-align: center;
+  flex: 1;
+}
 </style>

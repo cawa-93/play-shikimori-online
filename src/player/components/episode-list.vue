@@ -38,7 +38,7 @@ export default {
     },
 
     filteredEpisodes() {
-      return this.episodes.filter(e => e.isActive).reverse();
+      return this.episodes.filter(e => e.isActive);
     },
 
     currentEpisodeID: {
