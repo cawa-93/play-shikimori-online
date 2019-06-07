@@ -11,7 +11,7 @@
 		"scripts": [
 			"background/background.js"
 		],
-		"persistent": false
+		"persistent": true
 	},
 	"content_scripts": [
 		{
@@ -27,9 +27,7 @@
 		{
 			"matches": [
 				"https://smotretanime.ru/translations/embed/*",
-				"https://smotret-anime-365.ru/translations/embed/*",
-				"https://smotret-anime365.ru/translations/embed/*",
-				"https://smotretanime-365.ru/translations/embed/*"
+				"https://smotret-anime-365.ru/translations/embed/*"
 			],
 			"js": [
 				"content-scripts/inject-content-scripts.js"
@@ -42,7 +40,11 @@
 		}
 	],
 	"permissions": [
-		"<all_urls>"
+		"https://shikimori.org/*",
+		"https://smotretanime.ru/*",
+		"https://smotret-anime-365.ru/*",
+		"webRequest",
+		"webRequestBlocking"
 	],
 	"web_accessible_resources": [
 		"player/index.html",

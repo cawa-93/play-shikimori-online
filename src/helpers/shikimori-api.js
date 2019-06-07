@@ -18,8 +18,6 @@ async function getShikiDomain() {
   } catch (e) { }
 
   return domain
-
-
 }
 
 function callAPI(fullURL, options = {}) {
