@@ -34254,7 +34254,7 @@ var normalizeComponent_1 = normalizeComponent;
 const __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"episode-list"},[_c('div',{staticClass:"mdc-select"},[_c('v-select',{attrs:{"item-text":"episodeFull","item-value":"id","items":_vm.filteredEpisodes,"box":"","label":"Епизод","loading":_vm.episodes.length === 0,"menu-props":{auto:false}},scopedSlots:_vm._u([{key:"item",fn:function(ref){
+var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"episode-list"},[_c('div',{staticClass:"mdc-select"},[_c('v-select',{attrs:{"item-text":"episodeFull","item-value":"id","items":_vm.filteredEpisodes,"box":"","label":"Эпизод","loading":_vm.episodes.length === 0,"menu-props":{auto:false}},scopedSlots:_vm._u([{key:"item",fn:function(ref){
 var item = ref.item;
 var parent = ref.parent;
 var tile = ref.tile;

@@ -45,7 +45,7 @@ window.onload = function () {
 		 */
 		function createNextEpisedeButton() {
 			const nextEpisodeButton = document.createElement('button');
-			nextEpisodeButton.innerText = "Следующий епизод";
+			nextEpisodeButton.innerText = "Следующий эпизод";
 			nextEpisodeButton.classList.add('next-episode');
 			nextEpisodeButton.hidden = true;
 			document.querySelector('#main-video').appendChild(nextEpisodeButton);
@@ -175,7 +175,7 @@ window.onload = function () {
 //       if (duration - currentTime <= endingTime) {
 //         if (!nextEpisodeButton) {
 //           nextEpisodeButton = document.createElement('button')
-//           nextEpisodeButton.innerText = "Следующий епизод"
+//           nextEpisodeButton.innerText = "Следующий эпизод"
 //           nextEpisodeButton.classList.add('next-episode')
 //           nextEpisodeButton.hidden = true
 //           document.querySelector('#main-video').appendChild(nextEpisodeButton)
