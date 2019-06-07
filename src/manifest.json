@@ -26,15 +26,18 @@
 		},
 		{
 			"matches": [
-				"https://smotretanime.ru/translations/embed/*"
+				"https://smotretanime.ru/translations/embed/*",
+				"https://smotret-anime-365.ru/translations/embed/*",
+				"https://smotret-anime365.ru/translations/embed/*",
+				"https://smotretanime-365.ru/translations/embed/*"
 			],
 			"js": [
-				"content-scripts/anime365-player-events.js"
+				"content-scripts/inject-content-scripts.js"
 			],
 			"css": [
 				"content-scripts/anime365-player-styles.css"
 			],
-			"run_at": "document_idle",
+			"run_at": "document_end",
 			"all_frames": true
 		}
 	],
@@ -42,7 +45,8 @@
 		"<all_urls>"
 	],
 	"web_accessible_resources": [
-		"player/index.html"
+		"player/index.html",
+		"content-scripts/anime365-player-events.js"
 	],
 	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

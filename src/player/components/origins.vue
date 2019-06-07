@@ -25,7 +25,7 @@
             icon
             small
             right
-            :href="'https://smotretanime.ru/translations/report/' + $store.getters['player/currentTranslation'].id"
+            :href="'https://smotret-anime-365.ru/translations/report/' + $store.getters['player/currentTranslation'].id"
             color="gray"
             class="ma-0"
           >

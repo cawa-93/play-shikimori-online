@@ -36,6 +36,7 @@ module.exports = [{
     resolve(),
     copy({
       targets: {
+        'src/content-scripts/inject-content-scripts.js': 'dist/content-scripts/inject-content-scripts.js',
         'src/content-scripts/anime365-player-styles.css': 'dist/content-scripts/anime365-player-styles.css'
       }
     })

@@ -37,8 +37,6 @@
 <script>
 import { shikimoriAPI, anime365API } from "../../helpers";
 
-let _listener = null;
-
 export default {
   name: "video-controls",
 
@@ -53,19 +51,6 @@ export default {
         score: value * 2
       });
     }
-  },
-
-  created() {
-    _listener = ({ data: event }) => {
-      if (event.name === "ended" || event.name === "mark-as-watched") {
-        this.nextEpisode();
-      }
-    };
-    window.addEventListener("message", _listener);
-  },
-
-  destroyed() {
-    window.removeEventListener("message", _listener);
   }
 };
 </script>
