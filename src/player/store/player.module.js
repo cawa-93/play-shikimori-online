@@ -3,7 +3,6 @@ import { anime365API } from "../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
-worker.onmessage = console.log
 
 
 export const namespaced = true
@@ -90,10 +89,23 @@ export const mutations = {
 
 
 export const actions = {
-  async initSeries({ state, commit, dispatch }, seriesID) {
+  async initSeries({ state, commit, dispatch, rootState }, seriesID) {
     if (!state.series) {
       const { data } = await anime365API(`/series/${seriesID}`)
       commit('setSeries', data)
+    }
+
+    let episodeInt = 1;
+    if (
+      rootState.shikimori.anime &&
+      rootState.shikimori.anime.user_rate
+    ) {
+      episodeInt = rootState.shikimori.anime.user_rate.episodes + 1;
+    }
+
+    const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
+    if (startEpisode) {
+      dispatch('setCurrentEpisode', startEpisode.id)
     }
   },
 

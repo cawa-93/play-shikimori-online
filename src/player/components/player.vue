@@ -53,8 +53,6 @@ export default {
         this.$store.dispatch("shikimori/markAsWatched");
         this.$store.dispatch("player/initNextEpisode");
       } else if (event.name === "timeupdate") {
-        console.log({ parent: event });
-
         if (this.$store.getters["player/nextEpisode"]) {
           const endingTime = event.duration > 600 ? 120 : event.duration * 0.1;
           const hidden = event.duration - event.currentTime >= endingTime;

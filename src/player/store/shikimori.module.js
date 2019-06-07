@@ -40,14 +40,14 @@ export const actions = {
     if (!state.anime || !state.user) {
       return null
     }
-    
-    user_rate.target_type = 'Anime'
-    user_rate.target_id = state.anime.id
-    user_rate.user_id = state.user.id
+
+    if (state.anime.user_rate) {
+      commit('setUserRate', Object.assign({}, state.anime.user_rate, user_rate))
+    }
 
     const newUserRate = await shikimoriAPI('/v2/user_rates', {
       method: 'POST',
-      body: JSON.stringify({ user_rate })
+      body: JSON.stringify({ user_rate: Object.assign({}, { target_type: 'Anime', target_id: state.anime.id, user_id: state.user.id }, user_rate) })
     })
 
     commit('setUserRate', newUserRate)

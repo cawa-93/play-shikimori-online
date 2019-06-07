@@ -34786,7 +34786,7 @@ var index_esm = {
 function anime365API(path, options = {}) {
 
   return new Promise((resolve, reject) => {
-    const url = 'https://smotretanime.ru/api' + path;
+    const url = 'https://smotret-anime-365.ru/api' + path;
     let headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",
@@ -34846,7 +34846,6 @@ function shikimoriAPI(path, options = {}) {
 const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}//# sourceMappingURL=kv-storage-polyfill.mjs.map
 
 const worker = new Worker('/player/worker.js');
-worker.onmessage = console.log;
 
 
 const namespaced = true;
@@ -34890,8 +34889,22 @@ const getters = {
   },
 
   currentTranslation(state, getters) {
-    if (!state.currentTranslationID || !getters.currentEpisode || !getters.currentEpisode.translations) return undefined
-    return getters.currentEpisode.translations.find(translation => translation.id === state.currentTranslationID)
+    if (!state.currentTranslationID) return undefined
+    const episodesOrder = [
+      getters.currentEpisode,
+      getters.nextEpisode,
+      getters.previousEpisode,
+      ...getters.episodes,
+    ];
+
+    for (const episode of episodesOrder) {
+      if (!episode || !episode.translations || !episode.translations.length) continue
+      const translation = episode.translations.find(translation => translation.id === state.currentTranslationID);
+      if (translation) return translation
+
+    }
+
+    return undefined
   },
 };
 
@@ -34919,10 +34932,23 @@ const mutations = {
 
 
 const actions = {
-  async initSeries({ state, commit, dispatch }, seriesID) {
+  async initSeries({ state, commit, dispatch, rootState }, seriesID) {
     if (!state.series) {
       const { data } = await anime365API(`/series/${seriesID}`);
       commit('setSeries', data);
+    }
+
+    let episodeInt = 1;
+    if (
+      rootState.shikimori.anime &&
+      rootState.shikimori.anime.user_rate
+    ) {
+      episodeInt = rootState.shikimori.anime.user_rate.episodes + 1;
+    }
+
+    const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt);
+    if (startEpisode) {
+      dispatch('setCurrentEpisode', startEpisode.id);
     }
   },
 
@@ -35050,14 +35076,14 @@ const actions$1 = {
     if (!state.anime || !state.user) {
       return null
     }
-    
-    user_rate.target_type = 'Anime';
-    user_rate.target_id = state.anime.id;
-    user_rate.user_id = state.user.id;
+
+    if (state.anime.user_rate) {
+      commit('setUserRate', Object.assign({}, state.anime.user_rate, user_rate));
+    }
 
     const newUserRate = await shikimoriAPI('/v2/user_rates', {
       method: 'POST',
-      body: JSON.stringify({ user_rate })
+      body: JSON.stringify({ user_rate: Object.assign({}, { target_type: 'Anime', target_id: state.anime.id, user_id: state.user.id }, user_rate) })
     });
 
     commit('setUserRate', newUserRate);
@@ -35103,6 +35129,21 @@ var store = new index_esm.Store({
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 var script = {
   name: "episode-list",
@@ -35113,7 +35154,7 @@ var script = {
     },
 
     filteredEpisodes() {
-      return this.episodes.filter(e => e.isActive);
+      return this.episodes.filter(e => e.isActive).reverse();
     },
 
     currentEpisodeID: {
@@ -35124,26 +35165,21 @@ var script = {
       set(id) {
         return this.$store.dispatch("player/setCurrentEpisode", id);
       }
+    },
+
+    watchedEpisodes() {
+      return this.$store.state.shikimori.anime &&
+        this.$store.state.shikimori.anime.user_rate
+        ? this.$store.state.shikimori.anime.user_rate.episodes
+        : 0;
     }
   },
 
-  mounted() {
-    let episodeInt = 1;
-    if (this.$store.state.shikimori.anime.user_rate) {
-      episodeInt = this.$store.state.shikimori.anime.user_rate.episodes + 1;
-    }
-
-    const episode = this.$store.getters["player/episodes"].find(
-      episode => parseInt(episode.episodeInt) === episodeInt
-    );
-    // console.log({
-    //   episodeInt,
-    //   episode,
-    //   episodes: this.$store.getters["player/episodes"]
-    // });
-
-    if (episode) {
-      this.$store.dispatch("player/setCurrentEpisode", episode.id);
+  methods: {
+    markAsWatched(episode) {
+      this.$store.dispatch("shikimori/saveUserRate", {
+        episodes: parseInt(episode.episodeInt)
+      });
     }
   }
 };
@@ -35292,31 +35328,78 @@ var __vue_render__ = function() {
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
   return _c("section", { staticClass: "episode-list" }, [
-    _vm.episodes
-      ? _c(
-          "div",
-          { staticClass: "mdc-select" },
-          [
-            _c("v-select", {
-              attrs: {
-                "item-text": "episodeFull",
-                "item-value": "id",
-                items: _vm.filteredEpisodes,
-                box: "",
-                label: "Епизод"
-              },
-              model: {
-                value: _vm.currentEpisodeID,
-                callback: function($$v) {
-                  _vm.currentEpisodeID = $$v;
-                },
-                expression: "currentEpisodeID"
+    _c(
+      "div",
+      { staticClass: "mdc-select" },
+      [
+        _c("v-select", {
+          attrs: {
+            "item-text": "episodeFull",
+            "item-value": "id",
+            items: _vm.filteredEpisodes,
+            box: "",
+            label: "Епизод",
+            loading: _vm.episodes.length === 0,
+            "menu-props": { auto: false }
+          },
+          scopedSlots: _vm._u([
+            {
+              key: "item",
+              fn: function(ref) {
+                var item = ref.item;
+                var parent = ref.parent;
+                var tile = ref.tile;
+                return [
+                  _c(
+                    "v-list-tile-action",
+                    {
+                      on: {
+                        click: function($event) {
+                          $event.stopPropagation();
+                        }
+                      }
+                    },
+                    [
+                      _c("v-checkbox", {
+                        attrs: {
+                          "input-value": item.episodeInt <= _vm.watchedEpisodes
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault();
+                            return _vm.markAsWatched(item)
+                          }
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    { staticClass: "inset" },
+                    [
+                      _c("v-list-tile-title", [
+                        _vm._v(_vm._s(item.episodeFull))
+                      ])
+                    ],
+                    1
+                  )
+                ]
               }
-            })
-          ],
-          1
-        )
-      : _vm._e()
+            }
+          ]),
+          model: {
+            value: _vm.currentEpisodeID,
+            callback: function($$v) {
+              _vm.currentEpisodeID = $$v;
+            },
+            expression: "currentEpisodeID"
+          }
+        })
+      ],
+      1
+    )
   ])
 };
 var __vue_staticRenderFns__ = [];
@@ -35325,7 +35408,7 @@ __vue_render__._withStripped = true;
   /* style */
   const __vue_inject_styles__ = function (inject) {
     if (!inject) return
-    inject("data-v-27d487bd_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"episode-list.vue"}, media: undefined });
+    inject("data-v-a9908d5e_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"episode-list.vue"}, media: undefined });
 
   };
   /* scoped */
@@ -35456,7 +35539,9 @@ var script$1 = {
 
     label() {
       if (!this.$store.getters["player/currentTranslation"]) {
-        return "Выберите перевод";
+        return this.filteredTranslations.length
+          ? "Выберите перевод"
+          : "Загрузка...";
       }
       switch (this.$store.getters["player/currentTranslation"].type) {
         case "voiceRu":
@@ -35486,14 +35571,14 @@ var __vue_render__$1 = function() {
     "section",
     { staticClass: "translation-list" },
     [
-      _vm._v("\n  " + _vm._s(_vm.currentTranslationID) + "\n  "),
       _c("v-select", {
         attrs: {
           "item-text": "authorsSummary",
           "item-value": "id",
           items: _vm.groupedTranslations,
           box: "",
-          label: _vm.label
+          label: _vm.label,
+          loading: _vm.filteredTranslations.length === 0
         },
         scopedSlots: _vm._u([
           {
@@ -35536,7 +35621,7 @@ __vue_render__$1._withStripped = true;
   /* style */
   const __vue_inject_styles__$1 = function (inject) {
     if (!inject) return
-    inject("data-v-146c54ef_0", { source: "\n.v-list__tile__content.inset {\n  padding-left: 30px;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/translation-list.vue"],"names":[],"mappings":";AAgIA;EACA,kBAAA;AACA","file":"translation-list.vue","sourcesContent":["\n<template>\n  <section class=\"translation-list\">\n    {{currentTranslationID}}\n    <v-select\n      item-text=\"authorsSummary\"\n      item-value=\"id\"\n      :items=\"groupedTranslations\"\n      box\n      :label=\"label\"\n      v-model=\"currentTranslationID\"\n    >\n      <template v-slot:item=\"data\">\n        <template v-if=\"data.item.label\">\n          <v-subheader>{{data.item.label}}</v-subheader>\n        </template>\n        <template v-else>\n          <v-list-tile-content class=\"inset\">\n            <v-list-tile-title>{{data.item.authorsSummary}}</v-list-tile-title>\n          </v-list-tile-content>\n        </template>\n      </template>\n    </v-select>\n  </section>\n</template>\n\n\n<script>\nexport default {\n  name: \"translation-list\",\n\n  data() {\n    return {\n      filters: {\n        type: {\n          value: \"voiceRu\",\n          options: []\n        }\n      }\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    },\n\n    filteredTranslations() {\n      return this.translations.filter(t => t.isActive);\n    },\n\n    groupedTranslations() {\n      const groups = [\n        { type: \"voiceRu\", label: \"Озвучка\" },\n        { type: \"subRu\", label: \"Русские Субтиитры\" },\n        { type: \"subEn\", label: \"Английские Субтиитры\" },\n        { type: \"subJa\", label: \"Японские Субтиитры\" },\n        { type: \"raw\", label: \"Оригинал\" }\n      ];\n\n      const items = [];\n\n      groups.forEach(({ type, label }) => {\n        const translations = this.filteredTranslations.filter(\n          t => t.type === type\n        );\n\n        if (translations.length) {\n          items.push({\n            label,\n            disabled: true\n          });\n\n          items.push(...translations);\n\n          items.push({\n            divider: true,\n            disabled: true\n          });\n        }\n      });\n\n      return items;\n    },\n\n    currentTranslationID: {\n      get() {\n        return this.$store.state.player.currentTranslationID;\n      },\n      set(id) {\n        const translation = this.filteredTranslations.find(\n          translation => translation.id === id\n        );\n        if (translation) {\n          this.$store.dispatch(\"player/setCurrentTranslation\", translation);\n        }\n      }\n    },\n\n    label() {\n      if (!this.$store.getters[\"player/currentTranslation\"]) {\n        return \"Выберите перевод\";\n      }\n      switch (this.$store.getters[\"player/currentTranslation\"].type) {\n        case \"voiceRu\":\n          return \"Озвучка\";\n        case \"subRu\":\n          return \"Русские Субтиитры\";\n        case \"subEn\":\n          return \"Английские Субтиитры\";\n        case \"subJa\":\n          return \"Японские Субтиитры\";\n        case \"raw\":\n          return \"Оригинал\";\n      }\n    }\n  }\n};\n</script>\n\n\n<style>\n.v-list__tile__content.inset {\n  padding-left: 30px;\n}\n</style>\n"]}, media: undefined });
+    inject("data-v-483669cb_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"translation-list.vue"}, media: undefined });
 
   };
   /* scoped */
@@ -35575,28 +35660,61 @@ __vue_render__$1._withStripped = true;
 //
 //
 //
+//
+
+let _listener = null;
 
 var script$2 = {
   name: "player",
-  data() {
-    return {
-      extensionId: chrome.runtime.id,
-      displayFrame: false
-    };
-  },
 
   computed: {
-    currentTranslation() {
-      return this.$store.getters["player/currentTranslation"]
-        ? this.$store.getters["player/currentTranslation"]
-        : {};
+    src() {
+      const base = new URL(
+        `https://smotret-anime-365.ru/translations/embed/${
+          this.$store.state.player.currentTranslationID
+        }`
+      );
+      base.searchParams.append("extension-id", chrome.runtime.id);
+      base.searchParams.append(
+        "play-shikimori[seriesId]",
+        this.$store.getters["player/currentTranslation"].seriesId
+      );
+      base.searchParams.append(
+        "play-shikimori[episodeId]",
+        this.$store.getters["player/currentTranslation"].episodeId
+      );
+      base.searchParams.append(
+        "play-shikimori[id]",
+        this.$store.getters["player/currentTranslation"].id
+      );
+
+      return base.toString();
     }
   },
 
-  watch: {
-    currentTranslation() {
-      console.log(this.currentTranslation.embedUrl);
-    }
+  created() {
+    _listener = ({ data: event }) => {
+      if (event === "watched") {
+        this.$store.dispatch("shikimori/markAsWatched");
+      } else if (event.name === "ended" || event.name === "mark-as-watched") {
+        this.$store.dispatch("shikimori/markAsWatched");
+        this.$store.dispatch("player/initNextEpisode");
+      } else if (event.name === "timeupdate") {
+        if (this.$store.getters["player/nextEpisode"]) {
+          const endingTime = event.duration > 600 ? 120 : event.duration * 0.1;
+          const hidden = event.duration - event.currentTime >= endingTime;
+          this.$refs.player.contentWindow.postMessage(
+            { button: "next-episode", hidden },
+            "*"
+          );
+        }
+      }
+    };
+    window.addEventListener("message", _listener);
+  },
+
+  destroyed() {
+    window.removeEventListener("message", _listener);
   }
 };
 
@@ -35609,27 +35727,19 @@ var __vue_render__$2 = function() {
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
   return _c("v-card", { staticClass: "player-container" }, [
-    _c("iframe", {
-      directives: [
-        {
-          name: "show",
-          rawName: "v-show",
-          value: _vm.currentTranslation.embedUrl,
-          expression: "currentTranslation.embedUrl"
-        }
-      ],
-      key: "main-player",
-      attrs: {
-        src:
-          _vm.currentTranslation.embedUrl +
-          "?autoplay=1&extension-id=" +
-          _vm.extensionId,
-        height: "100%",
-        width: "100%",
-        frameborder: "0",
-        allowfullscreen: ""
-      }
-    })
+    _vm.$store.state.player.currentTranslationID
+      ? _c("iframe", {
+          ref: "player",
+          attrs: {
+            id: "player",
+            src: _vm.src,
+            height: "100%",
+            width: "100%",
+            frameborder: "0",
+            allowfullscreen: ""
+          }
+        })
+      : _vm._e()
   ])
 };
 var __vue_staticRenderFns__$2 = [];
@@ -35662,8 +35772,6 @@ __vue_render__$2._withStripped = true;
 
 //
 
-let _listener = null;
-
 var script$3 = {
   name: "video-controls",
 
@@ -35678,19 +35786,6 @@ var script$3 = {
         score: value * 2
       });
     }
-  },
-
-  created() {
-    _listener = ({ data: event }) => {
-      if (event.name === "ended" || event.name === "mark-as-watched") {
-        this.nextEpisode();
-      }
-    };
-    window.addEventListener("message", _listener);
-  },
-
-  destroyed() {
-    window.removeEventListener("message", _listener);
   }
 };
 
@@ -35980,7 +36075,7 @@ var __vue_render__$4 = function() {
                                     small: "",
                                     right: "",
                                     href:
-                                      "https://smotretanime.ru/translations/report/" +
+                                      "https://smotret-anime-365.ru/translations/report/" +
                                       _vm.$store.getters[
                                         "player/currentTranslation"
                                       ].id,
@@ -35998,7 +36093,7 @@ var __vue_render__$4 = function() {
                     ],
                     null,
                     false,
-                    634367328
+                    1308056752
                   )
                 },
                 [_vm._v(" "), _c("span", [_vm._v("Сообщить о проблеме")])]
@@ -36078,13 +36173,16 @@ var script$5 = {
     }
   },
 
-  mounted() {
-    this.$store.dispatch(
+  async mounted() {
+    await Promise.all([
+      this.$store.dispatch("shikimori/initUser"),
+      this.$store.dispatch("shikimori/initAnime")
+    ]);
+
+    await this.$store.dispatch(
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
-    this.$store.dispatch("shikimori/initUser");
-    this.$store.dispatch("shikimori/initAnime");
   }
 };
 
@@ -36103,73 +36201,71 @@ var __vue_render__$5 = function() {
         "v-app",
         { attrs: { id: "app", dark: _vm.darkMode } },
         [
-          _vm.$store.state.shikimori.anime
-            ? _c(
-                "v-container",
-                { staticClass: "layout" },
+          _c(
+            "v-container",
+            { staticClass: "layout" },
+            [
+              _c(
+                "v-layout",
+                { attrs: { column: "" } },
                 [
                   _c(
-                    "v-layout",
-                    { attrs: { column: "" } },
+                    "v-flex",
+                    { staticClass: "flex-grow-unset" },
                     [
                       _c(
-                        "v-flex",
-                        { staticClass: "flex-grow-unset" },
+                        "v-layout",
+                        { attrs: { row: "" } },
                         [
                           _c(
-                            "v-layout",
-                            { attrs: { row: "" } },
-                            [
-                              _c(
-                                "v-flex",
-                                { attrs: { xs6: "", "mr-3": "" } },
-                                [
-                                  _vm.$store.getters["player/episodes"].length
-                                    ? _c("episode-list")
-                                    : _vm._e()
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-flex",
-                                { attrs: { xs6: "" } },
-                                [_c("translation-list")],
-                                1
-                              )
-                            ],
+                            "v-flex",
+                            { attrs: { xs6: "", "mr-3": "" } },
+                            [_c("episode-list")],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-flex",
+                            { attrs: { xs6: "" } },
+                            [_c("translation-list")],
                             1
                           )
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c("v-flex", [_c("player")], 1),
-                      _vm._v(" "),
-                      _c(
-                        "v-flex",
-                        { staticClass: "flex-grow-unset mt-3" },
-                        [
-                          _vm.$store.getters["player/currentTranslation"]
-                            ? _c("video-controls")
-                            : _vm._e()
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-flex",
-                        { staticClass: "flex-grow-unset mt-3" },
-                        [_c("origins")],
-                        1
                       )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-flex", [_c("player")], 1),
+                  _vm._v(" "),
+                  _c(
+                    "v-flex",
+                    { staticClass: "flex-grow-unset mt-3" },
+                    [
+                      _vm.$store.getters["player/currentTranslation"]
+                        ? _c("video-controls")
+                        : _vm._e()
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-flex",
+                    { staticClass: "flex-grow-unset mt-3" },
+                    [
+                      _vm.$store.state.shikimori.anime
+                        ? _c("origins")
+                        : _vm._e()
                     ],
                     1
                   )
                 ],
                 1
               )
-            : _vm._e()
+            ],
+            1
+          )
         ],
         1
       )
@@ -36183,7 +36279,7 @@ __vue_render__$5._withStripped = true;
   /* style */
   const __vue_inject_styles__$5 = function (inject) {
     if (!inject) return
-    inject("data-v-34798f99_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA0FA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"layout\" v-if=\"$store.state.shikimori.anime\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list v-if=\"$store.getters['player/episodes'].length\"></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\"></video-controls>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <origins></origins>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\nimport origins from \"./origins.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    origins\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  mounted() {\n    this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n    this.$store.dispatch(\"shikimori/initUser\");\n    this.$store.dispatch(\"shikimori/initAnime\");\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
+    inject("data-v-53ab5e29_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA6FA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"layout\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\"></video-controls>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <origins v-if=\"$store.state.shikimori.anime\"></origins>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\nimport origins from \"./origins.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    origins\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  async mounted() {\n    await Promise.all([\n      this.$store.dispatch(\"shikimori/initUser\"),\n      this.$store.dispatch(\"shikimori/initAnime\")\n    ]);\n\n    await this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */

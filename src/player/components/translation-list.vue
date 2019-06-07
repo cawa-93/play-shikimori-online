@@ -1,7 +1,6 @@
 
 <template>
   <section class="translation-list">
-    {{currentTranslationID}}
     <v-select
       item-text="authorsSummary"
       item-value="id"
@@ -9,6 +8,7 @@
       box
       :label="label"
       v-model="currentTranslationID"
+      :loading="filteredTranslations.length === 0"
     >
       <template v-slot:item="data">
         <template v-if="data.item.label">
@@ -105,7 +105,9 @@ export default {
 
     label() {
       if (!this.$store.getters["player/currentTranslation"]) {
-        return "Выберите перевод";
+        return this.filteredTranslations.length
+          ? "Выберите перевод"
+          : "Загрузка...";
       }
       switch (this.$store.getters["player/currentTranslation"].type) {
         case "voiceRu":
@@ -126,7 +128,4 @@ export default {
 
 
 <style>
-.v-list__tile__content.inset {
-  padding-left: 30px;
-}
 </style>

@@ -1,7 +1,7 @@
 function anime365API(path, options = {}) {
 
   return new Promise((resolve, reject) => {
-    const url = 'https://smotretanime.ru/api' + path;
+    const url = 'https://smotret-anime-365.ru/api' + path;
     let headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",

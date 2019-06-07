@@ -1,12 +1,12 @@
 <template>
   <section>
     <v-app id="app" :dark="darkMode">
-      <v-container class="layout" v-if="$store.state.shikimori.anime">
+      <v-container class="layout">
         <v-layout column>
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
-                <episode-list v-if="$store.getters['player/episodes'].length"></episode-list>
+                <episode-list></episode-list>
               </v-flex>
               <v-flex xs6>
                 <translation-list></translation-list>
@@ -24,7 +24,7 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <origins></origins>
+            <origins v-if="$store.state.shikimori.anime"></origins>
           </v-flex>
         </v-layout>
       </v-container>
@@ -76,13 +76,16 @@ export default {
     }
   },
 
-  mounted() {
-    this.$store.dispatch(
+  async mounted() {
+    await Promise.all([
+      this.$store.dispatch("shikimori/initUser"),
+      this.$store.dispatch("shikimori/initAnime")
+    ]);
+
+    await this.$store.dispatch(
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
-    this.$store.dispatch("shikimori/initUser");
-    this.$store.dispatch("shikimori/initAnime");
   }
 };
 </script>

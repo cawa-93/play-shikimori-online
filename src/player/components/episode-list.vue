@@ -1,6 +1,6 @@
 <template>
   <section class="episode-list">
-    <div class="mdc-select" v-if="episodes">
+    <div class="mdc-select">
       <v-select
         item-text="episodeFull"
         item-value="id"
@@ -8,7 +8,22 @@
         box
         label="Епизод"
         v-model="currentEpisodeID"
-      ></v-select>
+        :loading="episodes.length === 0"
+        :menu-props="{auto:false}"
+      >
+        <template v-slot:item="{item, parent, tile}">
+          <v-list-tile-action @click.stop>
+            <v-checkbox
+              :input-value="item.episodeInt <= watchedEpisodes"
+              @click.prevent="markAsWatched(item)"
+            ></v-checkbox>
+          </v-list-tile-action>
+
+          <v-list-tile-content class="inset">
+            <v-list-tile-title>{{item.episodeFull}}</v-list-tile-title>
+          </v-list-tile-content>
+        </template>
+      </v-select>
     </div>
   </section>
 </template>
@@ -23,7 +38,7 @@ export default {
     },
 
     filteredEpisodes() {
-      return this.episodes.filter(e => e.isActive);
+      return this.episodes.filter(e => e.isActive).reverse();
     },
 
     currentEpisodeID: {
@@ -34,26 +49,21 @@ export default {
       set(id) {
         return this.$store.dispatch("player/setCurrentEpisode", id);
       }
+    },
+
+    watchedEpisodes() {
+      return this.$store.state.shikimori.anime &&
+        this.$store.state.shikimori.anime.user_rate
+        ? this.$store.state.shikimori.anime.user_rate.episodes
+        : 0;
     }
   },
 
-  mounted() {
-    let episodeInt = 1;
-    if (this.$store.state.shikimori.anime.user_rate) {
-      episodeInt = this.$store.state.shikimori.anime.user_rate.episodes + 1;
-    }
-
-    const episode = this.$store.getters["player/episodes"].find(
-      episode => parseInt(episode.episodeInt) === episodeInt
-    );
-    // console.log({
-    //   episodeInt,
-    //   episode,
-    //   episodes: this.$store.getters["player/episodes"]
-    // });
-
-    if (episode) {
-      this.$store.dispatch("player/setCurrentEpisode", episode.id);
+  methods: {
+    markAsWatched(episode) {
+      this.$store.dispatch("shikimori/saveUserRate", {
+        episodes: parseInt(episode.episodeInt)
+      });
     }
   }
 };
