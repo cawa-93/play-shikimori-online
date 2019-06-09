@@ -14,7 +14,7 @@
             </v-layout>
           </v-flex>
 
-          <v-flex>
+          <v-flex d-flex>
             <player></player>
             <!-- <p v-else>Выберите эпизод</p> -->
           </v-flex>
