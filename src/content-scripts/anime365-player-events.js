@@ -11,11 +11,11 @@ window.onload = function () {
 			playerGlobal.off('play', main)
 
 
-			setCuttentTime()
+			setCurrentTime()
 			initSaveCurrentTime()
 			initSaveFullScreenState()
 			initEventProxy()
-			createNextEpisedeButton()
+			createNextEpisodeButton()
 		}
 
 		playerGlobal.on('play', main)
@@ -43,7 +43,7 @@ window.onload = function () {
 		/**
 		 * Создаёт кнопку переключения эпизода и инизиализурует обработчик собитий на ней
 		 */
-		function createNextEpisedeButton() {
+		function createNextEpisodeButton() {
 			const nextEpisodeButton = document.createElement('button')
 			nextEpisodeButton.innerText = "Следующий епизод"
 			nextEpisodeButton.classList.add('next-episode')
@@ -66,9 +66,9 @@ window.onload = function () {
 		}
 
 		/**
-		 * 
+		 *
 		 */
-		function setCuttentTime() {
+		function setCurrentTime() {
 			const currentURL = new URL(location.href)
 			const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
 			const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')

@@ -65,9 +65,9 @@ export default {
     groupedTranslations() {
       const groups = [
         { type: "voiceRu", label: "Озвучка" },
-        { type: "subRu", label: "Русские Субтиитры" },
-        { type: "subEn", label: "Английские Субтиитры" },
-        { type: "subJa", label: "Японские Субтиитры" },
+        { type: "subRu", label: "Русские Субтитры" },
+        { type: "subEn", label: "Английские Субтитры" },
+        { type: "subJa", label: "Японские Субтитры" },
         { type: "raw", label: "Оригинал" }
       ];
 
@@ -120,11 +120,11 @@ export default {
         case "voiceRu":
           return "Озвучка";
         case "subRu":
-          return "Русские Субтиитры";
+          return "Русские Субтитры";
         case "subEn":
-          return "Английские Субтиитры";
+          return "Английские Субтитры";
         case "subJa":
-          return "Японские Субтиитры";
+          return "Японские Субтитры";
         case "raw":
           return "Оригинал";
       }
