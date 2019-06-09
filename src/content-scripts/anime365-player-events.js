@@ -2,48 +2,55 @@ window.onload = function () {
 	window.playerGlobal.ready(function () {
 
 		/**
+		 * @type {videojs.default.Player & {concatenate: {activated: boolean}}}
+		 */
+		const player = window.playerGlobal
+
+		/**
 		 * Главная функция
 		 * Запускается один раз, при первом запуске видео после рекламы
 		 */
 		function main() {
-			// console.log('firstActivatedHandler', playerGlobal.concatenate.activated)
-			if (!playerGlobal.concatenate.activated) return
-			playerGlobal.off('play', main)
+			if (!player.concatenate.activated) return
+			player.off('play', main)
 
 
 			setCuttentTime()
 			initSaveCurrentTime()
 			initSaveFullScreenState()
-			initEventProxy()
-			createNextEpisedeButton()
+			createNextEpisodeButton()
+
+			/**
+			 * Инициализирует отправку событий плеера к родительскому окну
+			 */
+			player.on(['play', 'pause', 'ended', 'timeupdate'], proxyEventToParent)
 		}
 
-		playerGlobal.on('play', main)
+		player.on('play', main)
 
 
-		/**
-		 * Инициализирует отправку событий плеера к родительскому окну
-		 */
-		function initEventProxy() {
-			const events = ['play', 'pause', 'ended', 'timeupdate']
-			events.forEach(name => {
-				playerGlobal.on(name, () => {
-					if (!playerGlobal.concatenate.activated) return
-					const message = {
-						name,
-						currentTime: playerGlobal.currentTime(),
-						duration: playerGlobal.duration(),
-					}
-					window.parent.postMessage(message, '*')
-				})
-			})
+		function proxyEventToParent(event) {
+			const name = event.type
+			const currentTime = player.currentTime()
+			const duration = player.duration()
+
+			if (name === 'ended' && duration - currentTime >= 10) {
+				return
+			}
+
+			const message = {
+				name,
+				currentTime,
+				duration,
+			}
+			window.parent.postMessage(message, '*')
 		}
 
 
 		/**
 		 * Создаёт кнопку переключения эпизода и инизиализурует обработчик собитий на ней
 		 */
-		function createNextEpisedeButton() {
+		function createNextEpisodeButton() {
 			const nextEpisodeButton = document.createElement('button')
 			nextEpisodeButton.innerText = "Следующий эпизод"
 			nextEpisodeButton.classList.add('next-episode')
@@ -52,8 +59,8 @@ window.onload = function () {
 			nextEpisodeButton.addEventListener('click', function () {
 				const message = {
 					name: 'mark-as-watched',
-					currentTime: playerGlobal.currentTime(),
-					duration: playerGlobal.duration(),
+					currentTime: player.currentTime(),
+					duration: player.duration(),
 				}
 				window.parent.postMessage(message, '*')
 			})
@@ -77,7 +84,7 @@ window.onload = function () {
 
 			savedTime = JSON.parse(savedTime)
 			if (savedTime.episodeId === episodeId) {
-				playerGlobal.currentTime(Math.max(0, savedTime.time - 10))
+				player.currentTime(Math.max(0, savedTime.time - 10))
 			}
 		}
 
@@ -87,10 +94,10 @@ window.onload = function () {
 			const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
 			if (!seriesId || !episodeId) return
 
-			playerGlobal.on('timeupdate', () => {
+			player.on('timeupdate', () => {
 				let savedTime = JSON.stringify({
 					episodeId,
-					time: playerGlobal.currentTime()
+					time: player.currentTime()
 				})
 				localStorage.setItem(`play-${seriesId}-time`, savedTime)
 
@@ -98,8 +105,8 @@ window.onload = function () {
 		}
 
 		function initSaveFullScreenState() {
-			playerGlobal.on('fullscreenchange', () => {
-				localStorage.setItem(`play-fullscreen-state`, playerGlobal.isFullscreen())
+			player.on('fullscreenchange', () => {
+				localStorage.setItem(`play-fullscreen-state`, player.isFullscreen())
 			})
 		}
 
@@ -107,12 +114,12 @@ window.onload = function () {
 		 * Функция автоматически запускает воспроизведение, если нет рекламной вставки
 		 */
 		function autoPlay() {
-			if (!playerGlobal.concatenate.activated) return
+			if (!player.concatenate.activated) return
 
 			if (localStorage.getItem(`play-fullscreen-state`) === 'true') {
-				playerGlobal.requestFullscreen()
+				player.requestFullscreen()
 			}
-			playerGlobal.play()
+			player.play()
 		}
 
 		autoPlay()
