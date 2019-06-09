@@ -210,3 +210,4 @@ fabric.properties
 .history
 
 # End of https://www.gitignore.io/api/node,macos,phpstorm,visualstudiocode
+*.zip
