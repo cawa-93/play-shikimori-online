@@ -1,5 +1,5 @@
 <template>
-  <v-card class="player-container">
+  <v-card class="player-container d-flex">
     <iframe
       id="player"
       ref="player"

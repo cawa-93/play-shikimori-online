@@ -9,6 +9,7 @@
       :label="label"
       v-model="currentTranslationID"
       :loading="filteredTranslations.length === 0"
+      no-data-text="Пока нет ни одного перевода"
     >
       <template v-slot:item="{item}">
         <template v-if="item.label">

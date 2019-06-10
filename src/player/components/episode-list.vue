@@ -10,6 +10,7 @@
         v-model="currentEpisodeID"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"
+        no-data-text="Пока нет ни одной сериии"
       >
         <template v-slot:item="{item, parent, tile}">
           <v-list-tile-action @click.stop>

@@ -15,7 +15,7 @@ window.onload = function () {
 			player.off('play', main);
 
 
-			setCuttentTime();
+			setCurrentTime();
 			initSaveCurrentTime();
 			initSaveFullScreenState();
 			createNextEpisodeButton();
@@ -73,9 +73,9 @@ window.onload = function () {
 		}
 
 		/**
-		 * 
+		 *
 		 */
-		function setCuttentTime() {
+		function setCurrentTime() {
 			const currentURL = new URL(location.href);
 			const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]');
 			const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]');
@@ -124,5 +124,4 @@ window.onload = function () {
 
 		autoPlay();
 	});
-
 };
