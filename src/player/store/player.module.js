@@ -72,8 +72,8 @@ export const mutations = {
     state.series = series
   },
 
-  setCurrentEpisode(state, playload) {
-    state.currentEpisodeID = playload
+  setCurrentEpisode(state, payload) {
+    state.currentEpisodeID = payload
   },
 
   setTranslations(state, { episodeID, translations }) {
@@ -82,8 +82,8 @@ export const mutations = {
   },
 
 
-  setCurrentTranslation(state, playload) {
-    state.currentTranslationID = playload
+  setCurrentTranslation(state, payload) {
+    state.currentTranslationID = payload
   },
 }
 
