@@ -10,7 +10,7 @@
         v-model="currentEpisodeID"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"
-        no-data-text="Пока нет ни одной сериии"
+        no-data-text="Пока нет ни одной серии"
       >
         <template v-slot:item="{item, parent, tile}">
           <v-list-tile-action @click.stop>
@@ -34,7 +34,7 @@
             </v-list-tile-action>
 
             <v-list-tile-content>
-              <v-list-tile-title>Добавить сериию</v-list-tile-title>
+              <v-list-tile-title>Добавить серию</v-list-tile-title>
             </v-list-tile-content>
 
             <v-list-tile-action>
