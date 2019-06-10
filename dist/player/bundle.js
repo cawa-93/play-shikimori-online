@@ -1334,8 +1334,8 @@ function mergeOptions (
     child = child.options;
   }
 
-  normalizeProps(child, vm);
-  normalizeInject(child, vm);
+  normalizeProps(child);
+  normalizeInject(child);
   normalizeDirectives(child);
 
   // Apply extends and mixins on the child options,
@@ -2222,7 +2222,7 @@ function renderSlot (
  * Runtime helper for resolving filters
  */
 function resolveFilter (id) {
-  return resolveAsset(this.$options, 'filters', id, true) || identity
+  return resolveAsset(this.$options, 'filters', id) || identity
 }
 
 /*  */
@@ -2562,12 +2562,12 @@ function createFunctionalComponent (
   var vnode = options.render.call(null, renderContext._c, renderContext);
 
   if (vnode instanceof VNode) {
-    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options, renderContext)
+    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options)
   } else if (Array.isArray(vnode)) {
     var vnodes = normalizeChildren(vnode) || [];
     var res = new Array(vnodes.length);
     for (var i = 0; i < vnodes.length; i++) {
-      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options, renderContext);
+      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options);
     }
     return res
   }
@@ -2722,7 +2722,7 @@ function createComponent (
   }
 
   // extract props
-  var propsData = extractPropsFromVNodeData(data, Ctor, tag);
+  var propsData = extractPropsFromVNodeData(data, Ctor);
 
   // functional component
   if (isTrue(Ctor.options.functional)) {
@@ -5780,7 +5780,7 @@ function normalizeDirectives$1 (
       dir.modifiers = emptyModifiers;
     }
     res[getRawDirName(dir)] = dir;
-    dir.def = resolveAsset(vm.$options, 'directives', dir.name, true);
+    dir.def = resolveAsset(vm.$options, 'directives', dir.name);
   }
   // $flow-disable-line
   return res
@@ -6935,7 +6935,7 @@ var directive = {
           directive.componentUpdated(el, binding, vnode);
         });
       } else {
-        setSelected(el, binding, vnode.context);
+        setSelected(el, binding);
       }
       el._vOptions = [].map.call(el.options, getValue);
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
@@ -6958,7 +6958,7 @@ var directive = {
 
   componentUpdated: function componentUpdated (el, binding, vnode) {
     if (vnode.tag === 'select') {
-      setSelected(el, binding, vnode.context);
+      setSelected(el, binding);
       // in case the options rendered by v-for have changed,
       // it's possible that the value is out-of-sync with the rendered options.
       // detect such cases and filter out values that no longer has a matching
@@ -6980,11 +6980,11 @@ var directive = {
 };
 
 function setSelected (el, binding, vm) {
-  actuallySetSelected(el, binding, vm);
+  actuallySetSelected(el, binding);
   /* istanbul ignore if */
   if (isIE || isEdge) {
     setTimeout(function () {
-      actuallySetSelected(el, binding, vm);
+      actuallySetSelected(el, binding);
     }, 0);
   }
 }
@@ -16057,7 +16057,7 @@ var __assign = function () {
     };
     return __assign.apply(this, arguments);
 };
-var __values = function (o) {
+var __values = undefined && undefined.__values || function (o) {
     var m = typeof Symbol === "function" && o[Symbol.iterator],
         i = 0;
     if (m) return m.call(o);
@@ -19225,7 +19225,7 @@ var __assign = function () {
     };
     return __assign.apply(this, arguments);
 };
-var __values = function (o) {
+var __values = undefined && undefined.__values || function (o) {
     var m = typeof Symbol === "function" && o[Symbol.iterator],
         i = 0;
     if (m) return m.call(o);
@@ -19897,7 +19897,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_colorable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/colorable */ "./src/mixins/colorable.ts");
 /* harmony import */ var _mixins_themeable__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../mixins/themeable */ "./src/mixins/themeable.ts");
 /* harmony import */ var _util_helpers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../util/helpers */ "./src/util/helpers.ts");
-var __values = function (o) {
+var __values = undefined && undefined.__values || function (o) {
     var m = typeof Symbol === "function" && o[Symbol.iterator],
         i = 0;
     if (m) return m.call(o);
@@ -24981,7 +24981,7 @@ var __assign = function () {
     };
     return __assign.apply(this, arguments);
 };
-var __read = function (o, n) {
+var __read = undefined && undefined.__read || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
     var i = m.call(o),
@@ -25008,7 +25008,7 @@ var __spread = function () {
         ar = ar.concat(__read(arguments[i]));
     }return ar;
 };
-var __values = function (o) {
+var __values = undefined && undefined.__values || function (o) {
     var m = typeof Symbol === "function" && o[Symbol.iterator],
         i = 0;
     if (m) return m.call(o);
@@ -34254,7 +34254,7 @@ var normalizeComponent_1 = normalizeComponent;
 const __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"episode-list"},[_c('div',{staticClass:"mdc-select"},[_c('v-select',{attrs:{"item-text":"episodeFull","item-value":"id","items":_vm.filteredEpisodes,"box":"","label":"Епизод","loading":_vm.episodes.length === 0,"menu-props":{auto:false}},scopedSlots:_vm._u([{key:"item",fn:function(ref){
+var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"episode-list"},[_c('div',{staticClass:"mdc-select"},[_c('v-select',{attrs:{"item-text":"episodeFull","item-value":"id","items":_vm.filteredEpisodes,"box":"","label":"Эпизод","loading":_vm.episodes.length === 0,"menu-props":{auto:false}},scopedSlots:_vm._u([{key:"item",fn:function(ref){
 var item = ref.item;
 var parent = ref.parent;
 var tile = ref.tile;
@@ -34840,13 +34840,13 @@ var script$5 = {
 const __vue_script__$5 = script$5;
 
 /* template */
-var __vue_render__$5 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',[_c('v-app',{attrs:{"id":"app","dark":_vm.darkMode}},[_c('v-container',{staticClass:"layout"},[_c('v-layout',{attrs:{"column":""}},[_c('v-flex',{staticClass:"flex-grow-unset"},[_c('v-layout',{attrs:{"row":""}},[_c('v-flex',{attrs:{"xs6":"","mr-3":""}},[_c('episode-list')],1),_vm._v(" "),_c('v-flex',{attrs:{"xs6":""}},[_c('translation-list')],1)],1)],1),_vm._v(" "),_c('v-flex',[_c('player')],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.getters['player/currentTranslation'])?_c('video-controls'):_vm._e()],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.state.shikimori.anime)?_c('origins'):_vm._e()],1)],1)],1)],1)],1)};
+var __vue_render__$5 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',[_c('v-app',{attrs:{"id":"app","dark":_vm.darkMode}},[_c('v-container',{staticClass:"layout"},[_c('v-layout',{attrs:{"column":""}},[_c('v-flex',{staticClass:"flex-grow-unset"},[_c('v-layout',{attrs:{"row":""}},[_c('v-flex',{attrs:{"xs6":"","mr-3":""}},[_c('episode-list')],1),_vm._v(" "),_c('v-flex',{attrs:{"xs6":""}},[_c('translation-list')],1)],1)],1),_vm._v(" "),_c('v-flex',{attrs:{"d-flex":""}},[_c('player')],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.getters['player/currentTranslation'])?_c('video-controls'):_vm._e()],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.state.shikimori.anime)?_c('origins'):_vm._e()],1)],1)],1)],1)],1)};
 var __vue_staticRenderFns__$5 = [];
 
   /* style */
   const __vue_inject_styles__$5 = function (inject) {
     if (!inject) return
-    inject("data-v-8325c0a2_0", { source: ".v-select__selections{overflow:hidden}.v-select__selection.v-select__selection--comma{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}.flex-grow-unset{flex-grow:unset}.player-container{height:100%}", map: undefined, media: undefined });
+    inject("data-v-40531efe_0", { source: ".v-select__selections{overflow:hidden}.v-select__selection.v-select__selection--comma{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}.flex-grow-unset{flex-grow:unset}.player-container{height:100%}", map: undefined, media: undefined });
 
   };
   /* scoped */
