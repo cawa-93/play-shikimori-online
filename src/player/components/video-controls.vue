@@ -1,5 +1,5 @@
 <template>
-  <v-layout row>
+  <v-layout row wrap>
     <v-flex>
       <v-btn
         class="ma-0"
