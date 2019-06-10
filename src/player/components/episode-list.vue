@@ -23,6 +23,24 @@
             <v-list-tile-title>{{item.episodeFull}}</v-list-tile-title>
           </v-list-tile-content>
         </template>
+
+        <template v-slot:append-item>
+          <v-divider class="mb-2"></v-divider>
+
+          <v-list-tile href="https://smotret-anime-365.ru/translations/create">
+            <v-list-tile-action>
+              <v-icon>add</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>Добавить сериию</v-list-tile-title>
+            </v-list-tile-content>
+
+            <v-list-tile-action>
+              <v-icon>open_in_new</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
+        </template>
       </v-select>
     </div>
   </section>

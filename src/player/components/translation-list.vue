@@ -27,6 +27,22 @@
           </v-list-tile-content>
         </template>
       </template>
+
+      <template v-slot:append-item>
+        <v-list-tile href="https://smotret-anime-365.ru/translations/create" class="mt-2">
+          <v-list-tile-action>
+            <v-icon>add</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>Добавить перевод</v-list-tile-title>
+          </v-list-tile-content>
+
+          <v-list-tile-action>
+            <v-icon>open_in_new</v-icon>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
     </v-select>
   </section>
 </template>
