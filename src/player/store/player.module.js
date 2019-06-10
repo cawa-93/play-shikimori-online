@@ -139,17 +139,19 @@ export const actions = {
   },
 
   async loadTranslations({ getters, commit }, episode) {
-    if (!episode.translations) {
-      const { data } = await anime365API(`/episodes/${episode.id}`)
-      data.translations = data.translations.map(translation => {
-        if (!translation.authorsSummary) {
-          translation.authorsSummary = 'Неизвестный'
-        }
-
-        return translation
-      })
-      commit('setTranslations', { episodeID: episode.id, translations: data.translations })
+    if (!episode || (Array.isArray(episode.translations) && episode.translations.length > 0)) {
+      return
     }
+
+    const { data } = await anime365API(`/episodes/${episode.id}`)
+    data.translations = data.translations.map(translation => {
+      if (!translation.authorsSummary) {
+        translation.authorsSummary = 'Неизвестный'
+      }
+
+      return translation
+    })
+    commit('setTranslations', { episodeID: episode.id, translations: data.translations })
   },
 
 
