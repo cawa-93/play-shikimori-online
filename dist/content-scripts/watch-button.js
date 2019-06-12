@@ -93,7 +93,7 @@ async function main() {
 
 	if (!infoSection || WatchOnlineButton) return
 
-	// Созданиие кнопки для перехода к плееру
+	// Создание кнопки для перехода к плееру
 	const WatchButtonSection = document.createElement('section');
 	WatchButtonSection.classList.add('block');
 	WatchButtonSection.classList.add('watch-online-block');
