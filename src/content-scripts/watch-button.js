@@ -63,7 +63,7 @@ async function main() {
 
 
 async function getAnime() {
-	const idMatch = location.pathname.match('animes/([0-9]+)')
+	const idMatch = location.pathname.match(/animes\/[^\d]*(\d+)-/)
 	if (!idMatch || !idMatch[1]) {
 		return undefined
 	}

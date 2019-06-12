@@ -93,7 +93,7 @@ async function main() {
 
 	if (!infoSection || WatchOnlineButton) return
 
-	// Созданиие кнопки для перехода к плееру
+	// Создание кнопки для перехода к плееру
 	const WatchButtonSection = document.createElement('section');
 	WatchButtonSection.classList.add('block');
 	WatchButtonSection.classList.add('watch-online-block');
@@ -142,7 +142,7 @@ async function main() {
 
 
 async function getAnime() {
-	const idMatch = location.pathname.match('animes/([0-9]+)');
+	const idMatch = location.pathname.match(/animes\/[^\d]*(\d+)-/);
 	if (!idMatch || !idMatch[1]) {
 		return undefined
 	}
