@@ -100,6 +100,7 @@ async function main() {
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
 		<a href="#" target="_blank" id="watch-online-button" class="b-link_button dark b-ajax"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
+		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`;
 	infoSection.appendChild(WatchButtonSection);
 	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button');
