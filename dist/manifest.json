@@ -2,6 +2,7 @@
 	"manifest_version": 2,
 	"name": "Play Shikimori Online",
 	"version": "0.3.4",
+	"minimum_chrome_version": "63",
 	"description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
 	"homepage_url": "https://shikimori.one/clubs/2372-play-shikimori",
 	"icons": {
@@ -45,6 +46,7 @@
 		"https://shikimori.org/*",
 		"https://smotretanime.ru/*",
 		"https://smotret-anime-365.ru/*",
+		"https://api.jikan.moe/*",
 		"webRequest",
 		"webRequestBlocking"
 	],
@@ -52,5 +54,5 @@
 		"player/index.html",
 		"content-scripts/anime365-player-events.js"
 	],
-	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://www.google-analytics.com; object-src 'self'"
 }
