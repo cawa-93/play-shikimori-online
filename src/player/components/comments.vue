@@ -35,7 +35,8 @@
           block
           class="mb-3"
         >Загрузить ещё</v-btn>
-        <v-form v-model="valid" @submit.prevent="createComment">
+
+        <!-- <v-form v-model="valid" @submit.prevent="createComment">
           <v-textarea
             box
             name="input-7-4"
@@ -44,9 +45,9 @@
             required
           ></v-textarea>
           <v-btn :disabled="!valid" block type="submit">Отправить</v-btn>
-        </v-form>
+        </v-form>-->
       </div>
-      <p v-else>Топик с обсуждением не найден</p>
+      <p v-else>На Шикимори пока-что нет темы с обсуждением этого эпизода</p>
     </template>
   </section>
 </template>
@@ -160,8 +161,6 @@ export default {
       if (comments.length > this.commentsPerPage) {
         comments.pop();
       }
-
-      console.log({ comments });
 
       this.comments.push(...comments.map(c => this.proccessComment(c)));
     },
