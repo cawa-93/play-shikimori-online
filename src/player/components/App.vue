@@ -1,8 +1,8 @@
 <template>
   <section>
     <v-app id="app" :dark="darkMode">
-      <v-container class="layout">
-        <v-layout column>
+      <v-container class="__layout">
+        <v-layout column style="	height: calc(100vh - 110px);">
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
@@ -23,10 +23,12 @@
             <video-controls v-if="$store.getters['player/currentTranslation']"></video-controls>
           </v-flex>
 
-          <v-flex class="flex-grow-unset mt-3">
+          <!-- <v-flex class="flex-grow-unset mt-3">
             <origins v-if="$store.state.shikimori.anime"></origins>
-          </v-flex>
+          </v-flex>-->
         </v-layout>
+
+        <comments></comments>
       </v-container>
     </v-app>
   </section>
@@ -39,6 +41,7 @@ import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
 import origins from "./origins.vue";
+import comments from "./comments.vue";
 
 export default {
   components: {
@@ -46,7 +49,8 @@ export default {
     translationList,
     player,
     videoControls,
-    origins
+    origins,
+    comments
   },
 
   data() {
@@ -58,6 +62,10 @@ export default {
       if (!darkMode) {
         darkMode = !window.matchMedia("(prefers-color-scheme: light)").matches;
       }
+    }
+
+    if (darkMode) {
+      document.querySelector("html").style.backgroundColor = "#303030";
     }
 
     return {
