@@ -34980,7 +34980,6 @@ const mutations = {
   },
 
   setEpisodeTitle(state, episodes) {
-    console.log({ state: state.series.episodes, episodes });
     if (!state.series.episodes) return
     for (const episode of state.series.episodes) {
       if (episode.episodeTitle || episode.episodeType === 'special') continue
@@ -35095,9 +35094,21 @@ const actions = {
   },
 
   async setEpisodeTitle({ commit, state }) {
-    const resp = await myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/1`);
-    console.log({ episodes: resp.episodes });
-    commit('setEpisodeTitle', resp.episodes);
+    const episodes = [];
+    let currentPage = 1;
+    let lastPage = Infinity;
+
+    while (currentPage <= lastPage) {
+      const resp = await myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/${currentPage}`);
+      if (!resp.episodes || !resp.episodes.length) break
+
+      episodes.push(...resp.episodes);
+      lastPage = resp.episodes_last_page;
+      currentPage++;
+    }
+
+    if (episodes.length)
+      commit('setEpisodeTitle', episodes);
 
   },
 
