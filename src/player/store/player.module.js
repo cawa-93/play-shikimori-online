@@ -1,6 +1,7 @@
 import Vue from "vue";
 import { anime365API } from "../../helpers";
 import { storage } from "kv-storage-polyfill";
+import * as ga from 'vue-analytics'
 
 const worker = new Worker('/player/worker.js')
 
@@ -155,7 +156,7 @@ export const actions = {
   },
 
 
-  async setCurrentTranslation({ commit }, translation) {
+  async setCurrentTranslation({ commit, dispatch }, translation) {
     commit('setCurrentTranslation', translation.id)
 
     let lastSelectedTranslations = await storage.get("lastSelectedTranslations");
@@ -168,6 +169,8 @@ export const actions = {
     lastSelectedTranslations.set(translation.seriesId, translation)
 
     await storage.set("lastSelectedTranslations", lastSelectedTranslations);
+
+    dispatch('trackPage')
   },
 
 
@@ -198,5 +201,9 @@ export const actions = {
       }
       worker.postMessage({ episode })
     })
+  },
+
+  trackPage() {
+    console.log({ ga })
   }
 }
