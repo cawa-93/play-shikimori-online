@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { myanimelistAPI } from "../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
@@ -86,6 +87,13 @@ export default {
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
+
+    // console.log("Call MAL");
+    // try {
+    //   console.log({ MAL_RESP: resp });
+    // } catch (e) {
+    //   console.log({ MAL_ERROR: e });
+    // }
   }
 };
 </script>

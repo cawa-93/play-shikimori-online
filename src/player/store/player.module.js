@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { anime365API } from "../../helpers";
+import { anime365API, myanimelistAPI } from "../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
@@ -85,6 +85,21 @@ export const mutations = {
   setCurrentTranslation(state, payload) {
     state.currentTranslationID = payload
   },
+
+  setEpisodeTitle(state, episodes) {
+    console.log({ state: state.series.episodes, episodes })
+    if (!state.series.episodes) return
+    for (const episode of state.series.episodes) {
+      if (episode.episodeTitle || episode.episodeType === 'special') continue
+
+      const episodeInfo = episodes.find(e => e.episode_id == episode.episodeInt)
+      if (!episodeInfo || !episodeInfo.title) continue
+
+      episode.episodeTitle = episodeInfo.title
+      episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`
+    }
+
+  }
 }
 
 
@@ -105,7 +120,7 @@ export const actions = {
 
     const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
     if (startEpisode) {
-      dispatch('setCurrentEpisode', startEpisode.id)
+      await dispatch('setCurrentEpisode', startEpisode.id)
     } else if (episodeInt !== 1) {
 
       episodeInt =
@@ -117,9 +132,11 @@ export const actions = {
 
       const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
       if (startEpisode) {
-        dispatch('setCurrentEpisode', startEpisode.id)
+        await dispatch('setCurrentEpisode', startEpisode.id)
       }
     }
+
+    await dispatch('setEpisodeTitle')
   },
 
 
@@ -182,6 +199,13 @@ export const actions = {
     if (getters.nextEpisode) {
       dispatch('setCurrentEpisode', getters.nextEpisode.id)
     }
+  },
+
+  async setEpisodeTitle({ commit, state }) {
+    const resp = await myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/1`);
+    console.log({ episodes: resp.episodes })
+    commit('setEpisodeTitle', resp.episodes)
+
   },
 
 

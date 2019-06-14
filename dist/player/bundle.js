@@ -380,12 +380,12 @@ var config = ({
   /**
    * Show production mode tip message on boot?
    */
-  productionTip: "production" !== 'production',
+  productionTip: "development" !== 'production',
 
   /**
    * Whether to enable devtools
    */
-  devtools: "production" !== 'production',
+  devtools: "development" !== 'production',
 
   /**
    * Whether to record perf
@@ -599,6 +599,96 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
 /*  */
 
 var warn = noop;
+var tip = noop;
+var generateComponentTrace = (noop); // work around flow check
+var formatComponentName = (noop);
+
+{
+  var hasConsole = typeof console !== 'undefined';
+  var classifyRE = /(?:^|[-_])(\w)/g;
+  var classify = function (str) { return str
+    .replace(classifyRE, function (c) { return c.toUpperCase(); })
+    .replace(/[-_]/g, ''); };
+
+  warn = function (msg, vm) {
+    var trace = vm ? generateComponentTrace(vm) : '';
+
+    if (config.warnHandler) {
+      config.warnHandler.call(null, msg, vm, trace);
+    } else if (hasConsole && (!config.silent)) {
+      console.error(("[Vue warn]: " + msg + trace));
+    }
+  };
+
+  tip = function (msg, vm) {
+    if (hasConsole && (!config.silent)) {
+      console.warn("[Vue tip]: " + msg + (
+        vm ? generateComponentTrace(vm) : ''
+      ));
+    }
+  };
+
+  formatComponentName = function (vm, includeFile) {
+    if (vm.$root === vm) {
+      return '<Root>'
+    }
+    var options = typeof vm === 'function' && vm.cid != null
+      ? vm.options
+      : vm._isVue
+        ? vm.$options || vm.constructor.options
+        : vm;
+    var name = options.name || options._componentTag;
+    var file = options.__file;
+    if (!name && file) {
+      var match = file.match(/([^/\\]+)\.vue$/);
+      name = match && match[1];
+    }
+
+    return (
+      (name ? ("<" + (classify(name)) + ">") : "<Anonymous>") +
+      (file && includeFile !== false ? (" at " + file) : '')
+    )
+  };
+
+  var repeat = function (str, n) {
+    var res = '';
+    while (n) {
+      if (n % 2 === 1) { res += str; }
+      if (n > 1) { str += str; }
+      n >>= 1;
+    }
+    return res
+  };
+
+  generateComponentTrace = function (vm) {
+    if (vm._isVue && vm.$parent) {
+      var tree = [];
+      var currentRecursiveSequence = 0;
+      while (vm) {
+        if (tree.length > 0) {
+          var last = tree[tree.length - 1];
+          if (last.constructor === vm.constructor) {
+            currentRecursiveSequence++;
+            vm = vm.$parent;
+            continue
+          } else if (currentRecursiveSequence > 0) {
+            tree[tree.length - 1] = [last, currentRecursiveSequence];
+            currentRecursiveSequence = 0;
+          }
+        }
+        tree.push(vm);
+        vm = vm.$parent;
+      }
+      return '\n\nfound in\n\n' + tree
+        .map(function (vm, i) { return ("" + (i === 0 ? '---> ' : repeat(' ', 5 + i * 2)) + (Array.isArray(vm)
+            ? ((formatComponentName(vm[0])) + "... (" + (vm[1]) + " recursive calls)")
+            : formatComponentName(vm))); })
+        .join('\n')
+    } else {
+      return ("\n\n(found in " + (formatComponentName(vm)) + ")")
+    }
+  };
+}
 
 /*  */
 
@@ -630,6 +720,12 @@ Dep.prototype.depend = function depend () {
 Dep.prototype.notify = function notify () {
   // stabilize the subscriber list first
   var subs = this.subs.slice();
+  if (!config.async) {
+    // subs aren't sorted in scheduler if not running async
+    // we need to sort them now to make sure they fire in correct
+    // order
+    subs.sort(function (a, b) { return a.id - b.id; });
+  }
   for (var i = 0, l = subs.length; i < l; i++) {
     subs[i].update();
   }
@@ -944,6 +1040,10 @@ function defineReactive$$1 (
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
+      /* eslint-enable no-self-compare */
+      if (customSetter) {
+        customSetter();
+      }
       // #7981: for accessor properties without setter
       if (getter && !setter) { return }
       if (setter) {
@@ -963,6 +1063,10 @@ function defineReactive$$1 (
  * already exist.
  */
 function set (target, key, val) {
+  if (isUndef(target) || isPrimitive(target)
+  ) {
+    warn(("Cannot set reactive property on undefined, null, or primitive value: " + ((target))));
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key);
     target.splice(key, 1, val);
@@ -974,6 +1078,10 @@ function set (target, key, val) {
   }
   var ob = (target).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
+    warn(
+      'Avoid adding reactive properties to a Vue instance or its root $data ' +
+      'at runtime - declare it upfront in the data option.'
+    );
     return val
   }
   if (!ob) {
@@ -989,12 +1097,20 @@ function set (target, key, val) {
  * Delete a property and trigger change if necessary.
  */
 function del (target, key) {
+  if (isUndef(target) || isPrimitive(target)
+  ) {
+    warn(("Cannot delete reactive property on undefined, null, or primitive value: " + ((target))));
+  }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.splice(key, 1);
     return
   }
   var ob = (target).__ob__;
   if (target._isVue || (ob && ob.vmCount)) {
+    warn(
+      'Avoid deleting properties on a Vue instance or its root $data ' +
+      '- just set it to null.'
+    );
     return
   }
   if (!hasOwn(target, key)) {
@@ -1029,6 +1145,21 @@ function dependArray (value) {
  * value into the final value.
  */
 var strats = config.optionMergeStrategies;
+
+/**
+ * Options with restrictions
+ */
+{
+  strats.el = strats.propsData = function (parent, child, vm, key) {
+    if (!vm) {
+      warn(
+        "option \"" + key + "\" can only be used during instance " +
+        'creation with the `new` keyword.'
+      );
+    }
+    return defaultStrat(parent, child)
+  };
+}
 
 /**
  * Helper that recursively merges two data objects together.
@@ -1112,6 +1243,12 @@ strats.data = function (
 ) {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
+      warn(
+        'The "data" option should be a function ' +
+        'that returns a per-instance value in component ' +
+        'definitions.',
+        vm
+      );
 
       return parentVal
     }
@@ -1169,6 +1306,7 @@ function mergeAssets (
 ) {
   var res = Object.create(parentVal || null);
   if (childVal) {
+    assertObjectType(key, childVal, vm);
     return extend(res, childVal)
   } else {
     return res
@@ -1196,6 +1334,9 @@ strats.watch = function (
   if (childVal === nativeWatch) { childVal = undefined; }
   /* istanbul ignore if */
   if (!childVal) { return Object.create(parentVal || null) }
+  {
+    assertObjectType(key, childVal, vm);
+  }
   if (!parentVal) { return childVal }
   var ret = {};
   extend(ret, parentVal);
@@ -1224,7 +1365,7 @@ strats.computed = function (
   vm,
   key
 ) {
-  if (childVal && "production" !== 'production') {
+  if (childVal && "development" !== 'production') {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) { return childVal }
@@ -1245,6 +1386,30 @@ var defaultStrat = function (parentVal, childVal) {
 };
 
 /**
+ * Validate component names
+ */
+function checkComponents (options) {
+  for (var key in options.components) {
+    validateComponentName(key);
+  }
+}
+
+function validateComponentName (name) {
+  if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
+    warn(
+      'Invalid component name: "' + name + '". Component names ' +
+      'should conform to valid custom element name in html5 specification.'
+    );
+  }
+  if (isBuiltInTag(name) || config.isReservedTag(name)) {
+    warn(
+      'Do not use built-in or reserved HTML elements as component ' +
+      'id: ' + name
+    );
+  }
+}
+
+/**
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  */
@@ -1260,6 +1425,8 @@ function normalizeProps (options, vm) {
       if (typeof val === 'string') {
         name = camelize(val);
         res[name] = { type: null };
+      } else {
+        warn('props must be strings when using array syntax.');
       }
     }
   } else if (isPlainObject(props)) {
@@ -1270,6 +1437,12 @@ function normalizeProps (options, vm) {
         ? val
         : { type: val };
     }
+  } else {
+    warn(
+      "Invalid value for option \"props\": expected an Array or an Object, " +
+      "but got " + (toRawType(props)) + ".",
+      vm
+    );
   }
   options.props = res;
 }
@@ -1292,6 +1465,12 @@ function normalizeInject (options, vm) {
         ? extend({ from: key }, val)
         : { from: val };
     }
+  } else {
+    warn(
+      "Invalid value for option \"inject\": expected an Array or an Object, " +
+      "but got " + (toRawType(inject)) + ".",
+      vm
+    );
   }
 }
 
@@ -1329,13 +1508,16 @@ function mergeOptions (
   child,
   vm
 ) {
+  {
+    checkComponents(child);
+  }
 
   if (typeof child === 'function') {
     child = child.options;
   }
 
-  normalizeProps(child);
-  normalizeInject(child);
+  normalizeProps(child, vm);
+  normalizeInject(child, vm);
   normalizeDirectives(child);
 
   // Apply extends and mixins on the child options,
@@ -1394,6 +1576,12 @@ function resolveAsset (
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
+  if (warnMissing && !res) {
+    warn(
+      'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
+      options
+    );
+  }
   return res
 }
 
@@ -1434,6 +1622,9 @@ function validateProp (
     observe(value);
     toggleObserving(prevShouldObserve);
   }
+  {
+    assertProp(prop, key, value, vm, absent);
+  }
   return value
 }
 
@@ -1446,6 +1637,15 @@ function getPropDefaultValue (vm, prop, key) {
     return undefined
   }
   var def = prop.default;
+  // warn against non-factory defaults for Object & Array
+  if (isObject(def)) {
+    warn(
+      'Invalid default value for prop "' + key + '": ' +
+      'Props with type Object/Array must use a factory function ' +
+      'to return the default value.',
+      vm
+    );
+  }
   // the raw prop value was also undefined from previous render,
   // return previous default value to avoid unnecessary watcher trigger
   if (vm && vm.$options.propsData &&
@@ -1459,6 +1659,83 @@ function getPropDefaultValue (vm, prop, key) {
   return typeof def === 'function' && getType(prop.type) !== 'Function'
     ? def.call(vm)
     : def
+}
+
+/**
+ * Assert whether a prop is valid.
+ */
+function assertProp (
+  prop,
+  name,
+  value,
+  vm,
+  absent
+) {
+  if (prop.required && absent) {
+    warn(
+      'Missing required prop: "' + name + '"',
+      vm
+    );
+    return
+  }
+  if (value == null && !prop.required) {
+    return
+  }
+  var type = prop.type;
+  var valid = !type || type === true;
+  var expectedTypes = [];
+  if (type) {
+    if (!Array.isArray(type)) {
+      type = [type];
+    }
+    for (var i = 0; i < type.length && !valid; i++) {
+      var assertedType = assertType(value, type[i]);
+      expectedTypes.push(assertedType.expectedType || '');
+      valid = assertedType.valid;
+    }
+  }
+
+  if (!valid) {
+    warn(
+      getInvalidTypeMessage(name, value, expectedTypes),
+      vm
+    );
+    return
+  }
+  var validator = prop.validator;
+  if (validator) {
+    if (!validator(value)) {
+      warn(
+        'Invalid prop: custom validator check failed for prop "' + name + '".',
+        vm
+      );
+    }
+  }
+}
+
+var simpleCheckRE = /^(String|Number|Boolean|Function|Symbol)$/;
+
+function assertType (value, type) {
+  var valid;
+  var expectedType = getType(type);
+  if (simpleCheckRE.test(expectedType)) {
+    var t = typeof value;
+    valid = t === expectedType.toLowerCase();
+    // for primitive wrapper objects
+    if (!valid && t === 'object') {
+      valid = value instanceof type;
+    }
+  } else if (expectedType === 'Object') {
+    valid = isPlainObject(value);
+  } else if (expectedType === 'Array') {
+    valid = Array.isArray(value);
+  } else {
+    valid = value instanceof type;
+  }
+  return {
+    valid: valid,
+    expectedType: expectedType
+  }
 }
 
 /**
@@ -1485,6 +1762,49 @@ function getTypeIndex (type, expectedTypes) {
     }
   }
   return -1
+}
+
+function getInvalidTypeMessage (name, value, expectedTypes) {
+  var message = "Invalid prop: type check failed for prop \"" + name + "\"." +
+    " Expected " + (expectedTypes.map(capitalize).join(', '));
+  var expectedType = expectedTypes[0];
+  var receivedType = toRawType(value);
+  var expectedValue = styleValue(value, expectedType);
+  var receivedValue = styleValue(value, receivedType);
+  // check if we need to specify expected value
+  if (expectedTypes.length === 1 &&
+      isExplicable(expectedType) &&
+      !isBoolean(expectedType, receivedType)) {
+    message += " with value " + expectedValue;
+  }
+  message += ", got " + receivedType + " ";
+  // check if we need to specify received value
+  if (isExplicable(receivedType)) {
+    message += "with value " + receivedValue + ".";
+  }
+  return message
+}
+
+function styleValue (value, type) {
+  if (type === 'String') {
+    return ("\"" + value + "\"")
+  } else if (type === 'Number') {
+    return ("" + (Number(value)))
+  } else {
+    return ("" + value)
+  }
+}
+
+function isExplicable (value) {
+  var explicitTypes = ['string', 'number', 'boolean'];
+  return explicitTypes.some(function (elem) { return value.toLowerCase() === elem; })
+}
+
+function isBoolean () {
+  var args = [], len = arguments.length;
+  while ( len-- ) args[ len ] = arguments[ len ];
+
+  return args.some(function (elem) { return elem.toLowerCase() === 'boolean'; })
 }
 
 /*  */
@@ -1554,6 +1874,9 @@ function globalHandleError (err, vm, info) {
 }
 
 function logError (err, vm, info) {
+  {
+    warn(("Error in " + info + ": \"" + (err.toString()) + "\""), vm);
+  }
   /* istanbul ignore else */
   if ((inBrowser || inWeex) && typeof console !== 'undefined') {
     console.error(err);
@@ -1670,6 +1993,96 @@ function nextTick (cb, ctx) {
 
 /*  */
 
+/* not type checking this file because flow doesn't play well with Proxy */
+
+var initProxy;
+
+{
+  var allowedGlobals = makeMap(
+    'Infinity,undefined,NaN,isFinite,isNaN,' +
+    'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
+    'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' +
+    'require' // for Webpack/Browserify
+  );
+
+  var warnNonPresent = function (target, key) {
+    warn(
+      "Property or method \"" + key + "\" is not defined on the instance but " +
+      'referenced during render. Make sure that this property is reactive, ' +
+      'either in the data option, or for class-based components, by ' +
+      'initializing the property. ' +
+      'See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.',
+      target
+    );
+  };
+
+  var warnReservedPrefix = function (target, key) {
+    warn(
+      "Property \"" + key + "\" must be accessed with \"$data." + key + "\" because " +
+      'properties starting with "$" or "_" are not proxied in the Vue instance to ' +
+      'prevent conflicts with Vue internals' +
+      'See: https://vuejs.org/v2/api/#data',
+      target
+    );
+  };
+
+  var hasProxy =
+    typeof Proxy !== 'undefined' && isNative(Proxy);
+
+  if (hasProxy) {
+    var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact');
+    config.keyCodes = new Proxy(config.keyCodes, {
+      set: function set (target, key, value) {
+        if (isBuiltInModifier(key)) {
+          warn(("Avoid overwriting built-in modifier in config.keyCodes: ." + key));
+          return false
+        } else {
+          target[key] = value;
+          return true
+        }
+      }
+    });
+  }
+
+  var hasHandler = {
+    has: function has (target, key) {
+      var has = key in target;
+      var isAllowed = allowedGlobals(key) ||
+        (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data));
+      if (!has && !isAllowed) {
+        if (key in target.$data) { warnReservedPrefix(target, key); }
+        else { warnNonPresent(target, key); }
+      }
+      return has || !isAllowed
+    }
+  };
+
+  var getHandler = {
+    get: function get (target, key) {
+      if (typeof key === 'string' && !(key in target)) {
+        if (key in target.$data) { warnReservedPrefix(target, key); }
+        else { warnNonPresent(target, key); }
+      }
+      return target[key]
+    }
+  };
+
+  initProxy = function initProxy (vm) {
+    if (hasProxy) {
+      // determine which proxy handler to use
+      var options = vm.$options;
+      var handlers = options.render && options.render._withStripped
+        ? getHandler
+        : hasHandler;
+      vm._renderProxy = new Proxy(vm, handlers);
+    } else {
+      vm._renderProxy = vm;
+    }
+  };
+}
+
+/*  */
+
 var seenObjects = new _Set();
 
 /**
@@ -1702,6 +2115,29 @@ function _traverse (val, seen) {
     keys = Object.keys(val);
     i = keys.length;
     while (i--) { _traverse(val[keys[i]], seen); }
+  }
+}
+
+var mark;
+var measure;
+
+{
+  var perf = inBrowser && window.performance;
+  /* istanbul ignore if */
+  if (
+    perf &&
+    perf.mark &&
+    perf.measure &&
+    perf.clearMarks &&
+    perf.clearMeasures
+  ) {
+    mark = function (tag) { return perf.mark(tag); };
+    measure = function (name, startTag, endTag) {
+      perf.measure(name, startTag, endTag);
+      perf.clearMarks(startTag);
+      perf.clearMarks(endTag);
+      // perf.clearMeasures(name)
+    };
   }
 }
 
@@ -1754,7 +2190,12 @@ function updateListeners (
     def$$1 = cur = on[name];
     old = oldOn[name];
     event = normalizeEvent(name);
-    if (isUndef(cur)) ; else if (isUndef(old)) {
+    if (isUndef(cur)) {
+      warn(
+        "Invalid handler for event \"" + (event.name) + "\": got " + String(cur),
+        vm
+      );
+    } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
         cur = on[name] = createFnInvoker(cur, vm);
       }
@@ -1830,6 +2271,22 @@ function extractPropsFromVNodeData (
   if (isDef(attrs) || isDef(props)) {
     for (var key in propOptions) {
       var altKey = hyphenate(key);
+      {
+        var keyInLowerCase = key.toLowerCase();
+        if (
+          key !== keyInLowerCase &&
+          attrs && hasOwn(attrs, keyInLowerCase)
+        ) {
+          tip(
+            "Prop \"" + keyInLowerCase + "\" is passed to component " +
+            (formatComponentName(tag || Ctor)) + ", but the declared prop name is" +
+            " \"" + key + "\". " +
+            "Note that HTML attributes are case-insensitive and camelCased " +
+            "props need to use their kebab-case equivalents when using in-DOM " +
+            "templates. You should probably use \"" + altKey + "\" instead of \"" + key + "\"."
+          );
+        }
+      }
       checkProp(res, props, key, altKey, true) ||
       checkProp(res, attrs, key, altKey, false);
     }
@@ -1967,7 +2424,14 @@ function initInjections (vm) {
     Object.keys(result).forEach(function (key) {
       /* istanbul ignore else */
       {
-        defineReactive$$1(vm, key, result[key]);
+        defineReactive$$1(vm, key, result[key], function () {
+          warn(
+            "Avoid mutating an injected value directly since the changes will be " +
+            "overwritten whenever the provided component re-renders. " +
+            "injection being mutated: \"" + key + "\"",
+            vm
+          );
+        });
       }
     });
     toggleObserving(true);
@@ -2001,6 +2465,8 @@ function resolveInject (inject, vm) {
           result[key] = typeof provideDefault === 'function'
             ? provideDefault.call(vm)
             : provideDefault;
+        } else {
+          warn(("Injection \"" + key + "\" not found"), vm);
         }
       }
     }
@@ -2201,6 +2667,12 @@ function renderSlot (
   if (scopedSlotFn) { // scoped slot
     props = props || {};
     if (bindObject) {
+      if (!isObject(bindObject)) {
+        warn(
+          'slot v-bind without argument expects an Object',
+          this
+        );
+      }
       props = extend(extend({}, bindObject), props);
     }
     nodes = scopedSlotFn(props) || fallback;
@@ -2222,7 +2694,7 @@ function renderSlot (
  * Runtime helper for resolving filters
  */
 function resolveFilter (id) {
-  return resolveAsset(this.$options, 'filters', id) || identity
+  return resolveAsset(this.$options, 'filters', id, true) || identity
 }
 
 /*  */
@@ -2270,7 +2742,12 @@ function bindObjectProps (
   isSync
 ) {
   if (value) {
-    if (!isObject(value)) ; else {
+    if (!isObject(value)) {
+      warn(
+        'v-bind without argument expects an Object or Array value',
+        this
+      );
+    } else {
       if (Array.isArray(value)) {
         value = toObject(value);
       }
@@ -2373,7 +2850,12 @@ function markStaticNode (node, key, isOnce) {
 
 function bindObjectListeners (data, value) {
   if (value) {
-    if (!isPlainObject(value)) ; else {
+    if (!isPlainObject(value)) {
+      warn(
+        'v-on without argument expects an Object value',
+        this
+      );
+    } else {
       var on = data.on = data.on ? extend({}, data.on) : {};
       for (var key in value) {
         var existing = on[key];
@@ -2420,6 +2902,12 @@ function bindDynamicKeys (baseObj, values) {
     var key = values[i];
     if (typeof key === 'string' && key) {
       baseObj[values[i]] = values[i + 1];
+    } else if (key !== '' && key !== null) {
+      // null is a speical value for explicitly removing a binding
+      warn(
+        ("Invalid value for dynamic directive argument (expected string or null): " + key),
+        this
+      );
     }
   }
   return baseObj
@@ -2562,12 +3050,12 @@ function createFunctionalComponent (
   var vnode = options.render.call(null, renderContext._c, renderContext);
 
   if (vnode instanceof VNode) {
-    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options)
+    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options, renderContext)
   } else if (Array.isArray(vnode)) {
     var vnodes = normalizeChildren(vnode) || [];
     var res = new Array(vnodes.length);
     for (var i = 0; i < vnodes.length; i++) {
-      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options);
+      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options, renderContext);
     }
     return res
   }
@@ -2580,6 +3068,9 @@ function cloneAndMarkFunctionalResult (vnode, data, contextVm, options, renderCo
   var clone = cloneVNode(vnode);
   clone.fnContext = contextVm;
   clone.fnOptions = options;
+  {
+    (clone.devtoolsMeta = clone.devtoolsMeta || {}).renderContext = renderContext;
+  }
   if (data.slot) {
     (clone.data || (clone.data = {})).slot = data.slot;
   }
@@ -2688,6 +3179,9 @@ function createComponent (
   // if at this stage it's not a constructor or an async component factory,
   // reject.
   if (typeof Ctor !== 'function') {
+    {
+      warn(("Invalid Component definition: " + (String(Ctor))), context);
+    }
     return
   }
 
@@ -2722,7 +3216,7 @@ function createComponent (
   }
 
   // extract props
-  var propsData = extractPropsFromVNodeData(data, Ctor);
+  var propsData = extractPropsFromVNodeData(data, Ctor, tag);
 
   // functional component
   if (isTrue(Ctor.options.functional)) {
@@ -2859,6 +3353,11 @@ function _createElement (
   normalizationType
 ) {
   if (isDef(data) && isDef((data).__ob__)) {
+    warn(
+      "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
+      'Always create fresh vnode data objects in each render!',
+      context
+    );
     return createEmptyVNode()
   }
   // object syntax in v-bind
@@ -2868,6 +3367,17 @@ function _createElement (
   if (!tag) {
     // in case of component :is set to falsy value
     return createEmptyVNode()
+  }
+  // warn against non-primitive key
+  if (isDef(data) && isDef(data.key) && !isPrimitive(data.key)
+  ) {
+    {
+      warn(
+        'Avoid using non-primitive value as key, ' +
+        'use string/number value instead.',
+        context
+      );
+    }
   }
   // support single function children as default scoped slot
   if (Array.isArray(children) &&
@@ -2974,8 +3484,12 @@ function initRender (vm) {
 
   /* istanbul ignore else */
   {
-    defineReactive$$1(vm, '$attrs', parentData && parentData.attrs || emptyObject, null, true);
-    defineReactive$$1(vm, '$listeners', options._parentListeners || emptyObject, null, true);
+    defineReactive$$1(vm, '$attrs', parentData && parentData.attrs || emptyObject, function () {
+      !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
+    }, true);
+    defineReactive$$1(vm, '$listeners', options._parentListeners || emptyObject, function () {
+      !isUpdatingChildComponent && warn("$listeners is readonly.", vm);
+    }, true);
   }
 }
 
@@ -3019,7 +3533,14 @@ function renderMixin (Vue) {
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
-      {
+      if (vm.$options.renderError) {
+        try {
+          vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e);
+        } catch (e) {
+          handleError(e, vm, "renderError");
+          vnode = vm._vnode;
+        }
+      } else {
         vnode = vm._vnode;
       }
     } finally {
@@ -3031,6 +3552,13 @@ function renderMixin (Vue) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
+      if (Array.isArray(vnode)) {
+        warn(
+          'Multiple root nodes returned from render function. Render function ' +
+          'should return a single root node.',
+          vm
+        );
+      }
       vnode = createEmptyVNode();
     }
     // set parent
@@ -3127,6 +3655,10 @@ function resolveAsyncComponent (
     });
 
     var reject = once(function (reason) {
+      warn(
+        "Failed to resolve async component: " + (String(factory)) +
+        (reason ? ("\nReason: " + reason) : '')
+      );
       if (isDef(factory.errorComp)) {
         factory.error = true;
         forceRender(true);
@@ -3168,7 +3700,7 @@ function resolveAsyncComponent (
             timerTimeout = null;
             if (isUndef(factory.resolved)) {
               reject(
-                null
+                "timeout (" + (res.timeout) + "ms)"
               );
             }
           }, res.timeout);
@@ -3315,6 +3847,18 @@ function eventsMixin (Vue) {
 
   Vue.prototype.$emit = function (event) {
     var vm = this;
+    {
+      var lowerCaseEvent = event.toLowerCase();
+      if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
+        tip(
+          "Event \"" + lowerCaseEvent + "\" is emitted in component " +
+          (formatComponentName(vm)) + " but the handler is registered for \"" + event + "\". " +
+          "Note that HTML attributes are case-insensitive and you cannot use " +
+          "v-on to listen to camelCase events when using in-DOM templates. " +
+          "You should probably use \"" + (hyphenate(event)) + "\" instead of \"" + event + "\"."
+        );
+      }
+    }
     var cbs = vm._events[event];
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
@@ -3331,6 +3875,7 @@ function eventsMixin (Vue) {
 /*  */
 
 var activeInstance = null;
+var isUpdatingChildComponent = false;
 
 function setActiveInstance(vm) {
   var prevActiveInstance = activeInstance;
@@ -3457,12 +4002,46 @@ function mountComponent (
   vm.$el = el;
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
+    {
+      /* istanbul ignore if */
+      if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
+        vm.$options.el || el) {
+        warn(
+          'You are using the runtime-only build of Vue where the template ' +
+          'compiler is not available. Either pre-compile the templates into ' +
+          'render functions, or use the compiler-included build.',
+          vm
+        );
+      } else {
+        warn(
+          'Failed to mount component: template or render function not defined.',
+          vm
+        );
+      }
+    }
   }
   callHook(vm, 'beforeMount');
 
   var updateComponent;
   /* istanbul ignore if */
-  {
+  if (config.performance && mark) {
+    updateComponent = function () {
+      var name = vm._name;
+      var id = vm._uid;
+      var startTag = "vue-perf-start:" + id;
+      var endTag = "vue-perf-end:" + id;
+
+      mark(startTag);
+      var vnode = vm._render();
+      mark(endTag);
+      measure(("vue " + name + " render"), startTag, endTag);
+
+      mark(startTag);
+      vm._update(vnode, hydrating);
+      mark(endTag);
+      measure(("vue " + name + " patch"), startTag, endTag);
+    };
+  } else {
     updateComponent = function () {
       vm._update(vm._render(), hydrating);
     };
@@ -3496,6 +4075,9 @@ function updateChildComponent (
   parentVnode,
   renderChildren
 ) {
+  {
+    isUpdatingChildComponent = true;
+  }
 
   // determine whether component has slot children
   // we need to do this before overwriting $options._renderChildren.
@@ -3560,6 +4142,10 @@ function updateChildComponent (
     vm.$slots = resolveSlots(renderChildren, parentVnode.context);
     vm.$forceUpdate();
   }
+
+  {
+    isUpdatingChildComponent = false;
+  }
 }
 
 function isInInactiveTree (vm) {
@@ -3619,9 +4205,14 @@ function callHook (vm, hook) {
   popTarget();
 }
 
+/*  */
+
+var MAX_UPDATE_COUNT = 100;
+
 var queue = [];
 var activatedChildren = [];
 var has = {};
+var circular = {};
 var waiting = false;
 var flushing = false;
 var index = 0;
@@ -3632,6 +4223,9 @@ var index = 0;
 function resetSchedulerState () {
   index = queue.length = activatedChildren.length = 0;
   has = {};
+  {
+    circular = {};
+  }
   waiting = flushing = false;
 }
 
@@ -3694,6 +4288,21 @@ function flushSchedulerQueue () {
     id = watcher.id;
     has[id] = null;
     watcher.run();
+    // in dev build, check and stop circular updates.
+    if (has[id] != null) {
+      circular[id] = (circular[id] || 0) + 1;
+      if (circular[id] > MAX_UPDATE_COUNT) {
+        warn(
+          'You may have an infinite update loop ' + (
+            watcher.user
+              ? ("in watcher with expression \"" + (watcher.expression) + "\"")
+              : "in a component render function."
+          ),
+          watcher.vm
+        );
+        break
+      }
+    }
   }
 
   // keep copies of post queues before resetting state
@@ -3765,6 +4374,11 @@ function queueWatcher (watcher) {
     // queue the flush
     if (!waiting) {
       waiting = true;
+
+      if (!config.async) {
+        flushSchedulerQueue();
+        return
+      }
       nextTick(flushSchedulerQueue);
     }
   }
@@ -3811,7 +4425,7 @@ var Watcher = function Watcher (
   this.newDeps = [];
   this.depIds = new _Set();
   this.newDepIds = new _Set();
-  this.expression = '';
+  this.expression = expOrFn.toString();
   // parse expression for getter
   if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
@@ -3819,6 +4433,12 @@ var Watcher = function Watcher (
     this.getter = parsePath(expOrFn);
     if (!this.getter) {
       this.getter = noop;
+      warn(
+        "Failed watching path: \"" + expOrFn + "\" " +
+        'Watcher only accepts simple dot-delimited paths. ' +
+        'For full control, use a function instead.',
+        vm
+      );
     }
   }
   this.value = this.lazy
@@ -4023,7 +4643,25 @@ function initProps (vm, propsOptions) {
     var value = validateProp(key, propsOptions, propsData, vm);
     /* istanbul ignore else */
     {
-      defineReactive$$1(props, key, value);
+      var hyphenatedKey = hyphenate(key);
+      if (isReservedAttribute(hyphenatedKey) ||
+          config.isReservedAttr(hyphenatedKey)) {
+        warn(
+          ("\"" + hyphenatedKey + "\" is a reserved attribute and cannot be used as component prop."),
+          vm
+        );
+      }
+      defineReactive$$1(props, key, value, function () {
+        if (!isRoot && !isUpdatingChildComponent) {
+          warn(
+            "Avoid mutating a prop directly since the value will be " +
+            "overwritten whenever the parent component re-renders. " +
+            "Instead, use a data or computed property based on the prop's " +
+            "value. Prop being mutated: \"" + key + "\"",
+            vm
+          );
+        }
+      });
     }
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
@@ -4044,6 +4682,11 @@ function initData (vm) {
     : data || {};
   if (!isPlainObject(data)) {
     data = {};
+    warn(
+      'data functions should return an object:\n' +
+      'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
+      vm
+    );
   }
   // proxy data on instance
   var keys = Object.keys(data);
@@ -4052,7 +4695,21 @@ function initData (vm) {
   var i = keys.length;
   while (i--) {
     var key = keys[i];
-    if (props && hasOwn(props, key)) ; else if (!isReserved(key)) {
+    {
+      if (methods && hasOwn(methods, key)) {
+        warn(
+          ("Method \"" + key + "\" has already been defined as a data property."),
+          vm
+        );
+      }
+    }
+    if (props && hasOwn(props, key)) {
+      warn(
+        "The data property \"" + key + "\" is already declared as a prop. " +
+        "Use prop default value instead.",
+        vm
+      );
+    } else if (!isReserved(key)) {
       proxy(vm, "_data", key);
     }
   }
@@ -4084,6 +4741,12 @@ function initComputed (vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
+    if (getter == null) {
+      warn(
+        ("Getter is missing for computed property \"" + key + "\"."),
+        vm
+      );
+    }
 
     if (!isSSR) {
       // create internal watcher for the computed property.
@@ -4100,6 +4763,12 @@ function initComputed (vm, computed) {
     // at instantiation here.
     if (!(key in vm)) {
       defineComputed(vm, key, userDef);
+    } else {
+      if (key in vm.$data) {
+        warn(("The computed property \"" + key + "\" is already defined in data."), vm);
+      } else if (vm.$options.props && key in vm.$options.props) {
+        warn(("The computed property \"" + key + "\" is already defined as a prop."), vm);
+      }
     }
   }
 }
@@ -4122,6 +4791,14 @@ function defineComputed (
         : createGetterInvoker(userDef.get)
       : noop;
     sharedPropertyDefinition.set = userDef.set || noop;
+  }
+  if (sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+      warn(
+        ("Computed property \"" + key + "\" was assigned to but it has no setter."),
+        this
+      );
+    };
   }
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
@@ -4150,6 +4827,27 @@ function createGetterInvoker(fn) {
 function initMethods (vm, methods) {
   var props = vm.$options.props;
   for (var key in methods) {
+    {
+      if (typeof methods[key] !== 'function') {
+        warn(
+          "Method \"" + key + "\" has type \"" + (typeof methods[key]) + "\" in the component definition. " +
+          "Did you reference the function correctly?",
+          vm
+        );
+      }
+      if (props && hasOwn(props, key)) {
+        warn(
+          ("Method \"" + key + "\" has already been defined as a prop."),
+          vm
+        );
+      }
+      if ((key in vm) && isReserved(key)) {
+        warn(
+          "Method \"" + key + "\" conflicts with an existing Vue instance method. " +
+          "Avoid defining component methods that start with _ or $."
+        );
+      }
+    }
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm);
   }
 }
@@ -4191,6 +4889,18 @@ function stateMixin (Vue) {
   dataDef.get = function () { return this._data };
   var propsDef = {};
   propsDef.get = function () { return this._props };
+  {
+    dataDef.set = function () {
+      warn(
+        'Avoid replacing instance root $data. ' +
+        'Use nested data properties instead.',
+        this
+      );
+    };
+    propsDef.set = function () {
+      warn("$props is readonly.", this);
+    };
+  }
   Object.defineProperty(Vue.prototype, '$data', dataDef);
   Object.defineProperty(Vue.prototype, '$props', propsDef);
 
@@ -4232,6 +4942,14 @@ function initMixin (Vue) {
     // a uid
     vm._uid = uid$3++;
 
+    var startTag, endTag;
+    /* istanbul ignore if */
+    if (config.performance && mark) {
+      startTag = "vue-perf-start:" + (vm._uid);
+      endTag = "vue-perf-end:" + (vm._uid);
+      mark(startTag);
+    }
+
     // a flag to avoid this being observed
     vm._isVue = true;
     // merge options
@@ -4249,7 +4967,7 @@ function initMixin (Vue) {
     }
     /* istanbul ignore else */
     {
-      vm._renderProxy = vm;
+      initProxy(vm);
     }
     // expose real self
     vm._self = vm;
@@ -4261,6 +4979,13 @@ function initMixin (Vue) {
     initState(vm);
     initProvide(vm); // resolve provide after data/props
     callHook(vm, 'created');
+
+    /* istanbul ignore if */
+    if (config.performance && mark) {
+      vm._name = formatComponentName(vm, false);
+      mark(endTag);
+      measure(("vue " + (vm._name) + " init"), startTag, endTag);
+    }
 
     if (vm.$options.el) {
       vm.$mount(vm.$options.el);
@@ -4325,6 +5050,10 @@ function resolveModifiedOptions (Ctor) {
 }
 
 function Vue (options) {
+  if (!(this instanceof Vue)
+  ) {
+    warn('Vue is a constructor and should be called with the `new` keyword');
+  }
   this._init(options);
 }
 
@@ -4389,6 +5118,9 @@ function initExtend (Vue) {
     }
 
     var name = extendOptions.name || Super.options.name;
+    if (name) {
+      validateComponentName(name);
+    }
 
     var Sub = function VueComponent (options) {
       this._init(options);
@@ -4468,6 +5200,10 @@ function initAssetRegisters (Vue) {
       if (!definition) {
         return this.options[type + 's'][id]
       } else {
+        /* istanbul ignore if */
+        if (type === 'component') {
+          validateComponentName(id);
+        }
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id;
           definition = this.options._base.extend(definition);
@@ -4622,6 +5358,13 @@ function initGlobalAPI (Vue) {
   // config
   var configDef = {};
   configDef.get = function () { return config; };
+  {
+    configDef.set = function () {
+      warn(
+        'Do not replace the Vue.config object, set individual fields instead.'
+      );
+    };
+  }
   Object.defineProperty(Vue, 'config', configDef);
 
   // exposed util methods.
@@ -4897,6 +5640,9 @@ function query (el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
     if (!selected) {
+      warn(
+        'Cannot find element: ' + el
+      );
       return document.createElement('div')
     }
     return selected
@@ -5111,6 +5857,24 @@ function createPatchFunction (backend) {
     }
   }
 
+  function isUnknownElement$$1 (vnode, inVPre) {
+    return (
+      !inVPre &&
+      !vnode.ns &&
+      !(
+        config.ignoredElements.length &&
+        config.ignoredElements.some(function (ignore) {
+          return isRegExp(ignore)
+            ? ignore.test(vnode.tag)
+            : ignore === vnode.tag
+        })
+      ) &&
+      config.isUnknownElement(vnode.tag)
+    )
+  }
+
+  var creatingElmInVPre = 0;
+
   function createElm (
     vnode,
     insertedVnodeQueue,
@@ -5138,6 +5902,19 @@ function createPatchFunction (backend) {
     var children = vnode.children;
     var tag = vnode.tag;
     if (isDef(tag)) {
+      {
+        if (data && data.pre) {
+          creatingElmInVPre++;
+        }
+        if (isUnknownElement$$1(vnode, creatingElmInVPre)) {
+          warn(
+            'Unknown custom element: <' + tag + '> - did you ' +
+            'register the component correctly? For recursive components, ' +
+            'make sure to provide the "name" option.',
+            vnode.context
+          );
+        }
+      }
 
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
@@ -5151,6 +5928,10 @@ function createPatchFunction (backend) {
           invokeCreateHooks(vnode, insertedVnodeQueue);
         }
         insert(parentElm, vnode.elm, refElm);
+      }
+
+      if (data && data.pre) {
+        creatingElmInVPre--;
       }
     } else if (isTrue(vnode.isComment)) {
       vnode.elm = nodeOps.createComment(vnode.text);
@@ -5237,6 +6018,9 @@ function createPatchFunction (backend) {
 
   function createChildren (vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
+      {
+        checkDuplicateKeys(children);
+      }
       for (var i = 0; i < children.length; ++i) {
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i);
       }
@@ -5368,6 +6152,10 @@ function createPatchFunction (backend) {
     // during leaving transitions
     var canMove = !removeOnly;
 
+    {
+      checkDuplicateKeys(newCh);
+    }
+
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
         oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
@@ -5417,6 +6205,24 @@ function createPatchFunction (backend) {
       addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
     } else if (newStartIdx > newEndIdx) {
       removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+    }
+  }
+
+  function checkDuplicateKeys (children) {
+    var seenKeys = {};
+    for (var i = 0; i < children.length; i++) {
+      var vnode = children[i];
+      var key = vnode.key;
+      if (isDef(key)) {
+        if (seenKeys[key]) {
+          warn(
+            ("Duplicate keys detected: '" + key + "'. This may cause an update error."),
+            vnode.context
+          );
+        } else {
+          seenKeys[key] = true;
+        }
+      }
     }
   }
 
@@ -5484,6 +6290,9 @@ function createPatchFunction (backend) {
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) { updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly); }
       } else if (isDef(ch)) {
+        {
+          checkDuplicateKeys(ch);
+        }
         if (isDef(oldVnode.text)) { nodeOps.setTextContent(elm, ''); }
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
       } else if (isDef(oldCh)) {
@@ -5510,6 +6319,8 @@ function createPatchFunction (backend) {
       }
     }
   }
+
+  var hydrationBailed = false;
   // list of modules that can skip create hook during hydration because they
   // are already rendered on the client or has no need for initialization
   // Note: style is excluded because it relies on initial clone for future
@@ -5529,6 +6340,12 @@ function createPatchFunction (backend) {
       vnode.isAsyncPlaceholder = true;
       return true
     }
+    // assert node match
+    {
+      if (!assertNodeMatch(elm, vnode, inVPre)) {
+        return false
+      }
+    }
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.init)) { i(vnode, true /* hydrating */); }
       if (isDef(i = vnode.componentInstance)) {
@@ -5546,6 +6363,15 @@ function createPatchFunction (backend) {
           // v-html and domProps: innerHTML
           if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
             if (i !== elm.innerHTML) {
+              /* istanbul ignore if */
+              if (typeof console !== 'undefined' &&
+                !hydrationBailed
+              ) {
+                hydrationBailed = true;
+                console.warn('Parent: ', elm);
+                console.warn('server innerHTML: ', i);
+                console.warn('client innerHTML: ', elm.innerHTML);
+              }
               return false
             }
           } else {
@@ -5562,6 +6388,14 @@ function createPatchFunction (backend) {
             // if childNode is not null, it means the actual childNodes list is
             // longer than the virtual children list.
             if (!childrenMatch || childNode) {
+              /* istanbul ignore if */
+              if (typeof console !== 'undefined' &&
+                !hydrationBailed
+              ) {
+                hydrationBailed = true;
+                console.warn('Parent: ', elm);
+                console.warn('Mismatching childNodes vs. VNodes: ', elm.childNodes, children);
+              }
               return false
             }
           }
@@ -5585,6 +6419,17 @@ function createPatchFunction (backend) {
       elm.data = vnode.text;
     }
     return true
+  }
+
+  function assertNodeMatch (node, vnode, inVPre) {
+    if (isDef(vnode.tag)) {
+      return vnode.tag.indexOf('vue-component') === 0 || (
+        !isUnknownElement$$1(vnode, inVPre) &&
+        vnode.tag.toLowerCase() === (node.tagName && node.tagName.toLowerCase())
+      )
+    } else {
+      return node.nodeType === (vnode.isComment ? 8 : 3)
+    }
   }
 
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
@@ -5618,6 +6463,14 @@ function createPatchFunction (backend) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true);
               return oldVnode
+            } else {
+              warn(
+                'The client-side rendered virtual DOM tree is not matching ' +
+                'server-rendered content. This is likely caused by incorrect ' +
+                'HTML markup, for example nesting block-level elements inside ' +
+                '<p>, or missing <tbody>. Bailing hydration and performing ' +
+                'full client-side render.'
+              );
             }
           }
           // either not server-rendered, or hydration failed.
@@ -5780,7 +6633,7 @@ function normalizeDirectives$1 (
       dir.modifiers = emptyModifiers;
     }
     res[getRawDirName(dir)] = dir;
-    dir.def = resolveAsset(vm.$options, 'directives', dir.name);
+    dir.def = resolveAsset(vm.$options, 'directives', dir.name, true);
   }
   // $flow-disable-line
   return res
@@ -6683,6 +7536,10 @@ function enter (vnode, toggleDisplay) {
       : duration
   );
 
+  if (explicitEnterDuration != null) {
+    checkDuration(explicitEnterDuration, 'enter', vnode);
+  }
+
   var expectsCSS = css !== false && !isIE9;
   var userWantsControl = getHookArgumentsLength(enterHook);
 
@@ -6787,6 +7644,10 @@ function leave (vnode, rm) {
       : duration
   );
 
+  if (isDef(explicitLeaveDuration)) {
+    checkDuration(explicitLeaveDuration, 'leave', vnode);
+  }
+
   var cb = el._leaveCb = once(function () {
     if (el.parentNode && el.parentNode._pending) {
       el.parentNode._pending[vnode.key] = null;
@@ -6844,6 +7705,23 @@ function leave (vnode, rm) {
     if (!expectsCSS && !userWantsControl) {
       cb();
     }
+  }
+}
+
+// only used in dev mode
+function checkDuration (val, name, vnode) {
+  if (typeof val !== 'number') {
+    warn(
+      "<transition> explicit " + name + " duration is not a valid number - " +
+      "got " + (JSON.stringify(val)) + ".",
+      vnode.context
+    );
+  } else if (isNaN(val)) {
+    warn(
+      "<transition> explicit " + name + " duration is NaN - " +
+      'the duration expression might be incorrect.',
+      vnode.context
+    );
   }
 }
 
@@ -6935,7 +7813,7 @@ var directive = {
           directive.componentUpdated(el, binding, vnode);
         });
       } else {
-        setSelected(el, binding);
+        setSelected(el, binding, vnode.context);
       }
       el._vOptions = [].map.call(el.options, getValue);
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
@@ -6958,7 +7836,7 @@ var directive = {
 
   componentUpdated: function componentUpdated (el, binding, vnode) {
     if (vnode.tag === 'select') {
-      setSelected(el, binding);
+      setSelected(el, binding, vnode.context);
       // in case the options rendered by v-for have changed,
       // it's possible that the value is out-of-sync with the rendered options.
       // detect such cases and filter out values that no longer has a matching
@@ -6980,11 +7858,11 @@ var directive = {
 };
 
 function setSelected (el, binding, vm) {
-  actuallySetSelected(el, binding);
+  actuallySetSelected(el, binding, vm);
   /* istanbul ignore if */
   if (isIE || isEdge) {
     setTimeout(function () {
-      actuallySetSelected(el, binding);
+      actuallySetSelected(el, binding, vm);
     }, 0);
   }
 }
@@ -6993,6 +7871,11 @@ function actuallySetSelected (el, binding, vm) {
   var value = binding.value;
   var isMultiple = el.multiple;
   if (isMultiple && !Array.isArray(value)) {
+    warn(
+      "<select multiple v-model=\"" + (binding.expression) + "\"> " +
+      "expects an Array value for its binding, but got " + (Object.prototype.toString.call(value).slice(8, -1)),
+      vm
+    );
     return
   }
   var selected, option;
@@ -7204,7 +8087,25 @@ var Transition = {
       return
     }
 
+    // warn multiple elements
+    if (children.length > 1) {
+      warn(
+        '<transition> can only be used on a single element. Use ' +
+        '<transition-group> for lists.',
+        this.$parent
+      );
+    }
+
     var mode = this.mode;
+
+    // warn invalid mode
+    if (mode && mode !== 'in-out' && mode !== 'out-in'
+    ) {
+      warn(
+        'invalid <transition> mode: ' + mode,
+        this.$parent
+      );
+    }
 
     var rawChild = children[0];
 
@@ -7330,6 +8231,10 @@ var TransitionGroup = {
           children.push(c);
           map[c.key] = c
           ;(c.data || (c.data = {})).transition = transitionData;
+        } else {
+          var opts = c.componentOptions;
+          var name = opts ? (opts.Ctor.options.name || opts.tag || '') : c.tag;
+          warn(("<transition-group> children must be keyed: <" + name + ">"));
         }
       }
     }
@@ -7486,7 +8391,21 @@ if (inBrowser) {
     if (config.devtools) {
       if (devtools) {
         devtools.emit('init', Vue);
+      } else {
+        console[console.info ? 'info' : 'log'](
+          'Download the Vue Devtools extension for a better development experience:\n' +
+          'https://github.com/vuejs/vue-devtools'
+        );
       }
+    }
+    if (config.productionTip !== false &&
+      typeof console !== 'undefined'
+    ) {
+      console[console.info ? 'info' : 'log'](
+        "You are running Vue in development mode.\n" +
+        "Make sure to turn on production mode when deploying for production.\n" +
+        "See more tips at https://vuejs.org/guide/deployment.html"
+      );
     }
   }, 0);
 }
@@ -32852,7 +33771,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_vue__;
 
 /******/ })["default"];
 });
-
+//# sourceMappingURL=vuetify.js.map
 });
 
 var Vuetify = unwrapExports(vuetify);
@@ -32943,6 +33862,10 @@ function isObject$1 (obj) {
 
 function isPromise$1 (val) {
   return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
 }
 
 function partial (fn, arg) {
@@ -33046,6 +33969,10 @@ ModuleCollection.prototype.register = function register (path, rawModule, runtim
     var this$1 = this;
     if ( runtime === void 0 ) runtime = true;
 
+  {
+    assertRawModule(path, rawModule);
+  }
+
   var newModule = new Module(rawModule, runtime);
   if (path.length === 0) {
     this.root = newModule;
@@ -33071,6 +33998,9 @@ ModuleCollection.prototype.unregister = function unregister (path) {
 };
 
 function update (path, targetModule, newModule) {
+  {
+    assertRawModule(path, newModule);
+  }
 
   // update target module
   targetModule.update(newModule);
@@ -33079,6 +34009,12 @@ function update (path, targetModule, newModule) {
   if (newModule.modules) {
     for (var key in newModule.modules) {
       if (!targetModule.getChild(key)) {
+        {
+          console.warn(
+            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+            'manual reload is needed'
+          );
+        }
         return
       }
       update(
@@ -33088,6 +34024,47 @@ function update (path, targetModule, newModule) {
       );
     }
   }
+}
+
+var functionAssert = {
+  assert: function (value) { return typeof value === 'function'; },
+  expected: 'function'
+};
+
+var objectAssert = {
+  assert: function (value) { return typeof value === 'function' ||
+    (typeof value === 'object' && typeof value.handler === 'function'); },
+  expected: 'function or object with "handler" function'
+};
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+};
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    if (!rawModule[key]) { return }
+
+    var assertOptions = assertTypes[key];
+
+    forEachValue(rawModule[key], function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf
 }
 
 var Vue$1; // bind on install
@@ -33101,6 +34078,12 @@ var Store = function Store (options) {
   // this code should be placed here. See #731
   if (!Vue$1 && typeof window !== 'undefined' && window.Vue) {
     install(window.Vue);
+  }
+
+  {
+    assert(Vue$1, "must call Vue.use(Vuex) before creating a store instance.");
+    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+    assert(this instanceof Store, "store must be called with the new operator.");
   }
 
   var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
@@ -33159,6 +34142,9 @@ prototypeAccessors$1$1.state.get = function () {
 };
 
 prototypeAccessors$1$1.state.set = function (v) {
+  {
+    assert(false, "use store.replaceState() to explicit replace store state.");
+  }
 };
 
 Store.prototype.commit = function commit (_type, _payload, _options) {
@@ -33168,10 +34154,14 @@ Store.prototype.commit = function commit (_type, _payload, _options) {
   var ref = unifyObjectStyle(_type, _payload, _options);
     var type = ref.type;
     var payload = ref.payload;
+    var options = ref.options;
 
   var mutation = { type: type, payload: payload };
   var entry = this._mutations[type];
   if (!entry) {
+    {
+      console.error(("[vuex] unknown mutation type: " + type));
+    }
     return
   }
   this._withCommit(function () {
@@ -33180,6 +34170,15 @@ Store.prototype.commit = function commit (_type, _payload, _options) {
     });
   });
   this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (
+    options && options.silent
+  ) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
 };
 
 Store.prototype.dispatch = function dispatch (_type, _payload) {
@@ -33193,6 +34192,9 @@ Store.prototype.dispatch = function dispatch (_type, _payload) {
   var action = { type: type, payload: payload };
   var entry = this._actions[type];
   if (!entry) {
+    {
+      console.error(("[vuex] unknown action type: " + type));
+    }
     return
   }
 
@@ -33201,6 +34203,10 @@ Store.prototype.dispatch = function dispatch (_type, _payload) {
       .filter(function (sub) { return sub.before; })
       .forEach(function (sub) { return sub.before(action, this$1.state); });
   } catch (e) {
+    {
+      console.warn("[vuex] error in before action subscribers: ");
+      console.error(e);
+    }
   }
 
   var result = entry.length > 1
@@ -33213,6 +34219,10 @@ Store.prototype.dispatch = function dispatch (_type, _payload) {
         .filter(function (sub) { return sub.after; })
         .forEach(function (sub) { return sub.after(action, this$1.state); });
     } catch (e) {
+      {
+        console.warn("[vuex] error in after action subscribers: ");
+        console.error(e);
+      }
     }
     return res
   })
@@ -33229,6 +34239,10 @@ Store.prototype.subscribeAction = function subscribeAction (fn) {
 
 Store.prototype.watch = function watch (getter, cb, options) {
     var this$1 = this;
+
+  {
+    assert(typeof getter === 'function', "store.watch only accepts a function.");
+  }
   return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
 };
 
@@ -33245,6 +34259,11 @@ Store.prototype.registerModule = function registerModule (path, rawModule, optio
 
   if (typeof path === 'string') { path = [path]; }
 
+  {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
   this._modules.register(path, rawModule);
   installModule(this, this.state, path, this._modules.get(path), options.preserveState);
   // reset store to update getters...
@@ -33255,6 +34274,10 @@ Store.prototype.unregisterModule = function unregisterModule (path) {
     var this$1 = this;
 
   if (typeof path === 'string') { path = [path]; }
+
+  {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
 
   this._modules.unregister(path);
   this._withCommit(function () {
@@ -33407,6 +34430,10 @@ function makeLocalContext (store, namespace, path) {
 
       if (!options || !options.root) {
         type = namespace + type;
+        if (!store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
       }
 
       return store.dispatch(type, payload)
@@ -33420,6 +34447,10 @@ function makeLocalContext (store, namespace, path) {
 
       if (!options || !options.root) {
         type = namespace + type;
+        if (!store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
       }
 
       store.commit(type, payload, options);
@@ -33499,6 +34530,9 @@ function registerAction (store, type, handler, local) {
 
 function registerGetter (store, type, rawGetter, local) {
   if (store._wrappedGetters[type]) {
+    {
+      console.error(("[vuex] duplicate getter key: " + type));
+    }
     return
   }
   store._wrappedGetters[type] = function wrappedGetter (store) {
@@ -33513,6 +34547,9 @@ function registerGetter (store, type, rawGetter, local) {
 
 function enableStrictMode (store) {
   store._vm.$watch(function () { return this._data.$$state }, function () {
+    {
+      assert(store._committing, "do not mutate vuex store state outside mutation handlers.");
+    }
   }, { deep: true, sync: true });
 }
 
@@ -33529,11 +34566,20 @@ function unifyObjectStyle (type, payload, options) {
     type = type.type;
   }
 
+  {
+    assert(typeof type === 'string', ("expects string as the type, but found " + (typeof type) + "."));
+  }
+
   return { type: type, payload: payload, options: options }
 }
 
 function install (_Vue) {
   if (Vue$1 && _Vue === Vue$1) {
+    {
+      console.error(
+        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+      );
+    }
     return
   }
   Vue$1 = _Vue;
@@ -33622,6 +34668,10 @@ var mapGetters = normalizeNamespace(function (namespace, getters) {
     val = namespace + val;
     res[key] = function mappedGetter () {
       if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if (!(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
         return
       }
       return this.$store.getters[val]
@@ -33716,6 +34766,9 @@ function normalizeNamespace (fn) {
  */
 function getModuleByNamespace (store, helper, namespace) {
   var module = store._modulesNamespaceMap[namespace];
+  if (!module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
   return module
 }
 
@@ -33811,7 +34864,36 @@ function callAPI(fullURL, options = {}) {
   })
 }
 
-const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}
+function myanimelistAPI(path, options = {}) {
+
+  return new Promise((resolve, reject) => {
+    const url = 'https://api.jikan.moe/v3' + path;
+    let headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    };
+
+    options.headers = headers;
+    options.credentials = 'include';
+
+    chrome.runtime.sendMessage({
+      contentScriptQuery: 'fetchUrl',
+      url,
+      options,
+    },
+      ({ response, error }) => {
+        if (error) {
+          return reject(error)
+        }
+
+        resolve(response);
+      });
+
+
+  })
+}
+
+const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}//# sourceMappingURL=kv-storage-polyfill.mjs.map
 
 const worker = new Worker('/player/worker.js');
 
@@ -33896,6 +34978,21 @@ const mutations = {
   setCurrentTranslation(state, payload) {
     state.currentTranslationID = payload;
   },
+
+  setEpisodeTitle(state, episodes) {
+    console.log({ state: state.series.episodes, episodes });
+    if (!state.series.episodes) return
+    for (const episode of state.series.episodes) {
+      if (episode.episodeTitle || episode.episodeType === 'special') continue
+
+      const episodeInfo = episodes.find(e => e.episode_id == episode.episodeInt);
+      if (!episodeInfo || !episodeInfo.title) continue
+
+      episode.episodeTitle = episodeInfo.title;
+      episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`;
+    }
+
+  }
 };
 
 
@@ -33916,7 +35013,7 @@ const actions = {
 
     const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt);
     if (startEpisode) {
-      dispatch('setCurrentEpisode', startEpisode.id);
+      await dispatch('setCurrentEpisode', startEpisode.id);
     } else if (episodeInt !== 1) {
 
       episodeInt =
@@ -33928,9 +35025,11 @@ const actions = {
 
       const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt);
       if (startEpisode) {
-        dispatch('setCurrentEpisode', startEpisode.id);
+        await dispatch('setCurrentEpisode', startEpisode.id);
       }
     }
+
+    await dispatch('setEpisodeTitle');
   },
 
 
@@ -33993,6 +35092,13 @@ const actions = {
     if (getters.nextEpisode) {
       dispatch('setCurrentEpisode', getters.nextEpisode.id);
     }
+  },
+
+  async setEpisodeTitle({ commit, state }) {
+    const resp = await myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/1`);
+    console.log({ episodes: resp.episodes });
+    commit('setEpisodeTitle', resp.episodes);
+
   },
 
 
@@ -34271,27 +35377,193 @@ function normalizeComponent(template, style, script, scopeId, isFunctionalTempla
 
 var normalizeComponent_1 = normalizeComponent;
 
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+function createInjector(context) {
+  return function (id, style) {
+    return addStyle(id, style);
+  };
+}
+var HEAD = document.head || document.getElementsByTagName('head')[0];
+var styles = {};
+
+function addStyle(id, css) {
+  var group = isOldIE ? css.media || 'default' : id;
+  var style = styles[group] || (styles[group] = {
+    ids: new Set(),
+    styles: []
+  });
+
+  if (!style.ids.has(id)) {
+    style.ids.add(id);
+    var code = css.source;
+
+    if (css.map) {
+      // https://developer.chrome.com/devtools/docs/javascript-debugging
+      // this makes source maps inside style tags work properly in Chrome
+      code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
+
+      code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
+    }
+
+    if (!style.element) {
+      style.element = document.createElement('style');
+      style.element.type = 'text/css';
+      if (css.media) style.element.setAttribute('media', css.media);
+      HEAD.appendChild(style.element);
+    }
+
+    if ('styleSheet' in style.element) {
+      style.styles.push(code);
+      style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
+    } else {
+      var index = style.ids.size - 1;
+      var textNode = document.createTextNode(code);
+      var nodes = style.element.childNodes;
+      if (nodes[index]) style.element.removeChild(nodes[index]);
+      if (nodes.length) style.element.insertBefore(textNode, nodes[index]);else style.element.appendChild(textNode);
+    }
+  }
+}
+
+var browser = createInjector;
+
 /* script */
 const __vue_script__ = script;
 
 /* template */
-var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"episode-list"},[_c('div',{staticClass:"mdc-select"},[_c('v-select',{attrs:{"item-text":"episodeFull","item-value":"id","items":_vm.filteredEpisodes,"box":"","label":"Эпизод","loading":_vm.episodes.length === 0,"menu-props":{auto:false},"no-data-text":"Пока нет ни одной серии"},scopedSlots:_vm._u([{key:"item",fn:function(ref){
-var item = ref.item;
-var parent = ref.parent;
-var tile = ref.tile;
-return [_c('v-list-tile-action',{on:{"click":function($event){$event.stopPropagation();}}},[_c('v-checkbox',{attrs:{"input-value":item.episodeInt <= _vm.watchedEpisodes},on:{"click":function($event){$event.preventDefault();return _vm.markAsWatched(item)}}})],1),_vm._v(" "),_c('v-list-tile-content',{staticClass:"inset"},[_c('v-list-tile-title',[_vm._v(_vm._s(item.episodeFull))])],1)]}},{key:"append-item",fn:function(){return [_c('v-divider',{staticClass:"mb-2"}),_vm._v(" "),_c('v-list-tile',{attrs:{"href":"https://smotret-anime-365.ru/translations/create"}},[_c('v-list-tile-action',[_c('v-icon',[_vm._v("add")])],1),_vm._v(" "),_c('v-list-tile-content',[_c('v-list-tile-title',[_vm._v("Добавить серию")])],1),_vm._v(" "),_c('v-list-tile-action',[_c('v-icon',[_vm._v("open_in_new")])],1)],1)]},proxy:true}]),model:{value:(_vm.currentEpisodeID),callback:function ($$v) {_vm.currentEpisodeID=$$v;},expression:"currentEpisodeID"}})],1)])};
+var __vue_render__ = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c("section", { staticClass: "episode-list" }, [
+    _c(
+      "div",
+      { staticClass: "mdc-select" },
+      [
+        _c("v-select", {
+          attrs: {
+            "item-text": "episodeFull",
+            "item-value": "id",
+            items: _vm.filteredEpisodes,
+            box: "",
+            label: "Эпизод",
+            loading: _vm.episodes.length === 0,
+            "menu-props": { auto: false },
+            "no-data-text": "Пока нет ни одной серии"
+          },
+          scopedSlots: _vm._u([
+            {
+              key: "item",
+              fn: function(ref) {
+                var item = ref.item;
+                var parent = ref.parent;
+                var tile = ref.tile;
+                return [
+                  _c(
+                    "v-list-tile-action",
+                    {
+                      on: {
+                        click: function($event) {
+                          $event.stopPropagation();
+                        }
+                      }
+                    },
+                    [
+                      _c("v-checkbox", {
+                        attrs: {
+                          "input-value": item.episodeInt <= _vm.watchedEpisodes
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault();
+                            return _vm.markAsWatched(item)
+                          }
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    { staticClass: "inset" },
+                    [
+                      _c("v-list-tile-title", [
+                        _vm._v(_vm._s(item.episodeFull))
+                      ])
+                    ],
+                    1
+                  )
+                ]
+              }
+            },
+            {
+              key: "append-item",
+              fn: function() {
+                return [
+                  _c("v-divider", { staticClass: "mb-2" }),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile",
+                    {
+                      attrs: {
+                        href: "https://smotret-anime-365.ru/translations/create"
+                      }
+                    },
+                    [
+                      _c(
+                        "v-list-tile-action",
+                        [_c("v-icon", [_vm._v("add")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-tile-content",
+                        [_c("v-list-tile-title", [_vm._v("Добавить серию")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-tile-action",
+                        [_c("v-icon", [_vm._v("open_in_new")])],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ]
+              },
+              proxy: true
+            }
+          ]),
+          model: {
+            value: _vm.currentEpisodeID,
+            callback: function($$v) {
+              _vm.currentEpisodeID = $$v;
+            },
+            expression: "currentEpisodeID"
+          }
+        })
+      ],
+      1
+    )
+  ])
+};
 var __vue_staticRenderFns__ = [];
+__vue_render__._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__ = undefined;
+  const __vue_inject_styles__ = function (inject) {
+    if (!inject) return
+    inject("data-v-7075b373_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", map: {"version":3,"sources":[],"names":[],"mappings":"","file":"episode-list.vue"}, media: undefined });
+
+  };
   /* scoped */
   const __vue_scope_id__ = undefined;
   /* module identifier */
   const __vue_module_identifier__ = undefined;
   /* functional template */
   const __vue_is_functional_template__ = false;
-  /* style inject */
-  
   /* style inject SSR */
   
 
@@ -34303,7 +35575,7 @@ var __vue_staticRenderFns__ = [];
     __vue_scope_id__,
     __vue_is_functional_template__,
     __vue_module_identifier__,
-    undefined,
+    browser,
     undefined
   );
 
@@ -34458,69 +35730,115 @@ var script$1 = {
   }
 };
 
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
-function createInjector(context) {
-  return function (id, style) {
-    return addStyle(id, style);
-  };
-}
-var HEAD = document.head || document.getElementsByTagName('head')[0];
-var styles = {};
-
-function addStyle(id, css) {
-  var group = isOldIE ? css.media || 'default' : id;
-  var style = styles[group] || (styles[group] = {
-    ids: new Set(),
-    styles: []
-  });
-
-  if (!style.ids.has(id)) {
-    style.ids.add(id);
-    var code = css.source;
-
-    if (css.map) {
-      // https://developer.chrome.com/devtools/docs/javascript-debugging
-      // this makes source maps inside style tags work properly in Chrome
-      code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
-
-      code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
-    }
-
-    if (!style.element) {
-      style.element = document.createElement('style');
-      style.element.type = 'text/css';
-      if (css.media) style.element.setAttribute('media', css.media);
-      HEAD.appendChild(style.element);
-    }
-
-    if ('styleSheet' in style.element) {
-      style.styles.push(code);
-      style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
-    } else {
-      var index = style.ids.size - 1;
-      var textNode = document.createTextNode(code);
-      var nodes = style.element.childNodes;
-      if (nodes[index]) style.element.removeChild(nodes[index]);
-      if (nodes.length) style.element.insertBefore(textNode, nodes[index]);else style.element.appendChild(textNode);
-    }
-  }
-}
-
-var browser = createInjector;
-
 /* script */
 const __vue_script__$1 = script$1;
 
 /* template */
-var __vue_render__$1 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',{staticClass:"translation-list"},[_c('v-select',{attrs:{"item-text":"authorsSummary","item-value":"id","items":_vm.groupedTranslations,"box":"","label":_vm.label,"loading":_vm.filteredTranslations.length === 0,"no-data-text":"Пока нет ни одного перевода"},scopedSlots:_vm._u([{key:"item",fn:function(ref){
-var item = ref.item;
-return [(item.label)?[_c('v-subheader',[_vm._v(_vm._s(item.label))])]:[_c('v-list-tile-action',[(item.qualityType !== 'tv')?_c('span',{staticClass:"qualityType"},[_vm._v(_vm._s(item.qualityType.toUpperCase()))]):_vm._e()]),_vm._v(" "),_c('v-list-tile-content',[_c('v-list-tile-title',[_vm._v(_vm._s(item.authorsSummary))])],1)]]}},{key:"append-item",fn:function(){return [_c('v-list-tile',{staticClass:"mt-2",attrs:{"href":"https://smotret-anime-365.ru/translations/create"}},[_c('v-list-tile-action',[_c('v-icon',[_vm._v("add")])],1),_vm._v(" "),_c('v-list-tile-content',[_c('v-list-tile-title',[_vm._v("Добавить перевод")])],1),_vm._v(" "),_c('v-list-tile-action',[_c('v-icon',[_vm._v("open_in_new")])],1)],1)]},proxy:true}]),model:{value:(_vm.currentTranslationID),callback:function ($$v) {_vm.currentTranslationID=$$v;},expression:"currentTranslationID"}})],1)};
+var __vue_render__$1 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "section",
+    { staticClass: "translation-list" },
+    [
+      _c("v-select", {
+        attrs: {
+          "item-text": "authorsSummary",
+          "item-value": "id",
+          items: _vm.groupedTranslations,
+          box: "",
+          label: _vm.label,
+          loading: _vm.filteredTranslations.length === 0,
+          "no-data-text": "Пока нет ни одного перевода"
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "item",
+            fn: function(ref) {
+              var item = ref.item;
+              return [
+                item.label
+                  ? [_c("v-subheader", [_vm._v(_vm._s(item.label))])]
+                  : [
+                      _c("v-list-tile-action", [
+                        item.qualityType !== "tv"
+                          ? _c("span", { staticClass: "qualityType" }, [
+                              _vm._v(_vm._s(item.qualityType.toUpperCase()))
+                            ])
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-tile-content",
+                        [
+                          _c("v-list-tile-title", [
+                            _vm._v(_vm._s(item.authorsSummary))
+                          ])
+                        ],
+                        1
+                      )
+                    ]
+              ]
+            }
+          },
+          {
+            key: "append-item",
+            fn: function() {
+              return [
+                _c(
+                  "v-list-tile",
+                  {
+                    staticClass: "mt-2",
+                    attrs: {
+                      href: "https://smotret-anime-365.ru/translations/create"
+                    }
+                  },
+                  [
+                    _c(
+                      "v-list-tile-action",
+                      [_c("v-icon", [_vm._v("add")])],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-list-tile-content",
+                      [_c("v-list-tile-title", [_vm._v("Добавить перевод")])],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-list-tile-action",
+                      [_c("v-icon", [_vm._v("open_in_new")])],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ]
+            },
+            proxy: true
+          }
+        ]),
+        model: {
+          value: _vm.currentTranslationID,
+          callback: function($$v) {
+            _vm.currentTranslationID = $$v;
+          },
+          expression: "currentTranslationID"
+        }
+      })
+    ],
+    1
+  )
+};
 var __vue_staticRenderFns__$1 = [];
+__vue_render__$1._withStripped = true;
 
   /* style */
   const __vue_inject_styles__$1 = function (inject) {
     if (!inject) return
-    inject("data-v-4bc3e6eb_0", { source: ".qualityType{text-align:center;flex:1}", map: undefined, media: undefined });
+    inject("data-v-7622fa65_0", { source: "\n.qualityType {\n  text-align: center;\n  flex: 1;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/translation-list.vue"],"names":[],"mappings":";AA0JA;EACA,kBAAA;EACA,OAAA;AACA","file":"translation-list.vue","sourcesContent":["\n<template>\n  <section class=\"translation-list\">\n    <v-select\n      item-text=\"authorsSummary\"\n      item-value=\"id\"\n      :items=\"groupedTranslations\"\n      box\n      :label=\"label\"\n      v-model=\"currentTranslationID\"\n      :loading=\"filteredTranslations.length === 0\"\n      no-data-text=\"Пока нет ни одного перевода\"\n    >\n      <template v-slot:item=\"{item}\">\n        <template v-if=\"item.label\">\n          <v-subheader>{{item.label}}</v-subheader>\n        </template>\n        <template v-else>\n          <v-list-tile-action>\n            <span\n              class=\"qualityType\"\n              v-if=\"item.qualityType !== 'tv'\"\n            >{{item.qualityType.toUpperCase()}}</span>\n          </v-list-tile-action>\n\n          <v-list-tile-content>\n            <v-list-tile-title>{{item.authorsSummary}}</v-list-tile-title>\n          </v-list-tile-content>\n        </template>\n      </template>\n\n      <template v-slot:append-item>\n        <v-list-tile href=\"https://smotret-anime-365.ru/translations/create\" class=\"mt-2\">\n          <v-list-tile-action>\n            <v-icon>add</v-icon>\n          </v-list-tile-action>\n\n          <v-list-tile-content>\n            <v-list-tile-title>Добавить перевод</v-list-tile-title>\n          </v-list-tile-content>\n\n          <v-list-tile-action>\n            <v-icon>open_in_new</v-icon>\n          </v-list-tile-action>\n        </v-list-tile>\n      </template>\n    </v-select>\n  </section>\n</template>\n\n\n<script>\nexport default {\n  name: \"translation-list\",\n\n  data() {\n    return {\n      filters: {\n        type: {\n          value: \"voiceRu\",\n          options: []\n        }\n      }\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    },\n\n    filteredTranslations() {\n      return this.translations.filter(t => t.isActive);\n    },\n\n    groupedTranslations() {\n      const groups = [\n        { type: \"voiceRu\", label: \"Озвучка\" },\n        { type: \"subRu\", label: \"Русские Субтитры\" },\n        { type: \"subEn\", label: \"Английские Субтитры\" },\n        { type: \"subJa\", label: \"Японские Субтитры\" },\n        { type: \"raw\", label: \"Оригинал\" }\n      ];\n\n      const items = [];\n\n      groups.forEach(({ type, label }) => {\n        const translations = this.filteredTranslations.filter(\n          t => t.type === type\n        );\n\n        if (translations.length) {\n          items.push({\n            label,\n            disabled: true\n          });\n\n          items.push(...translations);\n\n          items.push({\n            divider: true,\n            disabled: true\n          });\n        }\n      });\n\n      return items;\n    },\n\n    currentTranslationID: {\n      get() {\n        return this.$store.state.player.currentTranslationID;\n      },\n      set(id) {\n        const translation = this.filteredTranslations.find(\n          translation => translation.id === id\n        );\n        if (translation) {\n          this.$store.dispatch(\"player/setCurrentTranslation\", translation);\n        }\n      }\n    },\n\n    label() {\n      if (!this.$store.getters[\"player/currentTranslation\"]) {\n        return this.filteredTranslations.length\n          ? \"Выберите перевод\"\n          : \"Загрузка...\";\n      }\n      switch (this.$store.getters[\"player/currentTranslation\"].type) {\n        case \"voiceRu\":\n          return \"Озвучка\";\n        case \"subRu\":\n          return \"Русские Субтитры\";\n        case \"subEn\":\n          return \"Английские Субтитры\";\n        case \"subJa\":\n          return \"Японские Субтитры\";\n        case \"raw\":\n          return \"Оригинал\";\n      }\n    }\n  }\n};\n</script>\n\n\n<style>\n.qualityType {\n  text-align: center;\n  flex: 1;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
@@ -34621,8 +35939,28 @@ var script$2 = {
 const __vue_script__$2 = script$2;
 
 /* template */
-var __vue_render__$2 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('v-card',{staticClass:"player-container d-flex"},[(_vm.$store.state.player.currentTranslationID)?_c('iframe',{ref:"player",attrs:{"id":"player","src":_vm.src,"height":"100%","width":"100%","frameborder":"0","allowfullscreen":""}}):_vm._e()])};
+var __vue_render__$2 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c("v-card", { staticClass: "player-container d-flex" }, [
+    _vm.$store.state.player.currentTranslationID
+      ? _c("iframe", {
+          ref: "player",
+          attrs: {
+            id: "player",
+            src: _vm.src,
+            height: "100%",
+            width: "100%",
+            frameborder: "0",
+            allowfullscreen: ""
+          }
+        })
+      : _vm._e()
+  ])
+};
 var __vue_staticRenderFns__$2 = [];
+__vue_render__$2._withStripped = true;
 
   /* style */
   const __vue_inject_styles__$2 = undefined;
@@ -34672,8 +36010,94 @@ var script$3 = {
 const __vue_script__$3 = script$3;
 
 /* template */
-var __vue_render__$3 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('v-layout',{attrs:{"row":"","wrap":""}},[_c('v-flex',[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/previousEpisode']},on:{"click":function($event){return _vm.$store.dispatch('player/initPreviousEpisode')}}},[_c('v-icon',{attrs:{"left":""}},[_vm._v("skip_previous")]),_vm._v("Предыдущий эпизод\n    ")],1)],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-center"},[_c('v-rating',{attrs:{"value":_vm.$store.state.shikimori.anime ? (_vm.$store.state.shikimori.anime.user_rate && _vm.$store.state.shikimori.anime.user_rate.score ? _vm.$store.state.shikimori.anime.user_rate.score / 2 : _vm.$store.state.shikimori.anime.score / 2) : 0,"half-increments":"","hover":"","readonly":!_vm.$store.state.shikimori.user || !_vm.$store.state.shikimori.anime},on:{"input":_vm.saveRate}})],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-right"},[_c('v-btn',{staticClass:"ma-0",attrs:{"flat":"","disabled":!_vm.$store.getters['player/nextEpisode']},on:{"click":_vm.nextEpisode}},[_vm._v("\n      Следующий эпизод\n      "),_c('v-icon',{attrs:{"right":""}},[_vm._v("skip_next")])],1)],1)],1)};
+var __vue_render__$3 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "v-layout",
+    { attrs: { row: "", wrap: "" } },
+    [
+      _c(
+        "v-flex",
+        [
+          _c(
+            "v-btn",
+            {
+              staticClass: "ma-0",
+              attrs: {
+                flat: "",
+                disabled: !_vm.$store.getters["player/previousEpisode"]
+              },
+              on: {
+                click: function($event) {
+                  return _vm.$store.dispatch("player/initPreviousEpisode")
+                }
+              }
+            },
+            [
+              _c("v-icon", { attrs: { left: "" } }, [_vm._v("skip_previous")]),
+              _vm._v("Предыдущий эпизод\n    ")
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-center" },
+        [
+          _c("v-rating", {
+            attrs: {
+              value: _vm.$store.state.shikimori.anime
+                ? _vm.$store.state.shikimori.anime.user_rate &&
+                  _vm.$store.state.shikimori.anime.user_rate.score
+                  ? _vm.$store.state.shikimori.anime.user_rate.score / 2
+                  : _vm.$store.state.shikimori.anime.score / 2
+                : 0,
+              "half-increments": "",
+              hover: "",
+              readonly:
+                !_vm.$store.state.shikimori.user ||
+                !_vm.$store.state.shikimori.anime
+            },
+            on: { input: _vm.saveRate }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-right" },
+        [
+          _c(
+            "v-btn",
+            {
+              staticClass: "ma-0",
+              attrs: {
+                flat: "",
+                disabled: !_vm.$store.getters["player/nextEpisode"]
+              },
+              on: { click: _vm.nextEpisode }
+            },
+            [
+              _vm._v("\n      Следующий эпизод\n      "),
+              _c("v-icon", { attrs: { right: "" } }, [_vm._v("skip_next")])
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+};
 var __vue_staticRenderFns__$3 = [];
+__vue_render__$3._withStripped = true;
 
   /* style */
   const __vue_inject_styles__$3 = undefined;
@@ -34792,10 +36216,115 @@ var script$4 = {
 const __vue_script__$4 = script$4;
 
 /* template */
-var __vue_render__$4 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('v-layout',{attrs:{"tag":"footer","row":""}},[_c('v-flex',{attrs:{"align-self-end":""}},[_c('v-icon',{staticClass:"mr-1",attrs:{"left":"","size":"13"}},[_vm._v("copyright")]),_vm._v(" "),_c('span',[(_vm.$store.state.shikimori.anime)?_c('a',{attrs:{"href":'https://shikimori.org' + _vm.$store.state.shikimori.anime.url}},[_vm._v("Шикимори")]):_vm._e(),_vm._v("\n      |\n      "),(_vm.$store.state.player.series)?_c('a',{attrs:{"href":_vm.$store.state.player.series.url}},[_vm._v("Anime365")]):_vm._e(),_vm._v("\n      |\n      "),_c('a',{attrs:{"href":_vm.manifest.homepage_url}},[_vm._v(_vm._s(_vm.manifest.name))])])],1),_vm._v(" "),_c('v-flex',{staticClass:"text-xs-right"},[(_vm.$store.getters['player/currentTranslation'])?_c('v-tooltip',{attrs:{"left":""},scopedSlots:_vm._u([{key:"activator",fn:function(ref){
-var on = ref.on;
-return [_c('v-btn',_vm._g({staticClass:"ma-0",attrs:{"flat":"","icon":"","small":"","right":"","href":'https://smotret-anime-365.ru/translations/report/' + _vm.$store.getters['player/currentTranslation'].id,"color":"gray"}},on),[_c('v-icon',[_vm._v("report")])],1)]}}],null,false,1308056752)},[_vm._v(" "),_c('span',[_vm._v("Сообщить о проблеме")])]):_vm._e()],1)],1)};
+var __vue_render__$4 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "v-layout",
+    { attrs: { tag: "footer", row: "" } },
+    [
+      _c(
+        "v-flex",
+        { attrs: { "align-self-end": "" } },
+        [
+          _c(
+            "v-icon",
+            { staticClass: "mr-1", attrs: { left: "", size: "13" } },
+            [_vm._v("copyright")]
+          ),
+          _vm._v(" "),
+          _c("span", [
+            _vm.$store.state.shikimori.anime
+              ? _c(
+                  "a",
+                  {
+                    attrs: {
+                      href:
+                        "https://shikimori.org" +
+                        _vm.$store.state.shikimori.anime.url
+                    }
+                  },
+                  [_vm._v("Шикимори")]
+                )
+              : _vm._e(),
+            _vm._v("\n      |\n      "),
+            _vm.$store.state.player.series
+              ? _c(
+                  "a",
+                  { attrs: { href: _vm.$store.state.player.series.url } },
+                  [_vm._v("Anime365")]
+                )
+              : _vm._e(),
+            _vm._v("\n      |\n      "),
+            _c("a", { attrs: { href: _vm.manifest.homepage_url } }, [
+              _vm._v(_vm._s(_vm.manifest.name))
+            ])
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-right" },
+        [
+          _vm.$store.getters["player/currentTranslation"]
+            ? _c(
+                "v-tooltip",
+                {
+                  attrs: { left: "" },
+                  scopedSlots: _vm._u(
+                    [
+                      {
+                        key: "activator",
+                        fn: function(ref) {
+                          var on = ref.on;
+                          return [
+                            _c(
+                              "v-btn",
+                              _vm._g(
+                                {
+                                  staticClass: "ma-0",
+                                  attrs: {
+                                    flat: "",
+                                    icon: "",
+                                    small: "",
+                                    right: "",
+                                    href:
+                                      "https://smotret-anime-365.ru/translations/report/" +
+                                      _vm.$store.getters[
+                                        "player/currentTranslation"
+                                      ].id,
+                                    color: "gray"
+                                  }
+                                },
+                                on
+                              ),
+                              [_c("v-icon", [_vm._v("report")])],
+                              1
+                            )
+                          ]
+                        }
+                      }
+                    ],
+                    null,
+                    false,
+                    1308056752
+                  )
+                },
+                [_vm._v(" "), _c("span", [_vm._v("Сообщить о проблеме")])]
+              )
+            : _vm._e()
+        ],
+        1
+      )
+    ],
+    1
+  )
+};
 var __vue_staticRenderFns__$4 = [];
+__vue_render__$4._withStripped = true;
 
   /* style */
   const __vue_inject_styles__$4 = undefined;
@@ -34871,6 +36400,13 @@ var script$5 = {
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
+
+    // console.log("Call MAL");
+    // try {
+    //   console.log({ MAL_RESP: resp });
+    // } catch (e) {
+    //   console.log({ MAL_ERROR: e });
+    // }
   }
 };
 
@@ -34878,13 +36414,96 @@ var script$5 = {
 const __vue_script__$5 = script$5;
 
 /* template */
-var __vue_render__$5 = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('section',[_c('v-app',{attrs:{"id":"app","dark":_vm.darkMode}},[_c('v-container',{staticClass:"layout"},[_c('v-layout',{attrs:{"column":""}},[_c('v-flex',{staticClass:"flex-grow-unset"},[_c('v-layout',{attrs:{"row":""}},[_c('v-flex',{attrs:{"xs6":"","mr-3":""}},[_c('episode-list')],1),_vm._v(" "),_c('v-flex',{attrs:{"xs6":""}},[_c('translation-list')],1)],1)],1),_vm._v(" "),_c('v-flex',{attrs:{"d-flex":""}},[_c('player')],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.getters['player/currentTranslation'])?_c('video-controls'):_vm._e()],1),_vm._v(" "),_c('v-flex',{staticClass:"flex-grow-unset mt-3"},[(_vm.$store.state.shikimori.anime)?_c('origins'):_vm._e()],1)],1)],1)],1)],1)};
+var __vue_render__$5 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "section",
+    [
+      _c(
+        "v-app",
+        { attrs: { id: "app", dark: _vm.darkMode } },
+        [
+          _c(
+            "v-container",
+            { staticClass: "layout" },
+            [
+              _c(
+                "v-layout",
+                { attrs: { column: "" } },
+                [
+                  _c(
+                    "v-flex",
+                    { staticClass: "flex-grow-unset" },
+                    [
+                      _c(
+                        "v-layout",
+                        { attrs: { row: "" } },
+                        [
+                          _c(
+                            "v-flex",
+                            { attrs: { xs6: "", "mr-3": "" } },
+                            [_c("episode-list")],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-flex",
+                            { attrs: { xs6: "" } },
+                            [_c("translation-list")],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-flex", { attrs: { "d-flex": "" } }, [_c("player")], 1),
+                  _vm._v(" "),
+                  _c(
+                    "v-flex",
+                    { staticClass: "flex-grow-unset mt-3" },
+                    [
+                      _vm.$store.getters["player/currentTranslation"]
+                        ? _c("video-controls")
+                        : _vm._e()
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-flex",
+                    { staticClass: "flex-grow-unset mt-3" },
+                    [
+                      _vm.$store.state.shikimori.anime
+                        ? _c("origins")
+                        : _vm._e()
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+};
 var __vue_staticRenderFns__$5 = [];
+__vue_render__$5._withStripped = true;
 
   /* style */
   const __vue_inject_styles__$5 = function (inject) {
     if (!inject) return
-    inject("data-v-40531efe_0", { source: ".v-select__selections{overflow:hidden}.v-select__selection.v-select__selection--comma{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}.flex-grow-unset{flex-grow:unset}.player-container{height:100%}", map: undefined, media: undefined });
+    inject("data-v-d51c1d2c_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AAqGA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"layout\">\n        <v-layout column>\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex d-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\"></video-controls>\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <origins v-if=\"$store.state.shikimori.anime\"></origins>\n          </v-flex>\n        </v-layout>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport { myanimelistAPI } from \"../../helpers\";\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\nimport origins from \"./origins.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    origins\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  async mounted() {\n    await Promise.all([\n      this.$store.dispatch(\"shikimori/initUser\"),\n      this.$store.dispatch(\"shikimori/initAnime\")\n    ]);\n\n    await this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n\n    // console.log(\"Call MAL\");\n    // try {\n    //   console.log({ MAL_RESP: resp });\n    // } catch (e) {\n    //   console.log({ MAL_ERROR: e });\n    // }\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
