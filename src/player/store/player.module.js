@@ -91,7 +91,7 @@ export const mutations = {
     for (const episode of state.series.episodes) {
       if (episode.episodeTitle || episode.episodeType === 'special') continue
 
-      const episodeInfo = episodes.find(e => e.episode_id == episode.episodeInt)
+      const episodeInfo = episodes.get(parseInt(episode.episodeInt))
       if (!episodeInfo || !episodeInfo.title) continue
 
       episode.episodeTitle = episodeInfo.title
@@ -201,21 +201,33 @@ export const actions = {
   },
 
   async setEpisodeTitle({ commit, state }) {
-    const episodes = []
     let currentPage = 1
-    let lastPage = Infinity
+    let episodeMap = new Map()
 
-    while (currentPage <= lastPage) {
-      const resp = await myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/${currentPage}`);
+    while (true) {
+      const promise = myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/${currentPage}`);
+
+      if (episodeMap.size) {
+        commit('setEpisodeTitle', episodeMap)
+        episodeMap = new Map()
+      }
+
+      const resp = await promise
+      console.log({ resp })
       if (!resp.episodes || !resp.episodes.length) break
 
-      episodes.push(...resp.episodes)
-      lastPage = resp.episodes_last_page
+      resp.episodes.forEach(e => episodeMap.set(e.episode_id, e))
+
+      if (currentPage >= resp.episodes_last_page) {
+        break
+      }
+
       currentPage++
     }
 
-    if (episodes.length)
-      commit('setEpisodeTitle', episodes)
+    if (episodeMap.size) {
+      commit('setEpisodeTitle', episodeMap)
+    }
 
   },
 
