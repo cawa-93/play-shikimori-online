@@ -21,11 +21,12 @@ export default {
   name: "player",
 
   computed: {
+    translationID() {
+      return this.$store.state.player.currentTranslationID;
+    },
     src() {
       const base = new URL(
-        `https://smotret-anime-365.ru/translations/embed/${
-          this.$store.state.player.currentTranslationID
-        }`
+        `https://smotret-anime-365.ru/translations/embed/${this.translationID}`
       );
       base.searchParams.append("extension-id", chrome.runtime.id);
       base.searchParams.append(
@@ -45,7 +46,24 @@ export default {
     }
   },
 
+  watch: {
+    translationID() {
+      this.setTitle();
+    }
+  },
+
+  methods: {
+    setTitle() {
+      if (!this.$store.getters["player/currentTranslation"]) return;
+      document.title = `${
+        this.$store.getters["player/currentTranslation"].title
+      } — онлайн просмотр`;
+    }
+  },
+
   created() {
+    this.setTitle();
+
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");
@@ -61,6 +79,10 @@ export default {
             "*"
           );
         }
+      } else if (event.name === "play" || event.name === "pause") {
+        document.head.querySelector('link[rel="icon"]').href = `/icons/${
+          event.name
+        }.png`;
       }
     };
     window.addEventListener("message", _listener);
