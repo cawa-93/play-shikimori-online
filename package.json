@@ -12,10 +12,10 @@
   },
   "devDependencies": {
     "@types/video.js": "^7.2.10",
-    "rollup": "^1.14.4",
+    "rollup": "^1.15.5",
     "rollup-plugin-commonjs": "^10.0.0",
     "rollup-plugin-copy": "^2.0.1",
-    "rollup-plugin-node-resolve": "^5.0.1",
+    "rollup-plugin-node-resolve": "^5.0.2",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-vue": "^5.0.0",
     "vue-template-compiler": "^2.6.10"
