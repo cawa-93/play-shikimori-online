@@ -214,7 +214,6 @@ export const actions = {
       }
 
       const resp = await promise
-      console.log({ resp })
       if (!resp.episodes || !resp.episodes.length) break
 
       resp.episodes.forEach(e => episodeMap.set(e.episode_id, e))

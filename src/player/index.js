@@ -35,7 +35,6 @@ Vue.use(VueAnalytics, {
       })
     },
     trackVideoControls(action, label) {
-      console.log('trackVideoControls', action, label)
       this.$ga.event('player-controls', action, label)
     }
   }
