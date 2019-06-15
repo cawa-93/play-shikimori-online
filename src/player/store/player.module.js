@@ -171,7 +171,7 @@ export const actions = {
   },
 
 
-  async setCurrentTranslation({ commit }, translation) {
+  async setCurrentTranslation({ commit, dispatch }, translation) {
     commit('setCurrentTranslation', translation.id)
 
     let lastSelectedTranslations = await storage.get("lastSelectedTranslations");
@@ -184,6 +184,7 @@ export const actions = {
     lastSelectedTranslations.set(translation.seriesId, translation)
 
     await storage.set("lastSelectedTranslations", lastSelectedTranslations);
+
   },
 
 
@@ -245,5 +246,5 @@ export const actions = {
       }
       worker.postMessage({ episode })
     })
-  }
+  },
 }

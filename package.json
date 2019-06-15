@@ -6,6 +6,7 @@
   "dependencies": {
     "kv-storage-polyfill": "^1.1.0",
     "vue": "^2.6.10",
+    "vue-analytics": "^5.17.0",
     "vuetify": "^1.5.14",
     "vuex": "^3.1.1"
   },

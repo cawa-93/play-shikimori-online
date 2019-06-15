@@ -6,6 +6,7 @@
         flat
         :disabled="!$store.getters['player/previousEpisode']"
         @click="$store.dispatch('player/initPreviousEpisode')"
+        v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
       >
         <v-icon left>skip_previous</v-icon>Предыдущий эпизод
       </v-btn>
@@ -25,6 +26,7 @@
         flat
         :disabled="!$store.getters['player/nextEpisode']"
         @click="nextEpisode"
+        v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
       >
         Следующий эпизод
         <v-icon right>skip_next</v-icon>
