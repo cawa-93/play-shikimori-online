@@ -12,13 +12,7 @@
       </v-btn>
     </v-flex>
     <v-flex class="text-xs-center">
-      <!-- <v-rating
-        :value="$store.state.shikimori.anime ? ($store.state.shikimori.anime.user_rate && $store.state.shikimori.anime.user_rate.score ? $store.state.shikimori.anime.user_rate.score / 2 : $store.state.shikimori.anime.score / 2) : 0"
-        @input="saveRate"
-        half-increments
-        hover
-        :readonly="!$store.state.shikimori.user || !$store.state.shikimori.anime"
-      ></v-rating>-->
+      <slot></slot>
     </v-flex>
     <v-flex class="text-xs-right">
       <v-btn

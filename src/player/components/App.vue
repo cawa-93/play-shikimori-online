@@ -20,7 +20,9 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.getters['player/currentTranslation']"></video-controls>
+            <video-controls v-if="$store.getters['player/currentTranslation']">
+              <actions v-if="$store.state.shikimori.anime"></actions>
+            </video-controls>
           </v-flex>
 
           <!-- <v-flex class="flex-grow-unset mt-3">
@@ -40,7 +42,8 @@ import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
-import origins from "./origins.vue";
+// import origins from "./origins.vue";
+import actions from "./actions.vue";
 import comments from "./comments.vue";
 
 export default {
@@ -49,7 +52,8 @@ export default {
     translationList,
     player,
     videoControls,
-    origins,
+    // origins,
+    actions,
     comments
   },
 
