@@ -49,7 +49,7 @@
           <v-btn :disabled="!valid" block type="submit">Отправить</v-btn>
         </v-form>-->
       </div>
-      <p v-else>На Шикимори пока-что нет темы с обсуждением этого эпизода</p>
+      <p v-else class="blockquote pl-0">На Шикимори пока-что нет темы с обсуждением этого эпизода</p>
     </template>
   </section>
 </template>
@@ -238,6 +238,10 @@ export default {
 .comment-body {
   line-height: 1.65;
   word-break: break-word;
+}
+
+.comment-body img {
+  max-width: 100%;
 }
 .smiley {
   vertical-align: middle;
