@@ -36,6 +36,8 @@
           class="mb-3"
         >Загрузить ещё</v-btn>
 
+        <v-btn outline block class="mb-3" :href="topicUrl">Написать отзыв о серии</v-btn>
+
         <!-- <v-form v-model="valid" @submit.prevent="createComment">
           <v-textarea
             box
@@ -86,6 +88,15 @@ export default {
 
     currentEpisodeID() {
       return this.$store.state.player.currentEpisodeID;
+    },
+
+    topicUrl() {
+      return `https://${sessionStorage.getItem("shiki-domain") ||
+        "shikimori.one"}${
+        this.topic.forum.url
+      }/${this.topic.linked_type.toLowerCase()}-${this.topic.linked_id}/${
+        this.topic.id
+      }`;
     }
   },
 
@@ -102,6 +113,8 @@ export default {
 
       this.topic = topics[0];
       this.comments = [];
+
+      console.log(topics[0]);
 
       await this.loadComments();
 
