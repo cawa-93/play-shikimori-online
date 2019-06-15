@@ -3,6 +3,7 @@
     <iframe
       id="player"
       ref="player"
+      v-ga.load="'trackView'"
       v-if="$store.state.player.currentTranslationID"
       :src="src"
       height="100%"
@@ -45,11 +46,22 @@ export default {
     }
   },
 
+  methods: {
+    // trackView() {
+    //   this.$ga.commands.trackView
+    // }
+  },
+
   created() {
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");
       } else if (event.name === "ended" || event.name === "mark-as-watched") {
+        if (event.name === "mark-as-watched") {
+          // console.log({ event: event.name });
+          this.$ga.event("player-controls", "next-episode", "in-frame");
+        }
+
         this.$store.dispatch("shikimori/markAsWatched");
         this.$store.dispatch("player/initNextEpisode");
       } else if (event.name === "timeupdate") {
