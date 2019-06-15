@@ -17,7 +17,7 @@ Vue.use(VueAnalytics, {
   autoTracking: {
     pageviewOnLoad: false,
     exception: true,
-    exceptionLogs: process.env.NODE_ENV === 'development'
+    exceptionLogs: true//process.env.NODE_ENV === 'development'
   },
   set: [
     { field: 'checkProtocolTask', value: function () { } }

@@ -114,8 +114,6 @@ export default {
       this.topic = topics[0];
       this.comments = [];
 
-      console.log(topics[0]);
-
       await this.loadComments();
 
       this.loading = false;
@@ -162,20 +160,26 @@ export default {
       if (!this.topic) {
         return;
       }
-      const comments = await shikimoriAPI(
-        `/comments/?desc=0&commentable_id=${
-          this.topic.id
-        }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this
-          .comments.length /
-          this.commentsPerPage +
-          1}`
-      );
 
-      if (comments.length > this.commentsPerPage) {
-        comments.pop();
+      try {
+        const comments = await shikimoriAPI(
+          `/comments/?desc=0&commentable_id=${
+            this.topic.id
+          }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this
+            .comments.length /
+            this.commentsPerPage +
+            1}`
+        );
+
+        if (comments.length > this.commentsPerPage) {
+          comments.pop();
+        }
+
+        this.comments.push(...comments.map(c => this.proccessComment(c)));
+      } catch (error) {
+        const exception = error.message || error;
+        this.$ga.exception(exception);
       }
-
-      this.comments.push(...comments.map(c => this.proccessComment(c)));
     },
 
     async createComment() {
