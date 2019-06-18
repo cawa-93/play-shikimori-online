@@ -49,7 +49,7 @@ export default {
 
     reportAboutError() {
       return {
-        label: "Сообщить об ошибке в видео",
+        label: "Сообщить о проблеме с видео",
         url: `https://smotret-anime-365.ru/translations/report/${
           this.$store.state.player.currentTranslationID
         }`
