@@ -34813,6 +34813,184 @@ function anime365API(path, options = {}) {
   })
 }
 
+const sync = {
+  get: (keys) => {
+    let promise = new Promise((resolve, reject) => {
+      chrome.storage.sync.get(keys, (items) => {
+        let err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve(items);
+        }
+      });
+    });
+    return promise;
+  },
+  set: (items) => {
+    let promise = new Promise((resolve, reject) => {
+      chrome.storage.sync.set(items, () => {
+        let err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return promise;
+  },
+  getBytesInUse: (keys) => {
+    let promise = new Promise((resolve, reject) => {
+      chrome.storage.sync.getBytesInUse(keys, (items) => {
+        let err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve(items);
+        }
+      });
+    });
+    return promise;
+  },
+  remove: (keys) => {
+    let promise = new Promise((resolve, reject) => {
+      chrome.storage.sync.remove(keys, () => {
+        let err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return promise;
+  },
+  clear: () => {
+    let promise = new Promise((resolve, reject) => {
+      chrome.storage.sync.clear(() => {
+        let err = chrome.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return promise;
+  }
+};
+
+async function getAuth() {
+  const { userAuth } = await sync.get('userAuth');
+  return userAuth
+}
+
+async function updateAuth() {
+  const oldAuth = await getAuth();
+
+  if (!oldAuth || !oldAuth.refresh_token) {
+    const code = await getNewCode();
+
+    const response = await fetch('https://shikimori.one/oauth/token', {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
+      },
+      body: JSON.stringify({
+        code,
+        grant_type: 'authorization_code',
+        client_id: "dfe897f91e37ce4fbc5a0f393ac0f7d8dddccc572b83ed52720b73c24a3cef8b",
+        client_secret: "eb73006e026d606b9b6a1b5ec00e5cb8580f69e68e2def5ec62e2e665cf3d9f2",
+        redirect_uri: "https://shikimori.one/tests/oauth?app=play-shikimori-online"
+      })
+    });
+
+    const newAuth = await response.json();
+    if (newAuth.access_token && newAuth.refresh_token) {
+      await sync.set({ 'userAuth': newAuth });
+      return newAuth
+    } else {
+      return Promise.reject(newAuth)
+    }
+  } else {
+    const response = await fetch('https://shikimori.one/oauth/token', {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
+      },
+      body: JSON.stringify({
+        grant_type: 'refresh_token',
+        client_id: "dfe897f91e37ce4fbc5a0f393ac0f7d8dddccc572b83ed52720b73c24a3cef8b",
+        client_secret: "eb73006e026d606b9b6a1b5ec00e5cb8580f69e68e2def5ec62e2e665cf3d9f2",
+        refresh_token: oldAuth.refresh_token
+      })
+    });
+
+    const newAuth = await response.json();
+    console.log({ refresh: newAuth });
+    if (newAuth.access_token && newAuth.refresh_token) {
+      await sync.set({ 'userAuth': newAuth });
+      return newAuth
+    } else {
+      return Promise.reject(newAuth)
+    }
+  }
+}
+
+function getNewCode() {
+  return new Promise((resolve, reject) => {
+    const url = new URL('https://shikimori.one/oauth/authorize');
+    url.searchParams.set('client_id', "dfe897f91e37ce4fbc5a0f393ac0f7d8dddccc572b83ed52720b73c24a3cef8b");
+    url.searchParams.set('redirect_uri', "https://shikimori.one/tests/oauth?app=play-shikimori-online");
+    url.searchParams.set('response_type', 'code');
+    chrome.tabs.create({ active: true, url: url.toString() }, createdTab => {
+
+      const _onRemoved = tabId => {
+        if (tabId === createdTab.id) {
+          reject({ error: 'tab-removed' });
+          _clear();
+        }
+      };
+
+      const _onUpdated = (tabId, changeInfo) => {
+        if (tabId !== createdTab.id || !changeInfo.url) {
+          return
+        }
+
+        const tabUrl = new URL(changeInfo.url);
+        if (tabUrl.hostname !== 'shikimori.one' || tabUrl.pathname !== '/tests/oauth' || tabUrl.searchParams.get('app') !== 'play-shikimori-online') {
+          return
+        }
+
+        const error = tabUrl.searchParams.get('error');
+        const error_description = tabUrl.searchParams.get('error_description');
+
+        if (error || error_description) {
+          reject({ error, error_description });
+        } else {
+          const code = tabUrl.searchParams.get('code');
+          resolve(code);
+        }
+
+        _clear();
+      };
+
+      const _clear = () => {
+        chrome.tabs.onRemoved.removeListener(_onRemoved);
+        chrome.tabs.onUpdated.removeListener(_onUpdated);
+      };
+
+      chrome.tabs.onRemoved.addListener(_onRemoved);
+      chrome.tabs.onUpdated.addListener(_onUpdated);
+    });
+  })
+}
+
 function shikimoriAPI(path, options = {}) {
   return new Promise((resolve, reject) => {
 
@@ -34826,7 +35004,7 @@ function shikimoriAPI(path, options = {}) {
     options.headers["Content-Type"] = "application/json";
     options.headers["User-Agent"] = "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori";
 
-    options.credentials = 'include';
+    options.credentials = 'omit';
 
     chrome.runtime.sendMessage({
       contentScriptQuery: 'fetchUrl',
@@ -35157,10 +35335,27 @@ const actions$1 = {
   },
 
   async initUser({ commit }) {
-    const user = await shikimoriAPI(`/users/whoami`);
+    const auth = await getAuth();
+    if (!auth || !auth.access_token) {
+      return
+    }
+
+    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+      console.log('ACCESS_TOKEN need updates !!!');
+      return await updateAuth()
+    }
+
+
+    const user = await shikimoriAPI(`/users/whoami`, {
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
+    });
+
     if (user) {
       commit('setUser', user);
     }
+    console.log({ auth });
   },
 
   async saveUserRate({ commit, state }, user_rate) {
@@ -36168,61 +36363,18 @@ __vue_render__$3._withStripped = true;
   );
 
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 var script$4 = {
-  name: "actions",
-  computed: {
-    shikiLink() {
-      return {
-        label: "Открыть на Шикимори",
-        url: `https://${sessionStorage.getItem("shiki-domain") ||
-          "shikimori.one"}${this.$store.state.shikimori.anime.url}`
-      };
-    },
+  name: "main-menu",
 
-    reportAboutError() {
-      return {
-        label: "Сообщить о проблеме с видео",
-        url: `https://smotret-anime-365.ru/translations/report/${
-          this.$store.state.player.currentTranslationID
-        }`
-      };
+  computed: {
+    user() {
+      return this.$store.state.shikimori.user;
+    }
+  },
+
+  methods: {
+    updateAuth() {
+      return updateAuth();
     }
   }
 };
@@ -36236,101 +36388,19 @@ var __vue_render__$4 = function() {
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
   return _c(
-    "v-menu",
-    {
-      attrs: { transition: "slide-y-transition" },
-      scopedSlots: _vm._u([
-        {
-          key: "activator",
-          fn: function(ref) {
-            var on = ref.on;
-            return [
-              _c(
-                "v-btn",
-                _vm._g(
-                  { staticClass: "ma-0 pr-2", attrs: { outline: "" } },
-                  on
-                ),
-                [
-                  _vm._v("\n      Действия\n      "),
-                  _c("v-icon", { staticClass: "ml-1" }, [
-                    _vm._v("arrow_drop_down")
-                  ])
-                ],
-                1
-              )
-            ]
-          }
-        }
-      ])
-    },
+    "div",
     [
-      _vm._v(" "),
-      _c(
-        "v-list",
-        [
-          _c(
-            "v-list-tile",
-            {
-              directives: [
-                {
-                  name: "ga",
-                  rawName: "v-ga",
-                  value: _vm.$ga.commands.trackAction.bind(
-                    this,
-                    "open-on-shikimori"
-                  ),
-                  expression:
-                    "$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
-                }
-              ],
-              key: "open-on-shikimori",
-              attrs: { href: _vm.shikiLink.url }
-            },
-            [
-              _c(
-                "v-list-tile-action",
-                [_c("v-icon", [_vm._v("open_in_new")])],
-                1
-              ),
-              _vm._v(" "),
-              _c("v-list-tile-title", [_vm._v(_vm._s(_vm.shikiLink.label))])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "v-list-tile",
-            {
-              directives: [
-                {
-                  name: "ga",
-                  rawName: "v-ga",
-                  value: _vm.$ga.commands.trackAction.bind(
-                    this,
-                    "report-about-error"
-                  ),
-                  expression:
-                    "$ga.commands.trackAction.bind(this, 'report-about-error')"
-                }
-              ],
-              key: "report-about-error",
-              attrs: { href: _vm.reportAboutError.url }
-            },
-            [
-              _c("v-list-tile-action", [_c("v-icon", [_vm._v("report")])], 1),
-              _vm._v(" "),
-              _c("v-list-tile-title", [
-                _vm._v(_vm._s(_vm.reportAboutError.label))
-              ])
-            ],
-            1
-          )
-        ],
-        1
-      )
+      !_vm.user
+        ? [
+            _c(
+              "v-btn",
+              { attrs: { color: "error" }, on: { click: _vm.updateAuth } },
+              [_vm._v("Включить синхронизацию")]
+            )
+          ]
+        : [_vm._v("вы вошли как " + _vm._s(_vm.user.nickname))]
     ],
-    1
+    2
   )
 };
 var __vue_staticRenderFns__$4 = [];
@@ -36350,7 +36420,7 @@ __vue_render__$4._withStripped = true;
   
 
   
-  var actions$2 = normalizeComponent_1(
+  var mainMenu = normalizeComponent_1(
     { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
     __vue_inject_styles__$4,
     __vue_script__$4,
@@ -36700,7 +36770,8 @@ var script$6 = {
     player: player$1,
     videoControls,
     // origins,
-    actions: actions$2,
+    // actions,
+    mainMenu,
     comments
   },
 
@@ -36746,6 +36817,18 @@ var script$6 = {
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
+
+    chrome.storage.onChanged.addListener(async (changes, namespace) => {
+      if (!changes.userAuth) {
+        return;
+      }
+
+      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
+        await this.$store.dispatch("shikimori/initUser");
+      } else {
+        this.$store.commit("shikimori/setUser", null);
+      }
+    });
 
     // console.log("Call MAL");
     // try {
@@ -36817,15 +36900,7 @@ var __vue_render__$6 = function() {
                     { staticClass: "flex-grow-unset mt-3" },
                     [
                       _vm.$store.getters["player/currentTranslation"]
-                        ? _c(
-                            "video-controls",
-                            [
-                              _vm.$store.state.shikimori.anime
-                                ? _c("actions")
-                                : _vm._e()
-                            ],
-                            1
-                          )
+                        ? _c("video-controls", [_c("main-menu")], 1)
                         : _vm._e()
                     ],
                     1
@@ -36851,7 +36926,7 @@ __vue_render__$6._withStripped = true;
   /* style */
   const __vue_inject_styles__$6 = function (inject) {
     if (!inject) return
-    inject("data-v-391b3a58_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AAiHA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"__layout\">\n        <v-layout column style=\"\theight: calc(100vh - 110px);\">\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex d-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\">\n              <actions v-if=\"$store.state.shikimori.anime\"></actions>\n            </video-controls>\n          </v-flex>\n\n          <!-- <v-flex class=\"flex-grow-unset mt-3\">\n            <origins v-if=\"$store.state.shikimori.anime\"></origins>\n          </v-flex>-->\n        </v-layout>\n\n        <comments></comments>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport { myanimelistAPI } from \"../../helpers\";\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\n// import origins from \"./origins.vue\";\nimport actions from \"./actions.vue\";\nimport comments from \"./comments.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    // origins,\n    actions,\n    comments\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    if (darkMode) {\n      document.querySelector(\"html\").style.backgroundColor = \"#303030\";\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  async mounted() {\n    await Promise.all([\n      this.$store.dispatch(\"shikimori/initUser\"),\n      this.$store.dispatch(\"shikimori/initAnime\")\n    ]);\n\n    await this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n\n    // console.log(\"Call MAL\");\n    // try {\n    //   console.log({ MAL_RESP: resp });\n    // } catch (e) {\n    //   console.log({ MAL_ERROR: e });\n    // }\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
+    inject("data-v-25c2d716_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA+HA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"__layout\">\n        <v-layout column style=\"\theight: calc(100vh - 110px);\">\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex d-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\">\n              <main-menu></main-menu>\n            </video-controls>\n          </v-flex>\n\n          <!-- <v-flex class=\"flex-grow-unset mt-3\">\n            <origins v-if=\"$store.state.shikimori.anime\"></origins>\n          </v-flex>-->\n        </v-layout>\n\n        <comments></comments>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport { myanimelistAPI } from \"../../helpers\";\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\n// import origins from \"./origins.vue\";\n// import actions from \"./actions.vue\";\nimport mainMenu from \"./main-menu.vue\";\nimport comments from \"./comments.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    // origins,\n    // actions,\n    mainMenu,\n    comments\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    if (darkMode) {\n      document.querySelector(\"html\").style.backgroundColor = \"#303030\";\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  async mounted() {\n    await Promise.all([\n      this.$store.dispatch(\"shikimori/initUser\"),\n      this.$store.dispatch(\"shikimori/initAnime\")\n    ]);\n\n    await this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n\n    chrome.storage.onChanged.addListener(async (changes, namespace) => {\n      if (!changes.userAuth) {\n        return;\n      }\n\n      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {\n        await this.$store.dispatch(\"shikimori/initUser\");\n      } else {\n        this.$store.commit(\"shikimori/setUser\", null);\n      }\n    });\n\n    // console.log(\"Call MAL\");\n    // try {\n    //   console.log({ MAL_RESP: resp });\n    // } catch (e) {\n    //   console.log({ MAL_ERROR: e });\n    // }\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */

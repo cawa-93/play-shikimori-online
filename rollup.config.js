@@ -45,6 +45,7 @@ module.exports = [{
   },
   plugins: [
     resolve(),
+    replace(replaceEnv),
     copy({
       targets: {
         'src/content-scripts/inject-content-scripts.js': 'dist/content-scripts/inject-content-scripts.js',
@@ -63,6 +64,7 @@ module.exports = [{
   },
   plugins: [
     resolve(),
+    replace(replaceEnv),
   ]
 },
 
@@ -77,10 +79,7 @@ module.exports = [{
   plugins: [
     resolve(),
     commonjs(),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.VUE_ENV': JSON.stringify('browser')
-    }),
+    replace(replaceEnv),
     VuePlugin(),
     copy({
       targets: {

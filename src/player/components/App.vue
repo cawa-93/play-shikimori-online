@@ -21,7 +21,7 @@
 
           <v-flex class="flex-grow-unset mt-3">
             <video-controls v-if="$store.getters['player/currentTranslation']">
-              <actions v-if="$store.state.shikimori.anime"></actions>
+              <main-menu></main-menu>
             </video-controls>
           </v-flex>
 
@@ -43,7 +43,8 @@ import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
 // import origins from "./origins.vue";
-import actions from "./actions.vue";
+// import actions from "./actions.vue";
+import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 
 export default {
@@ -53,7 +54,8 @@ export default {
     player,
     videoControls,
     // origins,
-    actions,
+    // actions,
+    mainMenu,
     comments
   },
 
@@ -99,6 +101,18 @@ export default {
       "player/initSeries",
       new URL(location.href).searchParams.get("series")
     );
+
+    chrome.storage.onChanged.addListener(async (changes, namespace) => {
+      if (!changes.userAuth) {
+        return;
+      }
+
+      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
+        await this.$store.dispatch("shikimori/initUser");
+      } else {
+        this.$store.commit("shikimori/setUser", null);
+      }
+    });
 
     // console.log("Call MAL");
     // try {

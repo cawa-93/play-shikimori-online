@@ -13,7 +13,7 @@ export function shikimoriAPI(path, options = {}) {
     options.headers["Content-Type"] = "application/json"
     options.headers["User-Agent"] = "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
 
-    options.credentials = 'include'
+    options.credentials = 'omit'
 
     chrome.runtime.sendMessage({
       contentScriptQuery: 'fetchUrl',

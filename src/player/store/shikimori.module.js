@@ -1,4 +1,5 @@
 import { shikimoriAPI } from "../../helpers";
+import { getAuth, updateAuth } from '../../helpers/oauth-provider'
 import Vue from "vue";
 
 export const namespaced = true
@@ -30,10 +31,27 @@ export const actions = {
   },
 
   async initUser({ commit }) {
-    const user = await shikimoriAPI(`/users/whoami`)
+    const auth = await getAuth()
+    if (!auth || !auth.access_token) {
+      return
+    }
+
+    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+      console.log('ACCESS_TOKEN need updates !!!')
+      return await updateAuth()
+    }
+
+
+    const user = await shikimoriAPI(`/users/whoami`, {
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
+    })
+
     if (user) {
       commit('setUser', user)
     }
+    console.log({ auth })
   },
 
   async saveUserRate({ commit, state }, user_rate) {
