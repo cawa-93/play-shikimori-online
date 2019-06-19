@@ -51,7 +51,6 @@ export async function updateAuth() {
     })
 
     const newAuth = await response.json()
-    console.log({ refresh: newAuth })
     if (newAuth.access_token && newAuth.refresh_token) {
       await sync.set({ 'userAuth': newAuth })
       return newAuth
@@ -97,6 +96,7 @@ export function getNewCode() {
         }
 
         _clear()
+        chrome.tabs.remove(createdTab.id)
       }
 
       const _clear = () => {

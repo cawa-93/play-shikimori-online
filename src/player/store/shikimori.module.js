@@ -1,5 +1,4 @@
-import { shikimoriAPI } from "../../helpers";
-import { getAuth, updateAuth } from '../../helpers/oauth-provider'
+import { shikimoriAPI, getAuth, updateAuth } from "../../helpers";
 import Vue from "vue";
 
 export const namespaced = true
@@ -51,7 +50,6 @@ export const actions = {
     if (user) {
       commit('setUser', user)
     }
-    console.log({ auth })
   },
 
   async saveUserRate({ commit, state }, user_rate) {

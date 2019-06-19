@@ -34932,7 +34932,6 @@ async function updateAuth() {
     });
 
     const newAuth = await response.json();
-    console.log({ refresh: newAuth });
     if (newAuth.access_token && newAuth.refresh_token) {
       await sync.set({ 'userAuth': newAuth });
       return newAuth
@@ -34978,6 +34977,7 @@ function getNewCode() {
         }
 
         _clear();
+        chrome.tabs.remove(createdTab.id);
       };
 
       const _clear = () => {
@@ -35355,7 +35355,6 @@ const actions$1 = {
     if (user) {
       commit('setUser', user);
     }
-    console.log({ auth });
   },
 
   async saveUserRate({ commit, state }, user_rate) {
@@ -36273,6 +36272,7 @@ var __vue_render__$3 = function() {
               ],
               staticClass: "ma-0",
               attrs: {
+                large: "",
                 flat: "",
                 disabled: !_vm.$store.getters["player/previousEpisode"]
               },
@@ -36316,6 +36316,7 @@ var __vue_render__$3 = function() {
               ],
               staticClass: "ma-0",
               attrs: {
+                large: "",
                 flat: "",
                 disabled: !_vm.$store.getters["player/nextEpisode"]
               },
@@ -36368,6 +36369,7 @@ var script$4 = {
 
   computed: {
     user() {
+      console.log({ user: this.$store.state.shikimori.user });
       return this.$store.state.shikimori.user;
     }
   },
@@ -36375,6 +36377,14 @@ var script$4 = {
   methods: {
     updateAuth() {
       return updateAuth();
+    },
+
+    async logout() {
+      const auth = await getAuth();
+      if (!auth || !auth.access_token) return;
+
+      auth.access_token = "";
+      sync.set({ userAuth: auth });
     }
   }
 };
@@ -36394,11 +36404,55 @@ var __vue_render__$4 = function() {
         ? [
             _c(
               "v-btn",
-              { attrs: { color: "error" }, on: { click: _vm.updateAuth } },
+              {
+                staticClass: "ma-0",
+                attrs: { color: "error", large: "" },
+                on: { click: _vm.updateAuth }
+              },
               [_vm._v("Включить синхронизацию")]
             )
           ]
-        : [_vm._v("вы вошли как " + _vm._s(_vm.user.nickname))]
+        : [
+            _c(
+              "v-list-tile",
+              { staticStyle: { height: "44px" } },
+              [
+                _c("v-list-tile-avatar", [
+                  _c("img", {
+                    attrs: { src: _vm.user.image.x80, alt: _vm.user.nickname }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "v-list-tile-content",
+                  [
+                    _c("v-list-tile-title", [
+                      _vm._v(_vm._s(_vm.user.nickname))
+                    ]),
+                    _vm._v(" "),
+                    _c("v-list-tile-sub-title", [
+                      _vm._v("Синхронизация включена")
+                    ])
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-list-tile-action",
+                  [
+                    _c(
+                      "v-btn",
+                      { attrs: { icon: "" }, on: { click: _vm.logout } },
+                      [_c("v-icon", [_vm._v("more_vert")])],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ]
     ],
     2
   )
