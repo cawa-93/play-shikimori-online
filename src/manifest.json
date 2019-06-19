@@ -48,7 +48,9 @@
 		"https://smotret-anime-365.ru/*",
 		"https://api.jikan.moe/*",
 		"webRequest",
-		"webRequestBlocking"
+		"webRequestBlocking",
+		"storage",
+		"tabs"
 	],
 	"web_accessible_resources": [
 		"player/index.html",

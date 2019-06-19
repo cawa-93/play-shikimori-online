@@ -28,5 +28,13 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     }
     return { requestHeaders };
   },
-  { urls: ["https://shikimori.org/api/*", "https://shikimori.one/api/*", "https://smotret-anime-365.ru/api/*"] },
+  {
+    urls: [
+      "https://shikimori.org/api/*",
+      "https://shikimori.one/api/*",
+      "https://shikimori.org/oauth/*",
+      "https://shikimori.one/oauth/*",
+      "https://smotret-anime-365.ru/api/*"
+    ]
+  },
   ["requestHeaders", 'blocking']);
