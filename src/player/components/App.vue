@@ -20,7 +20,7 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.getters['player/currentTranslation']">
+            <video-controls v-if="$store.state.player.currentEpisodeID">
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
@@ -30,7 +30,7 @@
           </v-flex>-->
         </v-layout>
 
-        <comments></comments>
+        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
       </v-container>
     </v-app>
   </section>
@@ -93,16 +93,16 @@ export default {
 
   async mounted() {
     await Promise.all([
+      this.$store.dispatch("player/initSeries", {
+        seriesID: new URL(location.href).searchParams.get("series"),
+        episodeInt: parseInt(
+          new URL(location.href).searchParams.get("episodeInt")
+        )
+      }),
+
       this.$store.dispatch("shikimori/initUser"),
       this.$store.dispatch("shikimori/initAnime")
     ]);
-
-    await this.$store.dispatch("player/initSeries", {
-      seriesID: new URL(location.href).searchParams.get("series"),
-      episodeInt: parseInt(
-        new URL(location.href).searchParams.get("episodeInt")
-      )
-    });
 
     chrome.storage.onChanged.addListener(async (changes, namespace) => {
       if (!changes.userAuth) {
@@ -115,13 +115,6 @@ export default {
         this.$store.commit("shikimori/setUser", null);
       }
     });
-
-    // console.log("Call MAL");
-    // try {
-    //   console.log({ MAL_RESP: resp });
-    // } catch (e) {
-    //   console.log({ MAL_ERROR: e });
-    // }
   }
 };
 </script>

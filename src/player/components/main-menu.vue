@@ -1,5 +1,5 @@
 <template>
-  <v-menu :close-on-content-click="false" :nudge-width="200">
+  <v-menu :close-on-content-click="false" :nudge-width="200" lazy>
     <template v-slot:activator="{ on }">
       <v-btn :color="user ? '' : 'error'" v-on="on" flat class="ma-0 pr-2">
         <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
@@ -40,7 +40,7 @@
 
     <v-divider></v-divider>
 
-    <actions></actions>
+    <actions v-if="$store.state.shikimori.anime"></actions>
 
     <!-- <div>
     <template v-if="!user">
