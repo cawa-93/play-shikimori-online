@@ -36,7 +36,6 @@ export const actions = {
     }
 
     if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-      console.log('ACCESS_TOKEN need updates !!!')
       return await updateAuth()
     }
 
@@ -61,9 +60,32 @@ export const actions = {
       commit('setUserRate', Object.assign({}, state.anime.user_rate, user_rate))
     }
 
+    let auth = await getAuth()
+    if (!auth || !auth.access_token) {
+      return
+    }
+
+    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+      auth = await updateAuth()
+    }
+
     const newUserRate = await shikimoriAPI('/v2/user_rates', {
       method: 'POST',
-      body: JSON.stringify({ user_rate: Object.assign({}, { target_type: 'Anime', target_id: state.anime.id, user_id: state.user.id }, user_rate) })
+      body: JSON.stringify(
+        {
+          user_rate: Object.assign(
+            {},
+            {
+              target_type: 'Anime',
+              target_id: state.anime.id,
+              user_id: state.user.id
+            },
+            user_rate)
+        }
+      ),
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
     })
 
     commit('setUserRate', newUserRate)

@@ -1,7 +1,8 @@
 <template>
-  <v-menu :close-on-content-click="false" :nudge-width="200" lazy>
+  <v-menu :close-on-content-click="true" :nudge-width="200" lazy>
     <template v-slot:activator="{ on }">
       <v-btn :color="user ? '' : 'error'" v-on="on" flat class="ma-0 pr-2">
+        <v-icon class="mr-1" v-if="!user">sync_problem</v-icon>
         <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
         <v-icon class="ml-1">arrow_drop_down</v-icon>
       </v-btn>
