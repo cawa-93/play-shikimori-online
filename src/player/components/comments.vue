@@ -194,6 +194,10 @@ export default {
         auth = await updateAuth();
       }
 
+      const headers = {
+        Authorization: `Bearer ${auth.access_token}`
+      };
+
       if (!this.topic) {
         let is_fandub = false;
         let is_raw = false;
@@ -223,6 +227,7 @@ export default {
           "/v2/episode_notifications",
           {
             method: "POST",
+            headers,
             body: JSON.stringify({
               episode_notification: {
                 aired_at: new Date(
@@ -247,7 +252,7 @@ export default {
         }
 
         const topic = await shikimoriAPI(
-          `/animes/${this.anime.id}/topics/${episode_notifications.topic_id}`
+          `/topics/${episode_notifications.topic_id}`
         );
 
         console.log({ episode_notifications, topic });
@@ -257,9 +262,7 @@ export default {
 
       const newComment = await shikimoriAPI(`/comments`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${auth.access_token}`
-        },
+        headers,
         body: JSON.stringify({
           comment: {
             body: this.newCommentText,
