@@ -32,6 +32,8 @@
 
         <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
       </v-container>
+
+      <app-footer></app-footer>
     </v-app>
   </section>
 </template>
@@ -46,6 +48,7 @@ import videoControls from "./video-controls.vue";
 // import actions from "./actions.vue";
 import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
+import appFooter from "./app-footer.vue";
 
 export default {
   components: {
@@ -56,7 +59,8 @@ export default {
     // origins,
     // actions,
     mainMenu,
-    comments
+    comments,
+    appFooter
   },
 
   data() {
