@@ -6,7 +6,7 @@
         item-value="id"
         :items="filteredEpisodes"
         box
-        label="Эпизод"
+        label="Серия"
         v-model="currentEpisodeID"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"

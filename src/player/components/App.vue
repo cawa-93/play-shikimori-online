@@ -16,7 +16,6 @@
 
           <v-flex d-flex>
             <player></player>
-            <!-- <p v-else>Выберите эпизод</p> -->
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">

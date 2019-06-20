@@ -48,11 +48,11 @@ window.onload = function () {
 
 
 		/**
-		 * Создаёт кнопку переключения эпизода и инизиализурует обработчик собитий на ней
+		 * Создаёт кнопку переключения серии и инизиализурует обработчик собитий на ней
 		 */
 		function createNextEpisodeButton() {
 			const nextEpisodeButton = document.createElement('button')
-			nextEpisodeButton.innerText = "Следующий эпизод"
+			nextEpisodeButton.innerText = "Следующая серия"
 			nextEpisodeButton.classList.add('next-episode')
 			nextEpisodeButton.hidden = true
 			document.querySelector('#main-video').appendChild(nextEpisodeButton)
