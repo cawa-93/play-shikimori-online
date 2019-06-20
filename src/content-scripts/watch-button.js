@@ -27,7 +27,7 @@ async function main() {
 	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button')
 
 	// Загрузка метаданных аниме
-	const anime = await getAnime()
+	const anime = getAnime()
 
 	if (!anime || !anime.id) {
 		WatchOnlineButton.textContent = 'Не удалось определить ID аниме'
@@ -39,10 +39,10 @@ async function main() {
 	const seriesID = await getSeriesId(anime.id)
 
 	if (seriesID) {
-		const currentEpisodes = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')
-		if (!currentEpisodes) {
+		const episodeInt = getEpisodeInt()
+		if (episodeInt === 1) {
 			WatchOnlineButton.textContent = 'Начать просмотр'
-		} else if (currentEpisodes.textContent >= anime.episodes) {
+		} else if (episodeInt >= anime.episodes) {
 			WatchOnlineButton.textContent = 'Пересмотреть'
 		} else {
 			WatchOnlineButton.textContent = 'Продолжить просмотр'
@@ -51,6 +51,7 @@ async function main() {
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
 		playerURL.searchParams.append('series', seriesID)
 		playerURL.searchParams.append('anime', anime.id)
+		playerURL.searchParams.append('episodeInt', episodeInt)
 
 		WatchOnlineButton.href = playerURL.toString()
 	} else {
@@ -63,7 +64,7 @@ async function main() {
 
 
 
-async function getAnime() {
+function getAnime() {
 	try {
 		const data = JSON.parse(document.querySelector('.b-user_rate[data-target_type="Anime"]').dataset.entry)
 		return data
@@ -73,16 +74,26 @@ async function getAnime() {
 }
 
 async function getSeriesId(myAnimeListId) {
-	const cache = JSON.parse(sessionStorage.getItem('series-cache') || '{}')
-	if (cache[myAnimeListId]) {
-		return cache[myAnimeListId]
+	const cacheKey = `series-cache-${myAnimeListId}`
+	let cache = sessionStorage.getItem(cacheKey)
+	if (cache) {
+		return cache
 	}
 
 	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
 	if (!series) {
 		return
 	}
-	cache[myAnimeListId] = series.id
-	sessionStorage.setItem('series-cache', JSON.stringify(cache))
-	return cache[myAnimeListId]
+	cache = series.id
+	sessionStorage.setItem(cacheKey, cache)
+	return cache
+}
+
+function getEpisodeInt() {
+	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')
+	if (!episodeElement) return 1
+
+	const episodeItn = parseInt(episodeElement.textContent)
+
+	return isNaN(episodeItn) ? 1 : episodeItn + 1
 }

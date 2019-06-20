@@ -97,10 +97,12 @@ export default {
       this.$store.dispatch("shikimori/initAnime")
     ]);
 
-    await this.$store.dispatch(
-      "player/initSeries",
-      new URL(location.href).searchParams.get("series")
-    );
+    await this.$store.dispatch("player/initSeries", {
+      seriesID: new URL(location.href).searchParams.get("series"),
+      episodeInt: parseInt(
+        new URL(location.href).searchParams.get("episodeInt")
+      )
+    });
 
     chrome.storage.onChanged.addListener(async (changes, namespace) => {
       if (!changes.userAuth) {
