@@ -13,9 +13,9 @@
 
     <p>
       Работает на базе:
-      <a href="https://shikimori.one">shikimori.one</a>,
-      <a href="https://smotret-anime-365.ru">smotret-anime-365.ru</a>,
-      <a href="https://myanimelist.net">myanimelist.net</a>
+      <a rel="noopener noreferrer" href="https://shikimori.one">shikimori.one</a>,
+      <a rel="noopener noreferrer" href="https://smotret-anime-365.ru">smotret-anime-365.ru</a>,
+      <a rel="noopener noreferrer" href="https://myanimelist.net">myanimelist.net</a>
     </p>
   </footer>
 </template>

@@ -4,6 +4,7 @@
     <v-list-tile
       key="open-on-shikimori"
       :href="shikiLink.url"
+      rel="noopener noreferrer"
       v-ga="$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
     >
       <v-list-tile-action>
@@ -16,6 +17,7 @@
     <v-list-tile
       key="report-about-error"
       :href="reportAboutError.url"
+      rel="noopener noreferrer"
       v-ga="$ga.commands.trackAction.bind(this, 'report-about-error')"
     >
       <v-list-tile-action>
@@ -34,8 +36,7 @@ export default {
     shikiLink() {
       return {
         label: "Открыть на Шикимори",
-        url: `https://${sessionStorage.getItem("shiki-domain") ||
-          "shikimori.one"}${this.$store.state.shikimori.anime.url}`
+        url: `https://shikimori.one${this.$store.state.shikimori.anime.url}`
       };
     },
 

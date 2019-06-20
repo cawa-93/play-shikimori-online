@@ -36438,6 +36438,8 @@ __vue_render__$3._withStripped = true;
 //
 //
 //
+//
+//
 
 var script$4 = {
   name: "actions",
@@ -36445,8 +36447,7 @@ var script$4 = {
     shikiLink() {
       return {
         label: "Открыть на Шикимори",
-        url: `https://${sessionStorage.getItem("shiki-domain") ||
-          "shikimori.one"}${this.$store.state.shikimori.anime.url}`
+        url: `https://shikimori.one${this.$store.state.shikimori.anime.url}`
       };
     },
 
@@ -36488,7 +36489,7 @@ var __vue_render__$4 = function() {
             }
           ],
           key: "open-on-shikimori",
-          attrs: { href: _vm.shikiLink.url }
+          attrs: { href: _vm.shikiLink.url, rel: "noopener noreferrer" }
         },
         [
           _c("v-list-tile-action", [_c("v-icon", [_vm._v("open_in_new")])], 1),
@@ -36514,7 +36515,7 @@ var __vue_render__$4 = function() {
             }
           ],
           key: "report-about-error",
-          attrs: { href: _vm.reportAboutError.url }
+          attrs: { href: _vm.reportAboutError.url, rel: "noopener noreferrer" }
         },
         [
           _c("v-list-tile-action", [_c("v-icon", [_vm._v("report")])], 1),
@@ -37104,17 +37105,35 @@ var __vue_staticRenderFns__$7 = [
       _vm._v(" "),
       _c("p", [
         _vm._v("\n    Работает на базе:\n    "),
-        _c("a", { attrs: { href: "https://shikimori.one" } }, [
-          _vm._v("shikimori.one")
-        ]),
+        _c(
+          "a",
+          {
+            attrs: { rel: "noopener noreferrer", href: "https://shikimori.one" }
+          },
+          [_vm._v("shikimori.one")]
+        ),
         _vm._v(",\n    "),
-        _c("a", { attrs: { href: "https://smotret-anime-365.ru" } }, [
-          _vm._v("smotret-anime-365.ru")
-        ]),
+        _c(
+          "a",
+          {
+            attrs: {
+              rel: "noopener noreferrer",
+              href: "https://smotret-anime-365.ru"
+            }
+          },
+          [_vm._v("smotret-anime-365.ru")]
+        ),
         _vm._v(",\n    "),
-        _c("a", { attrs: { href: "https://myanimelist.net" } }, [
-          _vm._v("myanimelist.net")
-        ])
+        _c(
+          "a",
+          {
+            attrs: {
+              rel: "noopener noreferrer",
+              href: "https://myanimelist.net"
+            }
+          },
+          [_vm._v("myanimelist.net")]
+        )
       ])
     ])
   }
