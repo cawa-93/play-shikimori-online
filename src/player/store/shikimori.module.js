@@ -1,4 +1,4 @@
-import { shikimoriAPI } from "../../helpers";
+import { shikimoriAPI, getAuth, updateAuth } from "../../helpers";
 import Vue from "vue";
 
 export const namespaced = true
@@ -30,7 +30,22 @@ export const actions = {
   },
 
   async initUser({ commit }) {
-    const user = await shikimoriAPI(`/users/whoami`)
+    const auth = await getAuth()
+    if (!auth || !auth.access_token) {
+      return
+    }
+
+    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+      return await updateAuth()
+    }
+
+
+    const user = await shikimoriAPI(`/users/whoami`, {
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
+    })
+
     if (user) {
       commit('setUser', user)
     }
@@ -45,9 +60,32 @@ export const actions = {
       commit('setUserRate', Object.assign({}, state.anime.user_rate, user_rate))
     }
 
+    let auth = await getAuth()
+    if (!auth || !auth.access_token) {
+      return
+    }
+
+    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+      auth = await updateAuth()
+    }
+
     const newUserRate = await shikimoriAPI('/v2/user_rates', {
       method: 'POST',
-      body: JSON.stringify({ user_rate: Object.assign({}, { target_type: 'Anime', target_id: state.anime.id, user_id: state.user.id }, user_rate) })
+      body: JSON.stringify(
+        {
+          user_rate: Object.assign(
+            {},
+            {
+              target_type: 'Anime',
+              target_id: state.anime.id,
+              user_id: state.user.id
+            },
+            user_rate)
+        }
+      ),
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
     })
 
     commit('setUserRate', newUserRate)

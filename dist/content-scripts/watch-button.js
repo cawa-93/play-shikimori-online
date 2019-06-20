@@ -28,57 +28,6 @@ function anime365API(path, options = {}) {
   })
 }
 
-async function shikimoriAPI(path, options = {}) {
-  let domain = sessionStorage.getItem('shiki-domain');
-  if (!domain) {
-    domain = await getShikiDomain();
-    sessionStorage.setItem('shiki-domain', domain);
-  }
-  const url = `https://${domain}/api${path}`;
-  return callAPI(url, options)
-}
-
-async function getShikiDomain() {
-  let domain = 'shikimori.one';
-  try {
-    const resp = await callAPI('https://shikimori.org/api/users/whoami');
-    if (resp && resp.id) {
-      domain = 'shikimori.org';
-    }
-  } catch (e) { }
-
-  return domain
-}
-
-function callAPI(fullURL, options = {}) {
-  return new Promise((resolve, reject) => {
-
-    let headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-      "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-    };
-
-    options.headers = headers;
-    options.credentials = 'include';
-
-    chrome.runtime.sendMessage({
-      contentScriptQuery: 'fetchUrl',
-      url: fullURL,
-      options,
-    },
-      ({ response, error }) => {
-        if (error) {
-          return reject(error)
-        }
-
-        resolve(response);
-      });
-
-
-  })
-}
-
 // Запуск главной функции
 const mainObserver = new MutationObserver(main);
 const observerConfig = { attributes: true, subtree: true, childList: true };
@@ -106,30 +55,31 @@ async function main() {
 	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button');
 
 	// Загрузка метаданных аниме
-	const anime = await getAnime();
+	const anime = getAnime();
 
-	if (!anime) {
-		WatchOnlineButton.textContent = 'Нет видео';
+	if (!anime || !anime.id) {
+		WatchOnlineButton.textContent = 'Не удалось определить ID аниме';
 		WatchOnlineButton.classList.remove('b-ajax');
 		return
 	}
 
-	// 
-	const { data } = await anime365API(`/series/?myAnimeListId=${anime.myanimelist_id}`);
-	const series = data[0];
 
-	if (series && series.episodes && series.episodes.length) {
-		if (!anime.user_rate || anime.user_rate.episodes === 0) {
+	const seriesID = await getSeriesId(anime.id);
+
+	if (seriesID) {
+		const episodeInt = getEpisodeInt();
+		if (episodeInt === 1) {
 			WatchOnlineButton.textContent = 'Начать просмотр';
-		} else if (anime.user_rate.episodes >= anime.episodes) {
+		} else if (episodeInt >= anime.episodes) {
 			WatchOnlineButton.textContent = 'Пересмотреть';
 		} else {
 			WatchOnlineButton.textContent = 'Продолжить просмотр';
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`));
-		playerURL.searchParams.append('series', series.id);
+		playerURL.searchParams.append('series', seriesID);
 		playerURL.searchParams.append('anime', anime.id);
+		playerURL.searchParams.append('episodeInt', episodeInt);
 
 		WatchOnlineButton.href = playerURL.toString();
 	} else {
@@ -142,13 +92,36 @@ async function main() {
 
 
 
-async function getAnime() {
-	const idMatch = location.pathname.match(/animes\/[^\d]*(\d+)-/);
-	if (!idMatch || !idMatch[1]) {
-		return undefined
+function getAnime() {
+	try {
+		const data = JSON.parse(document.querySelector('.b-user_rate[data-target_type="Anime"]').dataset.entry);
+		return data
+	} catch {
+		return null
+	}
+}
+
+async function getSeriesId(myAnimeListId) {
+	const cacheKey = `series-cache-${myAnimeListId}`;
+	let cache = sessionStorage.getItem(cacheKey);
+	if (cache) {
+		return cache
 	}
 
-	const data = await shikimoriAPI(`/animes/${idMatch[1]}`);
+	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`);
+	if (!series) {
+		return
+	}
+	cache = series.id;
+	sessionStorage.setItem(cacheKey, cache);
+	return cache
+}
 
-	return data
+function getEpisodeInt() {
+	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes');
+	if (!episodeElement) return 1
+
+	const episodeItn = parseInt(episodeElement.textContent);
+
+	return isNaN(episodeItn) ? 1 : episodeItn + 1
 }

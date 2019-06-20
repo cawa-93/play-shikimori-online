@@ -103,36 +103,45 @@ export const mutations = {
 
 
 export const actions = {
-  async initSeries({ state, commit, dispatch, rootState }, seriesID) {
+  async initSeries({ state, commit, dispatch, rootState }, { seriesID = null, episodeInt = 1 }) {
     if (!state.series) {
       const { data } = await anime365API(`/series/${seriesID}`)
       commit('setSeries', data)
     }
 
-    let episodeInt = 1;
-    if (
-      rootState.shikimori.anime &&
-      rootState.shikimori.anime.user_rate
-    ) {
-      episodeInt = rootState.shikimori.anime.user_rate.episodes + 1;
+
+    /**
+     * episodeInt — последний просмотренный эпизод
+     * 
+     * Поиск наиболее подходящей серии для запуска
+     */
+
+    // Выбираем episodeInt-елемент по порядку
+    let startEpisode = state.series.episodes[episodeInt - 1]
+
+
+    // Если серия не подходящая выполнить поиск следующей серии перебором
+    if (!startEpisode || startEpisode.episodeInt != episodeInt) {
+      state.series.episodes.find(e => e.episodeInt == episodeInt)
     }
 
-    const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
+    // Если следующей серии не найдено — выполнить поиск предыдущей серии перебором
+    if (!startEpisode) {
+      startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt - 1)
+    }
+
+    // Если предыдущая серия не найдена — выполнить поиск первой серии перебором
+    if (!startEpisode && episodeInt != 1) {
+      startEpisode = state.series.episodes.find(e => e.episodeInt == 1)
+    }
+
+    // Если первая серия не найдена — использовать первый элемент из массива серий
+    if (!startEpisode) {
+      startEpisode = state.series.episodes[0]
+    }
+
     if (startEpisode) {
       await dispatch('setCurrentEpisode', startEpisode.id)
-    } else if (episodeInt !== 1) {
-
-      episodeInt =
-        rootState.shikimori.anime &&
-          rootState.shikimori.anime.user_rate
-          ? rootState.shikimori.anime.user_rate.episodes
-          : 1
-
-
-      const startEpisode = state.series.episodes.find(e => e.episodeInt == episodeInt)
-      if (startEpisode) {
-        await dispatch('setCurrentEpisode', startEpisode.id)
-      }
     }
 
     await dispatch('setEpisodeTitle')

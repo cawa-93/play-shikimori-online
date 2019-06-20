@@ -1,3 +1,5 @@
 export * from './anime-365-api'
 export * from './shikimori-api'
 export * from './myanimelist-api'
+export * from './chrome-storage'
+export * from './oauth-provider'

@@ -20,8 +20,8 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.getters['player/currentTranslation']">
-              <actions v-if="$store.state.shikimori.anime"></actions>
+            <video-controls v-if="$store.state.player.currentEpisodeID">
+              <main-menu></main-menu>
             </video-controls>
           </v-flex>
 
@@ -30,7 +30,7 @@
           </v-flex>-->
         </v-layout>
 
-        <comments></comments>
+        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
       </v-container>
     </v-app>
   </section>
@@ -43,7 +43,8 @@ import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
 // import origins from "./origins.vue";
-import actions from "./actions.vue";
+// import actions from "./actions.vue";
+import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 
 export default {
@@ -53,7 +54,8 @@ export default {
     player,
     videoControls,
     // origins,
-    actions,
+    // actions,
+    mainMenu,
     comments
   },
 
@@ -91,21 +93,28 @@ export default {
 
   async mounted() {
     await Promise.all([
+      this.$store.dispatch("player/initSeries", {
+        seriesID: new URL(location.href).searchParams.get("series"),
+        episodeInt: parseInt(
+          new URL(location.href).searchParams.get("episodeInt")
+        )
+      }),
+
       this.$store.dispatch("shikimori/initUser"),
       this.$store.dispatch("shikimori/initAnime")
     ]);
 
-    await this.$store.dispatch(
-      "player/initSeries",
-      new URL(location.href).searchParams.get("series")
-    );
+    chrome.storage.onChanged.addListener(async (changes, namespace) => {
+      if (!changes.userAuth) {
+        return;
+      }
 
-    // console.log("Call MAL");
-    // try {
-    //   console.log({ MAL_RESP: resp });
-    // } catch (e) {
-    //   console.log({ MAL_ERROR: e });
-    // }
+      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
+        await this.$store.dispatch("shikimori/initUser");
+      } else {
+        this.$store.commit("shikimori/setUser", null);
+      }
+    });
   }
 };
 </script>

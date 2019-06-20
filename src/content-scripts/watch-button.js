@@ -1,4 +1,4 @@
-import { anime365API, shikimoriAPI } from '../helpers'
+import { anime365API } from '../helpers'
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)
@@ -27,30 +27,31 @@ async function main() {
 	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button')
 
 	// Загрузка метаданных аниме
-	const anime = await getAnime()
+	const anime = getAnime()
 
-	if (!anime) {
-		WatchOnlineButton.textContent = 'Нет видео'
+	if (!anime || !anime.id) {
+		WatchOnlineButton.textContent = 'Не удалось определить ID аниме'
 		WatchOnlineButton.classList.remove('b-ajax')
 		return
 	}
 
-	// 
-	const { data } = await anime365API(`/series/?myAnimeListId=${anime.myanimelist_id}`)
-	const series = data[0]
 
-	if (series && series.episodes && series.episodes.length) {
-		if (!anime.user_rate || anime.user_rate.episodes === 0) {
+	const seriesID = await getSeriesId(anime.id)
+
+	if (seriesID) {
+		const episodeInt = getEpisodeInt()
+		if (episodeInt === 1) {
 			WatchOnlineButton.textContent = 'Начать просмотр'
-		} else if (anime.user_rate.episodes >= anime.episodes) {
+		} else if (episodeInt >= anime.episodes) {
 			WatchOnlineButton.textContent = 'Пересмотреть'
 		} else {
 			WatchOnlineButton.textContent = 'Продолжить просмотр'
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
-		playerURL.searchParams.append('series', series.id)
+		playerURL.searchParams.append('series', seriesID)
 		playerURL.searchParams.append('anime', anime.id)
+		playerURL.searchParams.append('episodeInt', episodeInt)
 
 		WatchOnlineButton.href = playerURL.toString()
 	} else {
@@ -63,13 +64,36 @@ async function main() {
 
 
 
-async function getAnime() {
-	const idMatch = location.pathname.match(/animes\/[^\d]*(\d+)-/)
-	if (!idMatch || !idMatch[1]) {
-		return undefined
+function getAnime() {
+	try {
+		const data = JSON.parse(document.querySelector('.b-user_rate[data-target_type="Anime"]').dataset.entry)
+		return data
+	} catch {
+		return null
+	}
+}
+
+async function getSeriesId(myAnimeListId) {
+	const cacheKey = `series-cache-${myAnimeListId}`
+	let cache = sessionStorage.getItem(cacheKey)
+	if (cache) {
+		return cache
 	}
 
-	const data = await shikimoriAPI(`/animes/${idMatch[1]}`)
+	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
+	if (!series) {
+		return
+	}
+	cache = series.id
+	sessionStorage.setItem(cacheKey, cache)
+	return cache
+}
 
-	return data
+function getEpisodeInt() {
+	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')
+	if (!episodeElement) return 1
+
+	const episodeItn = parseInt(episodeElement.textContent)
+
+	return isNaN(episodeItn) ? 1 : episodeItn + 1
 }

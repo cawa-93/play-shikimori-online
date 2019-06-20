@@ -1,10 +1,19 @@
+import dotenv from 'dotenv';
+dotenv.config()
 import resolve from 'rollup-plugin-node-resolve';
 import copy from 'rollup-plugin-copy'
 import commonjs from 'rollup-plugin-commonjs'
 import VuePlugin from 'rollup-plugin-vue'
 import replace from 'rollup-plugin-replace'
 
+const replaceEnv = {
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+  'process.env.VUE_ENV': JSON.stringify('browser'),
 
+  'process.env.SHIKIMORI_CLIENT_ID': JSON.stringify(process.env.SHIKIMORI_CLIENT_ID),
+  'process.env.SHIKIMORI_CLIENT_SECRET': JSON.stringify(process.env.SHIKIMORI_CLIENT_SECRET),
+  'process.env.SHIKIMORI_REDIRECT_URI': JSON.stringify(process.env.SHIKIMORI_REDIRECT_URI),
+}
 
 module.exports = [{
   input: 'src/background/background.js',
@@ -15,6 +24,7 @@ module.exports = [{
   },
   plugins: [
     resolve(),
+    replace(replaceEnv),
     copy({
       targets: {
         'src/manifest.json': 'dist/manifest.json',
@@ -35,6 +45,7 @@ module.exports = [{
   },
   plugins: [
     resolve(),
+    replace(replaceEnv),
     copy({
       targets: {
         'src/content-scripts/inject-content-scripts.js': 'dist/content-scripts/inject-content-scripts.js',
@@ -53,6 +64,7 @@ module.exports = [{
   },
   plugins: [
     resolve(),
+    replace(replaceEnv),
   ]
 },
 
@@ -67,10 +79,7 @@ module.exports = [{
   plugins: [
     resolve(),
     commonjs(),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.VUE_ENV': JSON.stringify('browser')
-    }),
+    replace(replaceEnv),
     VuePlugin(),
     copy({
       targets: {
@@ -91,9 +100,6 @@ module.exports = [{
   plugins: [
     resolve(),
     commonjs(),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      'process.env.VUE_ENV': JSON.stringify('browser')
-    }),
+    replace(replaceEnv),
   ],
 }]
