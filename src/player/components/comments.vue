@@ -3,7 +3,7 @@
     <h2 class="display-1 mt-4">Обсуждение серии</h2>
     <v-progress-linear :indeterminate="true" v-if="loading"></v-progress-linear>
     <template v-else>
-      <div class="mt-4 mb-2" v-if="topic">
+      <div class="mt-4 mb-2" v-if="topic && comments.length">
         <template v-for="comment in comments">
           <v-layout row :key="comment.id" class="mb-3" :id="'comment-' + comment.id">
             <v-list-tile-avatar>
@@ -33,23 +33,26 @@
           @click="loadComments"
           flat
           block
-          class="mb-3"
+          class="mt-3"
         >Загрузить ещё</v-btn>
-
-        <v-btn outline block class="mb-3" :href="topicUrl">Написать отзыв о серии</v-btn>
-
-        <!-- <v-form v-model="valid" @submit.prevent="createComment">
-          <v-textarea
-            box
-            name="input-7-4"
-            label="Напишите ваши впечатления от серии"
-            v-model="newCommentText"
-            required
-          ></v-textarea>
-          <v-btn :disabled="!valid" block type="submit">Отправить</v-btn>
-        </v-form>-->
       </div>
-      <p v-else class="blockquote pl-0">На Шикимори пока-что нет темы с обсуждением этого эпизода</p>
+
+      <p v-else>Ещё никто не оставил отзыв о серии</p>
+
+      <v-form v-if="user" v-model="valid" @submit.prevent="createComment" class="mt-3">
+        <v-textarea
+          box
+          name="input-7-4"
+          label="Напишите ваши впечатления от серии"
+          v-model="newCommentText"
+          required
+        ></v-textarea>
+        <v-btn :disabled="!valid" block type="submit">Отправить</v-btn>
+      </v-form>
+
+      <v-btn v-else class="pl-2" @click="updateAuth">
+        <v-icon class="mr-1">sync</v-icon>Включить возможность комментирования
+      </v-btn>
     </template>
   </section>
 </template>
@@ -57,7 +60,7 @@
 
 <script>
 import Vue from "vue";
-import { shikimoriAPI } from "../../helpers";
+import { shikimoriAPI, updateAuth, getAuth } from "../../helpers";
 
 export default {
   name: "comments",
@@ -68,7 +71,7 @@ export default {
       topic: null,
       comments: [],
       newCommentText: "",
-      commentsPerPage: 30,
+      commentsPerPage: 3,
       valid: false
     };
   },
@@ -88,19 +91,14 @@ export default {
 
     currentEpisodeID() {
       return this.$store.state.player.currentEpisodeID;
-    },
-
-    topicUrl() {
-      return `https://${sessionStorage.getItem("shiki-domain") ||
-        "shikimori.one"}${
-        this.topic.forum.url
-      }/${this.topic.linked_type.toLowerCase()}-${this.topic.linked_id}/${
-        this.topic.id
-      }`;
     }
   },
 
   methods: {
+    updateAuth() {
+      return updateAuth();
+    },
+
     async init() {
       if (!this.currentEpisode || !this.anime) return;
       this.loading = true;
@@ -183,8 +181,85 @@ export default {
     },
 
     async createComment() {
+      if (!this.user || !this.anime) {
+        return;
+      }
+
+      let auth = await getAuth();
+      if (!auth || !auth.access_token) {
+        return;
+      }
+
+      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+        auth = await updateAuth();
+      }
+
+      if (!this.topic) {
+        let is_fandub = false;
+        let is_raw = false;
+        let is_subtitles = false;
+
+        for (const translation of this.currentEpisode.translations) {
+          switch (translation.typeKind) {
+            case "raw":
+              is_raw = true;
+              break;
+
+            case "sub":
+              is_subtitles = true;
+              break;
+
+            case "voice":
+              is_fandub = true;
+              break;
+          }
+
+          if (is_fandub && is_raw && is_subtitles) {
+            break;
+          }
+        }
+
+        const episode_notifications = await shikimoriAPI(
+          "/v2/episode_notifications",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              episode_notification: {
+                aired_at: new Date(
+                  this.currentEpisode.firstUploadedDateTime
+                ).toISOString(),
+                anime_id: this.anime.id,
+                episode: this.currentEpisode.episodeInt,
+                is_anime365: true,
+                is_fandub,
+                is_raw,
+                is_subtitles
+              },
+              token: process.env.SHIKIMORI_SYSTEM_TOKEN
+            })
+          }
+        );
+
+        console.log({ episode_notifications });
+
+        if (!episode_notifications.topic_id) {
+          return;
+        }
+
+        const topic = await shikimoriAPI(
+          `/animes/${this.anime.id}/topics/${episode_notifications.topic_id}`
+        );
+
+        console.log({ episode_notifications, topic });
+
+        this.topic = topic;
+      }
+
       const newComment = await shikimoriAPI(`/comments`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`
+        },
         body: JSON.stringify({
           comment: {
             body: this.newCommentText,
@@ -202,6 +277,8 @@ export default {
       }
 
       this.comments.push(this.proccessComment(newComment));
+
+      this.newCommentText = "";
     }
   },
 
