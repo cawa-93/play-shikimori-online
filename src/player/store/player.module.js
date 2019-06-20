@@ -151,6 +151,11 @@ export const actions = {
   async setCurrentEpisode({ state, commit, getters, dispatch }, episodeID) {
     const targetEpisode = getters.episodes.find(e => e.id === episodeID)
     commit('setCurrentEpisode', targetEpisode.id)
+    {
+      const currentURL = new URL(location.href)
+      currentURL.searchParams.set('episodeInt', targetEpisode.episodeInt)
+      history.replaceState(history.state, '', currentURL.toString())
+    }
 
     await dispatch('loadTranslations', targetEpisode)
     const priorityTranslation = await dispatch('getPriorityTranslation', targetEpisode)
