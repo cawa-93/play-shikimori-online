@@ -3,7 +3,6 @@
     <v-flex>
       <v-btn
         class="ma-0"
-        large
         flat
         :disabled="!$store.getters['player/previousEpisode']"
         @click="$store.dispatch('player/initPreviousEpisode')"
@@ -18,7 +17,6 @@
     <v-flex class="text-xs-right">
       <v-btn
         class="ma-0"
-        large
         flat
         :disabled="!$store.getters['player/nextEpisode']"
         @click="nextEpisode"

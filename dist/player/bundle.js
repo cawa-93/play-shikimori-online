@@ -33771,7 +33771,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_vue__;
 
 /******/ })["default"];
 });
-
+//# sourceMappingURL=vuetify.js.map
 });
 
 var Vuetify = unwrapExports(vuetify);
@@ -35050,7 +35050,7 @@ function myanimelistAPI(path, options = {}) {
   })
 }
 
-const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}
+const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}//# sourceMappingURL=kv-storage-polyfill.mjs.map
 
 const worker = new Worker('/player/worker.js');
 
@@ -36272,7 +36272,6 @@ var __vue_render__$3 = function() {
               ],
               staticClass: "ma-0",
               attrs: {
-                large: "",
                 flat: "",
                 disabled: !_vm.$store.getters["player/previousEpisode"]
               },
@@ -36316,7 +36315,6 @@ var __vue_render__$3 = function() {
               ],
               staticClass: "ma-0",
               attrs: {
-                large: "",
                 flat: "",
                 disabled: !_vm.$store.getters["player/nextEpisode"]
               },
@@ -36364,8 +36362,156 @@ __vue_render__$3._withStripped = true;
   );
 
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 var script$4 = {
+  name: "actions",
+  computed: {
+    shikiLink() {
+      return {
+        label: "Открыть на Шикимори",
+        url: `https://${sessionStorage.getItem("shiki-domain") ||
+          "shikimori.one"}${this.$store.state.shikimori.anime.url}`
+      };
+    },
+
+    reportAboutError() {
+      return {
+        label: "Сообщить о проблеме с видео",
+        url: `https://smotret-anime-365.ru/translations/report/${
+          this.$store.state.player.currentTranslationID
+        }`
+      };
+    }
+  }
+};
+
+/* script */
+const __vue_script__$4 = script$4;
+
+/* template */
+var __vue_render__$4 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "v-list",
+    [
+      _c(
+        "v-list-tile",
+        {
+          directives: [
+            {
+              name: "ga",
+              rawName: "v-ga",
+              value: _vm.$ga.commands.trackAction.bind(
+                this,
+                "open-on-shikimori"
+              ),
+              expression:
+                "$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
+            }
+          ],
+          key: "open-on-shikimori",
+          attrs: { href: _vm.shikiLink.url }
+        },
+        [
+          _c("v-list-tile-action", [_c("v-icon", [_vm._v("open_in_new")])], 1),
+          _vm._v(" "),
+          _c("v-list-tile-title", [_vm._v(_vm._s(_vm.shikiLink.label))])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-list-tile",
+        {
+          directives: [
+            {
+              name: "ga",
+              rawName: "v-ga",
+              value: _vm.$ga.commands.trackAction.bind(
+                this,
+                "report-about-error"
+              ),
+              expression:
+                "$ga.commands.trackAction.bind(this, 'report-about-error')"
+            }
+          ],
+          key: "report-about-error",
+          attrs: { href: _vm.reportAboutError.url }
+        },
+        [
+          _c("v-list-tile-action", [_c("v-icon", [_vm._v("report")])], 1),
+          _vm._v(" "),
+          _c("v-list-tile-title", [_vm._v(_vm._s(_vm.reportAboutError.label))])
+        ],
+        1
+      )
+    ],
+    1
+  )
+};
+var __vue_staticRenderFns__$4 = [];
+__vue_render__$4._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$4 = undefined;
+  /* scoped */
+  const __vue_scope_id__$4 = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$4 = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$4 = false;
+  /* style inject */
+  
+  /* style inject SSR */
+  
+
+  
+  var actions$2 = normalizeComponent_1(
+    { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
+    __vue_inject_styles__$4,
+    __vue_script__$4,
+    __vue_scope_id__$4,
+    __vue_is_functional_template__$4,
+    __vue_module_identifier__$4,
+    undefined,
+    undefined
+  );
+
+//
+var script$5 = {
   name: "main-menu",
+
+  components: { actions: actions$2 },
 
   computed: {
     user() {
@@ -36390,84 +36536,137 @@ var script$4 = {
 };
 
 /* script */
-const __vue_script__$4 = script$4;
+const __vue_script__$5 = script$5;
 
 /* template */
-var __vue_render__$4 = function() {
+var __vue_render__$5 = function() {
   var _vm = this;
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
   return _c(
-    "div",
-    [
-      !_vm.user
-        ? [
-            _c(
-              "v-btn",
-              {
-                staticClass: "ma-0",
-                attrs: { color: "error", large: "" },
-                on: { click: _vm.updateAuth }
-              },
-              [_vm._v("Включить синхронизацию")]
-            )
-          ]
-        : [
-            _c(
-              "v-list-tile",
-              { staticStyle: { height: "44px" } },
-              [
-                _c("v-list-tile-avatar", [
-                  _c("img", {
-                    attrs: { src: _vm.user.image.x80, alt: _vm.user.nickname }
-                  })
-                ]),
-                _vm._v(" "),
-                _c(
-                  "v-list-tile-content",
-                  [
-                    _c("v-list-tile-title", [
-                      _vm._v(_vm._s(_vm.user.nickname))
-                    ]),
-                    _vm._v(" "),
-                    _c("v-list-tile-sub-title", [
-                      _vm._v("Синхронизация включена")
-                    ])
-                  ],
-                  1
+    "v-menu",
+    {
+      attrs: { "close-on-content-click": false, "nudge-width": 200 },
+      scopedSlots: _vm._u([
+        {
+          key: "activator",
+          fn: function(ref) {
+            var on = ref.on;
+            return [
+              _c(
+                "v-btn",
+                _vm._g(
+                  {
+                    staticClass: "ma-0 pr-2",
+                    attrs: { color: _vm.user ? "" : "error", flat: "" }
+                  },
+                  on
                 ),
-                _vm._v(" "),
-                _c(
-                  "v-list-tile-action",
-                  [
-                    _c(
-                      "v-btn",
-                      { attrs: { icon: "" }, on: { click: _vm.logout } },
-                      [_c("v-icon", [_vm._v("more_vert")])],
-                      1
+                [
+                  _c("span", [
+                    _vm._v(
+                      _vm._s(
+                        _vm.user ? "Открыть меню" : "Синхронизация отключена"
+                      )
                     )
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          ]
+                  ]),
+                  _vm._v(" "),
+                  _c("v-icon", { staticClass: "ml-1" }, [
+                    _vm._v("arrow_drop_down")
+                  ])
+                ],
+                1
+              )
+            ]
+          }
+        }
+      ])
+    },
+    [
+      _vm._v(" "),
+      _c(
+        "v-list",
+        [
+          _vm.user
+            ? _c(
+                "v-list-tile",
+                { attrs: { avatar: "" } },
+                [
+                  _c("v-list-tile-avatar", [
+                    _c("img", {
+                      attrs: { src: _vm.user.image.x80, alt: _vm.user.nickname }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    [
+                      _c("v-list-tile-title", [
+                        _vm._v(_vm._s(_vm.user.nickname))
+                      ]),
+                      _vm._v(" "),
+                      _c("v-list-tile-sub-title", [
+                        _vm._v("Синхронизация включена")
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-action",
+                    [
+                      _c(
+                        "v-btn",
+                        { attrs: { icon: "" }, on: { click: _vm.logout } },
+                        [_c("v-icon", [_vm._v("logout")])],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            : _c(
+                "v-list-tile",
+                { attrs: { avatar: "" }, on: { click: _vm.updateAuth } },
+                [
+                  _c("v-list-tile-avatar", [_c("v-icon", [_vm._v("sync")])], 1),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    [
+                      _c("v-list-tile-title", [
+                        _vm._v("Включить синхронизацию")
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("v-divider"),
+      _vm._v(" "),
+      _c("actions")
     ],
-    2
+    1
   )
 };
-var __vue_staticRenderFns__$4 = [];
-__vue_render__$4._withStripped = true;
+var __vue_staticRenderFns__$5 = [];
+__vue_render__$5._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$4 = undefined;
+  const __vue_inject_styles__$5 = undefined;
   /* scoped */
-  const __vue_scope_id__$4 = undefined;
+  const __vue_scope_id__$5 = undefined;
   /* module identifier */
-  const __vue_module_identifier__$4 = undefined;
+  const __vue_module_identifier__$5 = undefined;
   /* functional template */
-  const __vue_is_functional_template__$4 = false;
+  const __vue_is_functional_template__$5 = false;
   /* style inject */
   
   /* style inject SSR */
@@ -36475,19 +36674,19 @@ __vue_render__$4._withStripped = true;
 
   
   var mainMenu = normalizeComponent_1(
-    { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
-    __vue_inject_styles__$4,
-    __vue_script__$4,
-    __vue_scope_id__$4,
-    __vue_is_functional_template__$4,
-    __vue_module_identifier__$4,
+    { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
+    __vue_inject_styles__$5,
+    __vue_script__$5,
+    __vue_scope_id__$5,
+    __vue_is_functional_template__$5,
+    __vue_module_identifier__$5,
     undefined,
     undefined
   );
 
 //
 
-var script$5 = {
+var script$6 = {
   name: "comments",
 
   data() {
@@ -36659,10 +36858,10 @@ var script$5 = {
 };
 
 /* script */
-const __vue_script__$5 = script$5;
+const __vue_script__$6 = script$6;
 
 /* template */
-var __vue_render__$5 = function() {
+var __vue_render__$6 = function() {
   var _vm = this;
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
@@ -36785,39 +36984,39 @@ var __vue_render__$5 = function() {
     2
   )
 };
-var __vue_staticRenderFns__$5 = [];
-__vue_render__$5._withStripped = true;
+var __vue_staticRenderFns__$6 = [];
+__vue_render__$6._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$5 = function (inject) {
+  const __vue_inject_styles__$6 = function (inject) {
     if (!inject) return
     inject("data-v-0c286786_0", { source: "\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n.b-replies {\n  text-align: right;\n}\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n.b-image .marker {\n  display: none;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/comments.vue"],"names":[],"mappings":";AA2OA;EACA,WAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,iBAAA;EACA,sBAAA;AACA;AAEA;EACA,eAAA;AACA;AACA;EACA,sBAAA;EACA,YAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,2BAAA;AACA;AAEA;EACA,aAAA;AACA","file":"comments.vue","sourcesContent":["<template>\n  <section class=\"comments-container\">\n    <h2 class=\"display-1 mt-4\">Обсуждение серии</h2>\n    <v-progress-linear :indeterminate=\"true\" v-if=\"loading\"></v-progress-linear>\n    <template v-else>\n      <div class=\"mt-4 mb-2\" v-if=\"topic\">\n        <template v-for=\"comment in comments\">\n          <v-layout row :key=\"comment.id\" class=\"mb-3\" :id=\"'comment-' + comment.id\">\n            <v-list-tile-avatar>\n              <img :src=\"comment.user.avatar\">\n            </v-list-tile-avatar>\n\n            <v-list-tile-content>\n              <v-list-tile-title>\n                <strong>\n                  <a\n                    :href=\"'https://shikimori.one/' + comment.user.nickname\"\n                  >@{{ comment.user.nickname }}</a>\n                </strong>\n                <a\n                  class=\"text-lg-right grey--text text--lighten-1 ml-2\"\n                  :href=\"'https://shikimori.one/comments/' + comment.id\"\n                >{{comment.created_at_relative}}</a>\n              </v-list-tile-title>\n              <div class=\"w-100 comment-body\" v-html=\"comment.html_body\"></div>\n            </v-list-tile-content>\n          </v-layout>\n          <v-divider class=\"mb-3\"></v-divider>\n        </template>\n\n        <v-btn\n          v-if=\"comments.length < topic.comments_count\"\n          @click=\"loadComments\"\n          flat\n          block\n          class=\"mb-3\"\n        >Загрузить ещё</v-btn>\n\n        <v-btn outline block class=\"mb-3\" :href=\"topicUrl\">Написать отзыв о серии</v-btn>\n\n        <!-- <v-form v-model=\"valid\" @submit.prevent=\"createComment\">\n          <v-textarea\n            box\n            name=\"input-7-4\"\n            label=\"Напишите ваши впечатления от серии\"\n            v-model=\"newCommentText\"\n            required\n          ></v-textarea>\n          <v-btn :disabled=\"!valid\" block type=\"submit\">Отправить</v-btn>\n        </v-form>-->\n      </div>\n      <p v-else class=\"blockquote pl-0\">На Шикимори пока-что нет темы с обсуждением этого эпизода</p>\n    </template>\n  </section>\n</template>\n\n\n<script>\nimport Vue from \"vue\";\nimport { shikimoriAPI } from \"../../helpers\";\n\nexport default {\n  name: \"comments\",\n\n  data() {\n    return {\n      loading: true,\n      topic: null,\n      comments: [],\n      newCommentText: \"\",\n      commentsPerPage: 30,\n      valid: false\n    };\n  },\n\n  computed: {\n    user() {\n      return this.$store.state.shikimori.user;\n    },\n\n    anime() {\n      return this.$store.state.shikimori.anime;\n    },\n\n    currentEpisode() {\n      return this.$store.getters[\"player/currentEpisode\"];\n    },\n\n    currentEpisodeID() {\n      return this.$store.state.player.currentEpisodeID;\n    },\n\n    topicUrl() {\n      return `https://${sessionStorage.getItem(\"shiki-domain\") ||\n        \"shikimori.one\"}${\n        this.topic.forum.url\n      }/${this.topic.linked_type.toLowerCase()}-${this.topic.linked_id}/${\n        this.topic.id\n      }`;\n    }\n  },\n\n  methods: {\n    async init() {\n      if (!this.currentEpisode || !this.anime) return;\n      this.loading = true;\n\n      const topics = await shikimoriAPI(\n        `/animes/${this.anime.id}/topics?kind=episode&episode=${\n          this.currentEpisode.episodeInt\n        }`\n      );\n\n      this.topic = topics[0];\n      this.comments = [];\n\n      await this.loadComments();\n\n      this.loading = false;\n    },\n\n    proccessComment(comment) {\n      comment.html_body = comment.html_body\n        .replace(/(href|src)=\"\\//gimu, '$1=\"https://shikimori.one/')\n        .replace(\"b-quote\", \"blockquote\");\n\n      comment.created_at_relative = this.getCreatedAtRelative(\n        comment.created_at\n      );\n\n      return comment;\n    },\n\n    getCreatedAtRelative(iso) {\n      const date = new Date(iso);\n      const now = new Date();\n      const diff = date - now;\n      const formatter = new Intl.RelativeTimeFormat();\n\n      const msPerMinute = 60 * 1000;\n      const msPerHour = msPerMinute * 60;\n      const msPerDay = msPerHour * 24;\n      const msPerMonth = msPerDay * 30;\n      const msPerYear = msPerDay * 365;\n\n      if (Math.abs(diff) < msPerMinute)\n        return formatter.format(Math.round(diff / 1000), \"seconds\");\n      if (Math.abs(diff) < msPerHour)\n        return formatter.format(Math.round(diff / msPerMinute), \"minutes\");\n      if (Math.abs(diff) < msPerDay)\n        return formatter.format(Math.round(diff / msPerHour), \"hour\");\n      if (Math.abs(diff) < msPerMonth)\n        return formatter.format(Math.round(diff / msPerDay), \"day\");\n      if (Math.abs(diff) < msPerYear)\n        return formatter.format(Math.round(diff / msPerMonth), \"month\");\n      return formatter.format(Math.round(diff / msPerYear), \"year\");\n    },\n\n    async loadComments() {\n      if (!this.topic) {\n        return;\n      }\n\n      try {\n        const comments = await shikimoriAPI(\n          `/comments/?desc=0&commentable_id=${\n            this.topic.id\n          }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this\n            .comments.length /\n            this.commentsPerPage +\n            1}`\n        );\n\n        if (comments.length > this.commentsPerPage) {\n          comments.pop();\n        }\n\n        this.comments.push(...comments.map(c => this.proccessComment(c)));\n      } catch (error) {\n        const exception = error.message || error;\n        this.$ga.exception(exception);\n      }\n    },\n\n    async createComment() {\n      const newComment = await shikimoriAPI(`/comments`, {\n        method: \"POST\",\n        body: JSON.stringify({\n          comment: {\n            body: this.newCommentText,\n            commentable_id: this.topic.id,\n            commentable_type: \"Topic\",\n            is_offtopic: false,\n            is_summary: false\n          },\n          frontend: false\n        })\n      });\n\n      if (!newComment.id) {\n        return;\n      }\n\n      this.comments.push(this.proccessComment(newComment));\n    }\n  },\n\n  created() {\n    this.init();\n  },\n\n  mounted() {\n    this.$el.addEventListener(\"click\", event => {\n      if (!event.target.matches('.comment-body a[href*=\"/comments/\"]')) {\n        return;\n      }\n\n      event.preventDefault();\n      const commentId = event.target.href.match(/comments\\/(\\d+)/)[1];\n\n      const targetElement = this.$el.querySelector(`#comment-${commentId}`);\n      if (targetElement) targetElement.scrollIntoView();\n    });\n  },\n\n  watch: {\n    currentEpisodeID() {\n      this.init();\n    }\n  }\n};\n</script>\n\n\n<style >\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n\n.b-replies {\n  text-align: right;\n}\n\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n\n.b-image .marker {\n  display: none;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
-  const __vue_scope_id__$5 = undefined;
+  const __vue_scope_id__$6 = undefined;
   /* module identifier */
-  const __vue_module_identifier__$5 = undefined;
+  const __vue_module_identifier__$6 = undefined;
   /* functional template */
-  const __vue_is_functional_template__$5 = false;
+  const __vue_is_functional_template__$6 = false;
   /* style inject SSR */
   
 
   
   var comments = normalizeComponent_1(
-    { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
-    __vue_inject_styles__$5,
-    __vue_script__$5,
-    __vue_scope_id__$5,
-    __vue_is_functional_template__$5,
-    __vue_module_identifier__$5,
+    { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
+    __vue_inject_styles__$6,
+    __vue_script__$6,
+    __vue_scope_id__$6,
+    __vue_is_functional_template__$6,
+    __vue_module_identifier__$6,
     browser,
     undefined
   );
 
 //
 
-var script$6 = {
+var script$7 = {
   components: {
     episodeList,
     translationList,
@@ -36894,10 +37093,10 @@ var script$6 = {
 };
 
 /* script */
-const __vue_script__$6 = script$6;
+const __vue_script__$7 = script$7;
 
 /* template */
-var __vue_render__$6 = function() {
+var __vue_render__$7 = function() {
   var _vm = this;
   var _h = _vm.$createElement;
   var _c = _vm._self._c || _h;
@@ -36974,32 +37173,32 @@ var __vue_render__$6 = function() {
     1
   )
 };
-var __vue_staticRenderFns__$6 = [];
-__vue_render__$6._withStripped = true;
+var __vue_staticRenderFns__$7 = [];
+__vue_render__$7._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$6 = function (inject) {
+  const __vue_inject_styles__$7 = function (inject) {
     if (!inject) return
     inject("data-v-25c2d716_0", { source: "\n.v-select__selections {\n  overflow: hidden;\n}\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/App.vue"],"names":[],"mappings":";AA+HA;EACA,gBAAA;AACA;AAEA;EACA,uBAAA;EACA,mBAAA;EACA,gBAAA;EACA,cAAA;AACA;AAEA;EACA,gBAAA;AACA;AACA;EACA,YAAA;AACA","file":"App.vue","sourcesContent":["<template>\n  <section>\n    <v-app id=\"app\" :dark=\"darkMode\">\n      <v-container class=\"__layout\">\n        <v-layout column style=\"\theight: calc(100vh - 110px);\">\n          <v-flex class=\"flex-grow-unset\">\n            <v-layout row>\n              <v-flex xs6 mr-3>\n                <episode-list></episode-list>\n              </v-flex>\n              <v-flex xs6>\n                <translation-list></translation-list>\n              </v-flex>\n            </v-layout>\n          </v-flex>\n\n          <v-flex d-flex>\n            <player></player>\n            <!-- <p v-else>Выберите эпизод</p> -->\n          </v-flex>\n\n          <v-flex class=\"flex-grow-unset mt-3\">\n            <video-controls v-if=\"$store.getters['player/currentTranslation']\">\n              <main-menu></main-menu>\n            </video-controls>\n          </v-flex>\n\n          <!-- <v-flex class=\"flex-grow-unset mt-3\">\n            <origins v-if=\"$store.state.shikimori.anime\"></origins>\n          </v-flex>-->\n        </v-layout>\n\n        <comments></comments>\n      </v-container>\n    </v-app>\n  </section>\n</template>\n\n<script>\nimport { myanimelistAPI } from \"../../helpers\";\nimport episodeList from \"./episode-list.vue\";\nimport translationList from \"./translation-list.vue\";\nimport player from \"./player.vue\";\nimport videoControls from \"./video-controls.vue\";\n// import origins from \"./origins.vue\";\n// import actions from \"./actions.vue\";\nimport mainMenu from \"./main-menu.vue\";\nimport comments from \"./comments.vue\";\n\nexport default {\n  components: {\n    episodeList,\n    translationList,\n    player,\n    videoControls,\n    // origins,\n    // actions,\n    mainMenu,\n    comments\n  },\n\n  data() {\n    let darkMode = true;\n\n    if (window.matchMedia) {\n      darkMode = window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n\n      if (!darkMode) {\n        darkMode = !window.matchMedia(\"(prefers-color-scheme: light)\").matches;\n      }\n    }\n\n    if (darkMode) {\n      document.querySelector(\"html\").style.backgroundColor = \"#303030\";\n    }\n\n    return {\n      darkMode\n    };\n  },\n\n  computed: {\n    translations() {\n      if (\n        !this.$store.getters[\"player/currentEpisode\"] ||\n        !this.$store.getters[\"player/currentEpisode\"].translations\n      ) {\n        return [];\n      }\n      return this.$store.getters[\"player/currentEpisode\"].translations;\n    }\n  },\n\n  async mounted() {\n    await Promise.all([\n      this.$store.dispatch(\"shikimori/initUser\"),\n      this.$store.dispatch(\"shikimori/initAnime\")\n    ]);\n\n    await this.$store.dispatch(\n      \"player/initSeries\",\n      new URL(location.href).searchParams.get(\"series\")\n    );\n\n    chrome.storage.onChanged.addListener(async (changes, namespace) => {\n      if (!changes.userAuth) {\n        return;\n      }\n\n      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {\n        await this.$store.dispatch(\"shikimori/initUser\");\n      } else {\n        this.$store.commit(\"shikimori/setUser\", null);\n      }\n    });\n\n    // console.log(\"Call MAL\");\n    // try {\n    //   console.log({ MAL_RESP: resp });\n    // } catch (e) {\n    //   console.log({ MAL_ERROR: e });\n    // }\n  }\n};\n</script>\n\n<style>\n.v-select__selections {\n  overflow: hidden;\n}\n\n.v-select__selection.v-select__selection--comma {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: block;\n}\n\n.flex-grow-unset {\n  flex-grow: unset;\n}\n.player-container {\n  height: 100%;\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
-  const __vue_scope_id__$6 = undefined;
+  const __vue_scope_id__$7 = undefined;
   /* module identifier */
-  const __vue_module_identifier__$6 = undefined;
+  const __vue_module_identifier__$7 = undefined;
   /* functional template */
-  const __vue_is_functional_template__$6 = false;
+  const __vue_is_functional_template__$7 = false;
   /* style inject SSR */
   
 
   
   var App = normalizeComponent_1(
-    { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
-    __vue_inject_styles__$6,
-    __vue_script__$6,
-    __vue_scope_id__$6,
-    __vue_is_functional_template__$6,
-    __vue_module_identifier__$6,
+    { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
+    __vue_inject_styles__$7,
+    __vue_script__$7,
+    __vue_scope_id__$7,
+    __vue_is_functional_template__$7,
+    __vue_module_identifier__$7,
     browser,
     undefined
   );
