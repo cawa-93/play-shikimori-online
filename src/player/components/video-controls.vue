@@ -8,10 +8,12 @@
         @click="$store.dispatch('player/initPreviousEpisode')"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
       >
-        <v-icon left>skip_previous</v-icon>Предыдущий эпизод
+        <v-icon left>skip_previous</v-icon>
+        <span>Предыдущая</span>
+        <span class="hide-on-xs ml-1">серия</span>
       </v-btn>
     </v-flex>
-    <v-flex class="text-xs-center">
+    <v-flex class="text-xs-center main-menu">
       <slot></slot>
     </v-flex>
     <v-flex class="text-xs-right">
@@ -22,7 +24,8 @@
         @click="nextEpisode"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
       >
-        Следующий эпизод
+        Следующая
+        <span class="hide-on-xs ml-1">серия</span>
         <v-icon right>skip_next</v-icon>
       </v-btn>
     </v-flex>
@@ -50,3 +53,18 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+@media (max-width: 670px) {
+  .main-menu {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hide-on-xs {
+    display: none;
+  }
+}
+</style>

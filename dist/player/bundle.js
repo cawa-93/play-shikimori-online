@@ -36314,7 +36314,10 @@ var __vue_render__$3 = function() {
             },
             [
               _c("v-icon", { attrs: { left: "" } }, [_vm._v("skip_previous")]),
-              _vm._v("Предыдущий эпизод\n    ")
+              _vm._v(" "),
+              _c("span", [_vm._v("Предыдущая")]),
+              _vm._v(" "),
+              _c("span", { staticClass: "hide-on-xs ml-1" }, [_vm._v("серия")])
             ],
             1
           )
@@ -36322,7 +36325,12 @@ var __vue_render__$3 = function() {
         1
       ),
       _vm._v(" "),
-      _c("v-flex", { staticClass: "text-xs-center" }, [_vm._t("default")], 2),
+      _c(
+        "v-flex",
+        { staticClass: "text-xs-center main-menu" },
+        [_vm._t("default")],
+        2
+      ),
       _vm._v(" "),
       _c(
         "v-flex",
@@ -36352,7 +36360,9 @@ var __vue_render__$3 = function() {
               on: { click: _vm.nextEpisode }
             },
             [
-              _vm._v("\n      Следующий эпизод\n      "),
+              _vm._v("\n      Следующая\n      "),
+              _c("span", { staticClass: "hide-on-xs ml-1" }, [_vm._v("серия")]),
+              _vm._v(" "),
               _c("v-icon", { attrs: { right: "" } }, [_vm._v("skip_next")])
             ],
             1
@@ -36368,15 +36378,17 @@ var __vue_staticRenderFns__$3 = [];
 __vue_render__$3._withStripped = true;
 
   /* style */
-  const __vue_inject_styles__$3 = undefined;
+  const __vue_inject_styles__$3 = function (inject) {
+    if (!inject) return
+    inject("data-v-013b8d65_0", { source: "\n@media (max-width: 670px) {\n.main-menu[data-v-013b8d65] {\n    order: 3;\n    flex-basis: 100%;\n}\n}\n@media (max-width: 768px) {\n.hide-on-xs[data-v-013b8d65] {\n    display: none;\n}\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/video-controls.vue"],"names":[],"mappings":";AAyDA;AACA;IACA,QAAA;IACA,gBAAA;AACA;AACA;AAEA;AACA;IACA,aAAA;AACA;AACA","file":"video-controls.vue","sourcesContent":["<template>\n  <v-layout row wrap>\n    <v-flex>\n      <v-btn\n        class=\"ma-0\"\n        flat\n        :disabled=\"!$store.getters['player/previousEpisode']\"\n        @click=\"$store.dispatch('player/initPreviousEpisode')\"\n        v-ga=\"$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')\"\n      >\n        <v-icon left>skip_previous</v-icon>\n        <span>Предыдущая</span>\n        <span class=\"hide-on-xs ml-1\">серия</span>\n      </v-btn>\n    </v-flex>\n    <v-flex class=\"text-xs-center main-menu\">\n      <slot></slot>\n    </v-flex>\n    <v-flex class=\"text-xs-right\">\n      <v-btn\n        class=\"ma-0\"\n        flat\n        :disabled=\"!$store.getters['player/nextEpisode']\"\n        @click=\"nextEpisode\"\n        v-ga=\"$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')\"\n      >\n        Следующая\n        <span class=\"hide-on-xs ml-1\">серия</span>\n        <v-icon right>skip_next</v-icon>\n      </v-btn>\n    </v-flex>\n  </v-layout>\n</template>\n\n\n<script>\nimport { shikimoriAPI, anime365API } from \"../../helpers\";\n\nexport default {\n  name: \"video-controls\",\n\n  methods: {\n    async nextEpisode() {\n      this.$store.dispatch(\"shikimori/markAsWatched\");\n      this.$store.dispatch(\"player/initNextEpisode\");\n    },\n\n    async saveRate(value) {\n      return this.$store.dispatch(\"shikimori/saveUserRate\", {\n        score: value * 2\n      });\n    }\n  }\n};\n</script>\n\n<style scoped>\n@media (max-width: 670px) {\n  .main-menu {\n    order: 3;\n    flex-basis: 100%;\n  }\n}\n\n@media (max-width: 768px) {\n  .hide-on-xs {\n    display: none;\n  }\n}\n</style>\n"]}, media: undefined });
+
+  };
   /* scoped */
-  const __vue_scope_id__$3 = undefined;
+  const __vue_scope_id__$3 = "data-v-013b8d65";
   /* module identifier */
   const __vue_module_identifier__$3 = undefined;
   /* functional template */
   const __vue_is_functional_template__$3 = false;
-  /* style inject */
-  
   /* style inject SSR */
   
 
@@ -36388,7 +36400,7 @@ __vue_render__$3._withStripped = true;
     __vue_scope_id__$3,
     __vue_is_functional_template__$3,
     __vue_module_identifier__$3,
-    undefined,
+    browser,
     undefined
   );
 
