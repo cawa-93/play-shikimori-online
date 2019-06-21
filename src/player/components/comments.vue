@@ -43,7 +43,7 @@
         >Загрузить ещё</v-btn>
       </div>
 
-      <p v-else>Ещё никто не оставил отзыв о серии</p>
+      <p v-else class="pl-0 blockquote">Ещё никто не оставил отзыв о серии</p>
 
       <v-form v-if="user" @submit.prevent="createComment" class="mt-3">
         <v-textarea
@@ -62,9 +62,11 @@
         >Отправить</v-btn>
       </v-form>
 
-      <v-btn v-else class="pl-2" @click="updateAuth">
-        <v-icon class="mr-1">sync</v-icon>Включить возможность комментирования
-      </v-btn>
+      <div v-else class="text-xs-center mt-4">
+        <v-btn class="pl-3" @click="updateAuth" large>
+          <v-icon class="mr-2">sync</v-icon>Включить возможность комментирования
+        </v-btn>
+      </div>
     </template>
   </section>
 </template>
