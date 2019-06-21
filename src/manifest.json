@@ -7,6 +7,7 @@
 	"homepage_url": "https://shikimori.one/clubs/2372",
 	"browser_specific_settings": {
 		"gecko": {
+			"id": "play-shikimori-online@cawa-93.github.com",
 			"strict_min_version": "67.0"
 		}
 	},
