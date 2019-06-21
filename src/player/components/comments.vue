@@ -40,15 +40,21 @@
 
       <p v-else>Ещё никто не оставил отзыв о серии</p>
 
-      <v-form v-if="user" v-model="valid" @submit.prevent="createComment" class="mt-3">
+      <v-form v-if="user" @submit.prevent="createComment" class="mt-3">
         <v-textarea
           box
           name="input-7-4"
           label="Напишите ваши впечатления от серии"
           v-model="newCommentText"
           required
+          :disabled="layout.newComment.loading"
         ></v-textarea>
-        <v-btn :disabled="!valid" block type="submit">Отправить</v-btn>
+        <v-btn
+          :disabled="!newCommentText || layout.newComment.loading"
+          block
+          type="submit"
+          :loading="layout.newComment.loading"
+        >Отправить</v-btn>
       </v-form>
 
       <v-btn v-else class="pl-2" @click="updateAuth">
@@ -72,13 +78,15 @@ export default {
         loading: true,
         moreComments: {
           loading: false
+        },
+        newComment: {
+          loading: false
         }
       },
       topic: null,
       comments: [],
       newCommentText: "",
-      commentsPerPage: 20,
-      valid: false
+      commentsPerPage: 20
     };
   },
 
@@ -195,8 +203,11 @@ export default {
         return;
       }
 
+      this.layout.newComment.loading = true;
+
       let auth = await getAuth();
       if (!auth || !auth.access_token) {
+        this.layout.newComment.loading = false;
         return;
       }
 
@@ -255,17 +266,14 @@ export default {
           }
         );
 
-        console.log({ episode_notifications });
-
         if (!episode_notifications.topic_id) {
+          this.layout.newComment.loading = false;
           return;
         }
 
         const topic = await shikimoriAPI(
           `/topics/${episode_notifications.topic_id}`
         );
-
-        console.log({ episode_notifications, topic });
 
         this.topic = topic;
       }
@@ -286,12 +294,14 @@ export default {
       });
 
       if (!newComment.id) {
+        this.layout.newComment.loading = false;
         return;
       }
 
       this.comments.push(this.proccessComment(newComment));
 
       this.newCommentText = "";
+      this.layout.newComment.loading = false;
     }
   },
 
