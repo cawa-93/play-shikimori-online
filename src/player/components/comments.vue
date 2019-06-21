@@ -1,7 +1,7 @@
 <template>
   <section class="comments-container">
     <h2 class="display-1 mt-4">Обсуждение серии</h2>
-    <v-progress-linear :indeterminate="true" v-if="loading"></v-progress-linear>
+    <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
       <div class="mt-4 mb-2" v-if="topic && comments.length">
         <template v-for="comment in comments">
@@ -31,6 +31,7 @@
         <v-btn
           v-if="comments.length < topic.comments_count"
           @click="loadComments"
+          :loading="layout.moreComments.loading"
           flat
           block
           class="mt-3"
@@ -67,11 +68,16 @@ export default {
 
   data() {
     return {
-      loading: true,
+      layout: {
+        loading: true,
+        moreComments: {
+          loading: false
+        }
+      },
       topic: null,
       comments: [],
       newCommentText: "",
-      commentsPerPage: 3,
+      commentsPerPage: 20,
       valid: false
     };
   },
@@ -101,7 +107,7 @@ export default {
 
     async init() {
       if (!this.currentEpisode || !this.anime) return;
-      this.loading = true;
+      this.layout.loading = true;
 
       const topics = await shikimoriAPI(
         `/animes/${this.anime.id}/topics?kind=episode&episode=${
@@ -114,7 +120,7 @@ export default {
 
       await this.loadComments();
 
-      this.loading = false;
+      this.layout.loading = false;
     },
 
     proccessComment(comment) {
@@ -159,6 +165,8 @@ export default {
         return;
       }
 
+      this.layout.moreComments.loading = true;
+
       try {
         const comments = await shikimoriAPI(
           `/comments/?desc=0&commentable_id=${
@@ -178,6 +186,8 @@ export default {
         const exception = error.message || error;
         this.$ga.exception(exception);
       }
+
+      this.layout.moreComments.loading = false;
     },
 
     async createComment() {
