@@ -5,7 +5,12 @@
     <template v-else>
       <div class="mt-4 mb-2" v-if="topic && comments.items.length">
         <template v-for="comment in comments.items">
-          <v-layout row :key="comment.id" class="mb-3" :id="'comment-' + comment.id">
+          <v-layout
+            row
+            :key="comment.id"
+            class="mb-3 comment-container"
+            :id="'comment-' + comment.id"
+          >
             <v-list-tile-avatar>
               <img :src="comment.user.avatar">
             </v-list-tile-avatar>
@@ -322,8 +327,7 @@ export default {
       event.preventDefault();
       const commentId = event.target.href.match(/comments\/(\d+)/)[1];
 
-      const targetElement = this.$el.querySelector(`#comment-${commentId}`);
-      if (targetElement) targetElement.scrollIntoView();
+      location.hash = `comment-${commentId}`;
     });
   },
 
@@ -366,5 +370,32 @@ export default {
 
 .b-image .marker {
   display: none;
+}
+
+.comment-container:target {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 </style>
