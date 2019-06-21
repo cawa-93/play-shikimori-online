@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
-	"name": "Play Shikimori Online",
-	"version": "0.3.6",
+	"name": "Play Шикимори Online",
+	"version": "0.4.0",
 	"minimum_chrome_version": "73",
 	"description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
 	"homepage_url": "https://shikimori.one/clubs/2372",
