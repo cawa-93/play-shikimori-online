@@ -33771,7 +33771,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_vue__;
 
 /******/ })["default"];
 });
-
+//# sourceMappingURL=vuetify.js.map
 });
 
 var Vuetify = unwrapExports(vuetify);
@@ -35050,7 +35050,7 @@ function myanimelistAPI(path, options = {}) {
   })
 }
 
-const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}
+const t=function(){function t(){}return t.prototype.then=function(e,r){const o=new t,i=this.s;if(i){const t=1&i?e:r;if(t){try{n(o,1,t(this.v));}catch(t){n(o,2,t);}return o}return this}return this.o=function(t){try{const i=t.v;1&t.s?n(o,1,e?e(i):i):r?n(o,1,r(i)):n(o,2,i);}catch(t){n(o,2,t);}},o},t}();function n(e,r,o){if(!e.s){if(o instanceof t){if(!o.s)return void(o.o=n.bind(null,e,r));1&r&&(r=o.s),o=o.v;}if(o&&o.then)return void o.then(n.bind(null,e,r),n.bind(null,e,2));e.s=r,e.v=o;const i=e.o;i&&i(e);}}var e=0,r="function"==typeof WeakMap?WeakMap:function(){var t="function"==typeof Symbol?Symbol(0):"__weak$"+ ++e;this.set=function(n,e){n[t]=e;},this.get=function(n){return n[t]};};function o(t,n){return new Promise(function(e,r){t.onsuccess=function(){var r=t.result;n&&(r=n(r)),e(r);},t.onerror=function(){r(t.error);};})}function i(t,n){return o(t.openCursor(n),function(t){return t?[t.key,t.value]:[]})}function u(t){return new Promise(function(n,e){t.oncomplete=function(){n();},t.onabort=function(){e(t.error);},t.onerror=function(){e(t.error);};})}function c(t){if(!function(t){if("number"==typeof t||"string"==typeof t)return !0;if("object"==typeof t&&t){if(Array.isArray(t))return !0;if("setUTCFullYear"in t)return !0;if("function"==typeof ArrayBuffer&&ArrayBuffer.isView(t))return !0;if("byteLength"in t&&"length"in t)return !0}return !1}(t))throw Error("kv-storage: The given value is not allowed as a key")}var f={};function s(t,n){return i(t,a(n))}function a(t){return t===f?IDBKeyRange.lowerBound(-Infinity):IDBKeyRange.lowerBound(t,!0)}var v=new r,h=new r,l=new r,y=new r,d=function(){};function p$1(e,r){return r(function(r,o){try{function u(){return h.set(e,f),l.set(e,void 0),{value:d,done:void 0===f}}var c=h.get(e);if(void 0===c)return Promise.resolve({value:void 0,done:!0});var f,v,d,p=function(e,r){var o,i=-1;t:{for(var u=0;u<r.length;u++){var c=r[u][0];if(c){var f=c();if(f&&f.then)break t;if(f===e){i=u;break}}else i=u;}if(-1!==i){do{for(var s=r[i][1];!s;)s=r[++i][1];var a=s();if(a&&a.then){o=!0;break t}var v=r[i][2];i++;}while(v&&!v());return a}}const h=new t,l=n.bind(null,h,2);return (o?a.then(y):f.then(function t(o){for(;;){if(o===e){i=u;break}if(++u===r.length){if(-1!==i)break;return void n(h,1,s)}if(c=r[u][0]){if((o=c())&&o.then)return void o.then(t).then(void 0,l)}else i=u;}do{for(var f=r[i][1];!f;)f=r[++i][1];var s=f();if(s&&s.then)return void s.then(y).then(void 0,l);var a=r[i][2];i++;}while(a&&!a());n(h,1,s);})).then(void 0,l),h;function y(t){for(;;){var e=r[i][2];if(!e||e())break;for(var o=r[++i][1];!o;)o=r[++i][1];if((t=o())&&t.then)return void t.then(y).then(void 0,l)}n(h,1,t);}}(y.get(e),[[function(){return "keys"},function(){return Promise.resolve(function(t,n){return i(t,a(n)).then(function(t){return t[0]})}(o,c)).then(function(t){d=f=t;})}],[function(){return "values"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;f=(n=t)[0],d=v=n[1];})}],[function(){return "entries"},function(){return Promise.resolve(s(o,c)).then(function(t){var n;v=(n=t)[1],d=void 0===(f=n[0])?void 0:[f,v];})}]]);return Promise.resolve(p&&p.then?p.then(u):u())}catch(t){return Promise.reject(t)}})}function m(t,n){var e=new d;return y.set(e,t),v.set(e,n),h.set(e,f),l.set(e,void 0),e}d.prototype.return=function(){h.set(this,void 0);},d.prototype.next=function(){var t=this,n=v.get(this);if(!n)return Promise.reject(new TypeError("Invalid this value"));var e,r=l.get(this);return e=void 0!==r?r.then(function(){return p$1(t,n)}):p$1(this,n),l.set(this,e),e},"function"==typeof Symbol&&Symbol.asyncIterator&&(d.prototype[Symbol.asyncIterator]=function(){return this});var b=function(t,n,e){try{return null===w.get(t)&&function(t){var n=g.get(t);w.set(t,new Promise(function(e,r){var o=self.indexedDB.open(n,1);o.onsuccess=function(){var i=o.result;(function(t,n,e){if(1!==t.objectStoreNames.length)return e(j(n)),!1;if(t.objectStoreNames[0]!==P)return e(j(n)),!1;var r=t.transaction(P,"readonly").objectStore(P);return !(r.autoIncrement||r.keyPath||r.indexNames.length)||(e(j(n)),!1)})(i,n,r)&&(i.onclose=function(){w.set(t,null);},i.onversionchange=function(){i.close(),w.set(t,null);},e(i));},o.onerror=function(){return r(o.error)},o.onupgradeneeded=function(){try{o.result.createObjectStore(P);}catch(t){r(t);}};}));}(t),Promise.resolve(w.get(t)).then(function(t){var r=t.transaction(P,n),o=r.objectStore(P);return e(r,o)})}catch(t){return Promise.reject(t)}},g=new r,w=new r,P="store",k=function(t){var n="kv-storage:"+t;w.set(this,null),g.set(this,n),this.backingStore={database:n,store:P,version:1};};k.prototype.set=function(t,n){try{return c(t),b(this,"readwrite",function(e,r){return void 0===n?r.delete(t):r.put(n,t),u(e)})}catch(t){return Promise.reject(t)}},k.prototype.get=function(t){try{return c(t),b(this,"readonly",function(n,e){return o(e.get(t))})}catch(t){return Promise.reject(t)}},k.prototype.delete=function(t){try{return c(t),b(this,"readwrite",function(n,e){return e.delete(t),u(n)})}catch(t){return Promise.reject(t)}},k.prototype.clear=function(){try{var t=this;function n(){function n(){return o(self.indexedDB.deleteDatabase(g.get(t)))}var r=function(){if(e){try{e.close();}catch(t){}return Promise.resolve(new Promise(setTimeout)).then(function(){})}}();return r&&r.then?r.then(n):n()}var e,r=w.get(t),i=function(){if(null!==r){function n(){w.set(t,null);}var o=function(t,n){try{var o=Promise.resolve(r).then(function(t){e=t;});}catch(t){return}return o&&o.then?o.then(void 0,function(){}):o}();return o&&o.then?o.then(n):n()}}();return i&&i.then?i.then(n):n()}catch(t){return Promise.reject(t)}},k.prototype.keys=function(){var t=this;return m("keys",function(n){return b(t,"readonly",n)})},k.prototype.values=function(){var t=this;return m("values",function(n){return b(t,"readonly",n)})},k.prototype.entries=function(){var t=this;return m("entries",function(n){return b(t,"readonly",n)})},"function"==typeof Symbol&&Symbol.asyncIterator&&(k.prototype[Symbol.asyncIterator]=k.prototype.entries);var S=new k("default");function j(t){return new Error('kv-storage: database "'+t+'" corrupted')}//# sourceMappingURL=kv-storage-polyfill.mjs.map
 
 const worker = new Worker('/player/worker.js');
 
@@ -36746,12 +36746,22 @@ var script$6 = {
 
   data() {
     return {
-      loading: true,
+      layout: {
+        loading: true,
+        moreComments: {
+          loading: false
+        },
+        newComment: {
+          loading: false
+        }
+      },
       topic: null,
-      comments: [],
-      newCommentText: "",
-      commentsPerPage: 30,
-      valid: false
+      comments: {
+        items: [],
+        page: 1,
+        perPage: 20
+      },
+      newCommentText: ""
     };
   },
 
@@ -36770,22 +36780,17 @@ var script$6 = {
 
     currentEpisodeID() {
       return this.$store.state.player.currentEpisodeID;
-    },
-
-    topicUrl() {
-      return `https://${sessionStorage.getItem("shiki-domain") ||
-        "shikimori.one"}${
-        this.topic.forum.url
-      }/${this.topic.linked_type.toLowerCase()}-${this.topic.linked_id}/${
-        this.topic.id
-      }`;
     }
   },
 
   methods: {
+    updateAuth() {
+      return updateAuth();
+    },
+
     async init() {
       if (!this.currentEpisode || !this.anime) return;
-      this.loading = true;
+      this.layout.loading = true;
 
       const topics = await shikimoriAPI(
         `/animes/${this.anime.id}/topics?kind=episode&episode=${
@@ -36794,11 +36799,12 @@ var script$6 = {
       );
 
       this.topic = topics[0];
-      this.comments = [];
+      this.comments.items = [];
+      this.comments.page = 1;
 
       await this.loadComments();
 
-      this.loading = false;
+      this.layout.loading = false;
     },
 
     proccessComment(comment) {
@@ -36843,30 +36849,114 @@ var script$6 = {
         return;
       }
 
+      this.layout.moreComments.loading = true;
+
       try {
         const comments = await shikimoriAPI(
           `/comments/?desc=0&commentable_id=${
             this.topic.id
-          }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this
-            .comments.length /
-            this.commentsPerPage +
-            1}`
+          }&commentable_type=Topic&limit=${this.comments.perPage}&page=${
+            this.comments.page
+          }`
         );
 
-        if (comments.length > this.commentsPerPage) {
+        if (comments.length > this.comments.perPage) {
           comments.pop();
         }
 
-        this.comments.push(...comments.map(c => this.proccessComment(c)));
+        this.comments.items.push(...comments.map(c => this.proccessComment(c)));
+        this.comments.page += 1;
       } catch (error) {
         const exception = error.message || error;
         this.$ga.exception(exception);
       }
+
+      this.layout.moreComments.loading = false;
     },
 
     async createComment() {
+      if (!this.user || !this.anime) {
+        return;
+      }
+
+      this.layout.newComment.loading = true;
+
+      let auth = await getAuth();
+      if (!auth || !auth.access_token) {
+        this.layout.newComment.loading = false;
+        return;
+      }
+
+      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+        auth = await updateAuth();
+      }
+
+      const headers = {
+        Authorization: `Bearer ${auth.access_token}`
+      };
+
+      if (!this.topic) {
+        let is_fandub = false;
+        let is_raw = false;
+        let is_subtitles = false;
+
+        for (const translation of this.currentEpisode.translations) {
+          switch (translation.typeKind) {
+            case "raw":
+              is_raw = true;
+              break;
+
+            case "sub":
+              is_subtitles = true;
+              break;
+
+            case "voice":
+              is_fandub = true;
+              break;
+          }
+
+          if (is_fandub && is_raw && is_subtitles) {
+            break;
+          }
+        }
+
+        const episode_notifications = await shikimoriAPI(
+          "/v2/episode_notifications",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              episode_notification: {
+                aired_at: new Date(
+                  this.currentEpisode.firstUploadedDateTime
+                ).toISOString(),
+                anime_id: this.anime.id,
+                episode: this.currentEpisode.episodeInt,
+                is_anime365: true,
+                is_fandub,
+                is_raw,
+                is_subtitles
+              },
+              token: "b904f15dbd33a8d8ada48a2895c9de00ce91d6268651d798"
+            })
+          }
+        );
+
+        if (!episode_notifications.topic_id) {
+          this.layout.newComment.loading = false;
+          return;
+        }
+
+        const topic = await shikimoriAPI(
+          `/topics/${episode_notifications.topic_id}`
+        );
+
+        this.topic = topic;
+      }
+
       const newComment = await shikimoriAPI(`/comments`, {
         method: "POST",
+        headers,
         body: JSON.stringify({
           comment: {
             body: this.newCommentText,
@@ -36880,10 +36970,14 @@ var script$6 = {
       });
 
       if (!newComment.id) {
+        this.layout.newComment.loading = false;
         return;
       }
 
-      this.comments.push(this.proccessComment(newComment));
+      this.comments.items.push(this.proccessComment(newComment));
+
+      this.newCommentText = "";
+      this.layout.newComment.loading = false;
     }
   },
 
@@ -36900,8 +36994,7 @@ var script$6 = {
       event.preventDefault();
       const commentId = event.target.href.match(/comments\/(\d+)/)[1];
 
-      const targetElement = this.$el.querySelector(`#comment-${commentId}`);
-      if (targetElement) targetElement.scrollIntoView();
+      location.hash = `comment-${commentId}`;
     });
   },
 
@@ -36926,21 +37019,21 @@ var __vue_render__$6 = function() {
     [
       _c("h2", { staticClass: "display-1 mt-4" }, [_vm._v("Обсуждение серии")]),
       _vm._v(" "),
-      _vm.loading
+      _vm.layout.loading
         ? _c("v-progress-linear", { attrs: { indeterminate: true } })
         : [
-            _vm.topic
+            _vm.topic && _vm.comments.items.length
               ? _c(
                   "div",
                   { staticClass: "mt-4 mb-2" },
                   [
-                    _vm._l(_vm.comments, function(comment) {
+                    _vm._l(_vm.comments.items, function(comment) {
                       return [
                         _c(
                           "v-layout",
                           {
                             key: comment.id,
-                            staticClass: "mb-3",
+                            staticClass: "mb-3 comment-container",
                             attrs: { row: "", id: "comment-" + comment.id }
                           },
                           [
@@ -37006,34 +37099,82 @@ var __vue_render__$6 = function() {
                       ]
                     }),
                     _vm._v(" "),
-                    _vm.comments.length < _vm.topic.comments_count
+                    _vm.comments.items.length < _vm.topic.comments_count
                       ? _c(
                           "v-btn",
                           {
-                            staticClass: "mb-3",
-                            attrs: { flat: "", block: "" },
+                            staticClass: "mt-3",
+                            attrs: {
+                              loading: _vm.layout.moreComments.loading,
+                              flat: "",
+                              block: ""
+                            },
                             on: { click: _vm.loadComments }
                           },
                           [_vm._v("Загрузить ещё")]
                         )
-                      : _vm._e(),
+                      : _vm._e()
+                  ],
+                  2
+                )
+              : _c("p", [_vm._v("Ещё никто не оставил отзыв о серии")]),
+            _vm._v(" "),
+            _vm.user
+              ? _c(
+                  "v-form",
+                  {
+                    staticClass: "mt-3",
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault();
+                        return _vm.createComment($event)
+                      }
+                    }
+                  },
+                  [
+                    _c("v-textarea", {
+                      attrs: {
+                        box: "",
+                        name: "input-7-4",
+                        label: "Напишите ваши впечатления от серии",
+                        required: "",
+                        disabled: _vm.layout.newComment.loading
+                      },
+                      model: {
+                        value: _vm.newCommentText,
+                        callback: function($$v) {
+                          _vm.newCommentText = $$v;
+                        },
+                        expression: "newCommentText"
+                      }
+                    }),
                     _vm._v(" "),
                     _c(
                       "v-btn",
                       {
-                        staticClass: "mb-3",
-                        attrs: { outline: "", block: "", href: _vm.topicUrl }
+                        attrs: {
+                          disabled:
+                            !_vm.newCommentText ||
+                            _vm.layout.newComment.loading,
+                          block: "",
+                          type: "submit",
+                          loading: _vm.layout.newComment.loading
+                        }
                       },
-                      [_vm._v("Написать отзыв о серии")]
+                      [_vm._v("Отправить")]
                     )
                   ],
-                  2
+                  1
                 )
-              : _c("p", { staticClass: "blockquote pl-0" }, [
-                  _vm._v(
-                    "На Шикимори пока-что нет темы с обсуждением этого эпизода"
-                  )
-                ])
+              : _c(
+                  "v-btn",
+                  { staticClass: "pl-2", on: { click: _vm.updateAuth } },
+                  [
+                    _c("v-icon", { staticClass: "mr-1" }, [_vm._v("sync")]),
+                    _vm._v("Включить возможность комментирования\n    ")
+                  ],
+                  1
+                )
           ]
     ],
     2
@@ -37045,7 +37186,7 @@ __vue_render__$6._withStripped = true;
   /* style */
   const __vue_inject_styles__$6 = function (inject) {
     if (!inject) return
-    inject("data-v-0c286786_0", { source: "\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n.b-replies {\n  text-align: right;\n}\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n.b-image .marker {\n  display: none;\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/comments.vue"],"names":[],"mappings":";AA2OA;EACA,WAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,iBAAA;EACA,sBAAA;AACA;AAEA;EACA,eAAA;AACA;AACA;EACA,sBAAA;EACA,YAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,2BAAA;AACA;AAEA;EACA,aAAA;AACA","file":"comments.vue","sourcesContent":["<template>\n  <section class=\"comments-container\">\n    <h2 class=\"display-1 mt-4\">Обсуждение серии</h2>\n    <v-progress-linear :indeterminate=\"true\" v-if=\"loading\"></v-progress-linear>\n    <template v-else>\n      <div class=\"mt-4 mb-2\" v-if=\"topic\">\n        <template v-for=\"comment in comments\">\n          <v-layout row :key=\"comment.id\" class=\"mb-3\" :id=\"'comment-' + comment.id\">\n            <v-list-tile-avatar>\n              <img :src=\"comment.user.avatar\">\n            </v-list-tile-avatar>\n\n            <v-list-tile-content>\n              <v-list-tile-title>\n                <strong>\n                  <a\n                    :href=\"'https://shikimori.one/' + comment.user.nickname\"\n                  >@{{ comment.user.nickname }}</a>\n                </strong>\n                <a\n                  class=\"text-lg-right grey--text text--lighten-1 ml-2\"\n                  :href=\"'https://shikimori.one/comments/' + comment.id\"\n                >{{comment.created_at_relative}}</a>\n              </v-list-tile-title>\n              <div class=\"w-100 comment-body\" v-html=\"comment.html_body\"></div>\n            </v-list-tile-content>\n          </v-layout>\n          <v-divider class=\"mb-3\"></v-divider>\n        </template>\n\n        <v-btn\n          v-if=\"comments.length < topic.comments_count\"\n          @click=\"loadComments\"\n          flat\n          block\n          class=\"mb-3\"\n        >Загрузить ещё</v-btn>\n\n        <v-btn outline block class=\"mb-3\" :href=\"topicUrl\">Написать отзыв о серии</v-btn>\n\n        <!-- <v-form v-model=\"valid\" @submit.prevent=\"createComment\">\n          <v-textarea\n            box\n            name=\"input-7-4\"\n            label=\"Напишите ваши впечатления от серии\"\n            v-model=\"newCommentText\"\n            required\n          ></v-textarea>\n          <v-btn :disabled=\"!valid\" block type=\"submit\">Отправить</v-btn>\n        </v-form>-->\n      </div>\n      <p v-else class=\"blockquote pl-0\">На Шикимори пока-что нет темы с обсуждением этого эпизода</p>\n    </template>\n  </section>\n</template>\n\n\n<script>\nimport Vue from \"vue\";\nimport { shikimoriAPI } from \"../../helpers\";\n\nexport default {\n  name: \"comments\",\n\n  data() {\n    return {\n      loading: true,\n      topic: null,\n      comments: [],\n      newCommentText: \"\",\n      commentsPerPage: 30,\n      valid: false\n    };\n  },\n\n  computed: {\n    user() {\n      return this.$store.state.shikimori.user;\n    },\n\n    anime() {\n      return this.$store.state.shikimori.anime;\n    },\n\n    currentEpisode() {\n      return this.$store.getters[\"player/currentEpisode\"];\n    },\n\n    currentEpisodeID() {\n      return this.$store.state.player.currentEpisodeID;\n    },\n\n    topicUrl() {\n      return `https://${sessionStorage.getItem(\"shiki-domain\") ||\n        \"shikimori.one\"}${\n        this.topic.forum.url\n      }/${this.topic.linked_type.toLowerCase()}-${this.topic.linked_id}/${\n        this.topic.id\n      }`;\n    }\n  },\n\n  methods: {\n    async init() {\n      if (!this.currentEpisode || !this.anime) return;\n      this.loading = true;\n\n      const topics = await shikimoriAPI(\n        `/animes/${this.anime.id}/topics?kind=episode&episode=${\n          this.currentEpisode.episodeInt\n        }`\n      );\n\n      this.topic = topics[0];\n      this.comments = [];\n\n      await this.loadComments();\n\n      this.loading = false;\n    },\n\n    proccessComment(comment) {\n      comment.html_body = comment.html_body\n        .replace(/(href|src)=\"\\//gimu, '$1=\"https://shikimori.one/')\n        .replace(\"b-quote\", \"blockquote\");\n\n      comment.created_at_relative = this.getCreatedAtRelative(\n        comment.created_at\n      );\n\n      return comment;\n    },\n\n    getCreatedAtRelative(iso) {\n      const date = new Date(iso);\n      const now = new Date();\n      const diff = date - now;\n      const formatter = new Intl.RelativeTimeFormat();\n\n      const msPerMinute = 60 * 1000;\n      const msPerHour = msPerMinute * 60;\n      const msPerDay = msPerHour * 24;\n      const msPerMonth = msPerDay * 30;\n      const msPerYear = msPerDay * 365;\n\n      if (Math.abs(diff) < msPerMinute)\n        return formatter.format(Math.round(diff / 1000), \"seconds\");\n      if (Math.abs(diff) < msPerHour)\n        return formatter.format(Math.round(diff / msPerMinute), \"minutes\");\n      if (Math.abs(diff) < msPerDay)\n        return formatter.format(Math.round(diff / msPerHour), \"hour\");\n      if (Math.abs(diff) < msPerMonth)\n        return formatter.format(Math.round(diff / msPerDay), \"day\");\n      if (Math.abs(diff) < msPerYear)\n        return formatter.format(Math.round(diff / msPerMonth), \"month\");\n      return formatter.format(Math.round(diff / msPerYear), \"year\");\n    },\n\n    async loadComments() {\n      if (!this.topic) {\n        return;\n      }\n\n      try {\n        const comments = await shikimoriAPI(\n          `/comments/?desc=0&commentable_id=${\n            this.topic.id\n          }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this\n            .comments.length /\n            this.commentsPerPage +\n            1}`\n        );\n\n        if (comments.length > this.commentsPerPage) {\n          comments.pop();\n        }\n\n        this.comments.push(...comments.map(c => this.proccessComment(c)));\n      } catch (error) {\n        const exception = error.message || error;\n        this.$ga.exception(exception);\n      }\n    },\n\n    async createComment() {\n      const newComment = await shikimoriAPI(`/comments`, {\n        method: \"POST\",\n        body: JSON.stringify({\n          comment: {\n            body: this.newCommentText,\n            commentable_id: this.topic.id,\n            commentable_type: \"Topic\",\n            is_offtopic: false,\n            is_summary: false\n          },\n          frontend: false\n        })\n      });\n\n      if (!newComment.id) {\n        return;\n      }\n\n      this.comments.push(this.proccessComment(newComment));\n    }\n  },\n\n  created() {\n    this.init();\n  },\n\n  mounted() {\n    this.$el.addEventListener(\"click\", event => {\n      if (!event.target.matches('.comment-body a[href*=\"/comments/\"]')) {\n        return;\n      }\n\n      event.preventDefault();\n      const commentId = event.target.href.match(/comments\\/(\\d+)/)[1];\n\n      const targetElement = this.$el.querySelector(`#comment-${commentId}`);\n      if (targetElement) targetElement.scrollIntoView();\n    });\n  },\n\n  watch: {\n    currentEpisodeID() {\n      this.init();\n    }\n  }\n};\n</script>\n\n\n<style >\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n\n.b-replies {\n  text-align: right;\n}\n\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n\n.b-image .marker {\n  display: none;\n}\n</style>\n"]}, media: undefined });
+    inject("data-v-5c34f99e_0", { source: "\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n.b-replies {\n  text-align: right;\n}\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n.b-image .marker {\n  display: none;\n}\n.comment-container:target {\n  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\n}\n@keyframes shake {\n10%,\n  90% {\n    transform: translate3d(-1px, 0, 0);\n}\n20%,\n  80% {\n    transform: translate3d(2px, 0, 0);\n}\n30%,\n  50%,\n  70% {\n    transform: translate3d(-4px, 0, 0);\n}\n40%,\n  60% {\n    transform: translate3d(4px, 0, 0);\n}\n}\n", map: {"version":3,"sources":["/Users/Alex/Develop/play-shikimori/src/player/components/comments.vue"],"names":[],"mappings":";AAuVA;EACA,WAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,iBAAA;EACA,sBAAA;AACA;AAEA;EACA,eAAA;AACA;AACA;EACA,sBAAA;EACA,YAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,2BAAA;AACA;AAEA;EACA,aAAA;AACA;AAEA;EACA,gEAAA;AACA;AAEA;AACA;;IAEA,kCAAA;AACA;AAEA;;IAEA,iCAAA;AACA;AAEA;;;IAGA,kCAAA;AACA;AAEA;;IAEA,iCAAA;AACA;AACA","file":"comments.vue","sourcesContent":["<template>\n  <section class=\"comments-container\">\n    <h2 class=\"display-1 mt-4\">Обсуждение серии</h2>\n    <v-progress-linear :indeterminate=\"true\" v-if=\"layout.loading\"></v-progress-linear>\n    <template v-else>\n      <div class=\"mt-4 mb-2\" v-if=\"topic && comments.items.length\">\n        <template v-for=\"comment in comments.items\">\n          <v-layout\n            row\n            :key=\"comment.id\"\n            class=\"mb-3 comment-container\"\n            :id=\"'comment-' + comment.id\"\n          >\n            <v-list-tile-avatar>\n              <img :src=\"comment.user.avatar\">\n            </v-list-tile-avatar>\n\n            <v-list-tile-content>\n              <v-list-tile-title>\n                <strong>\n                  <a\n                    :href=\"'https://shikimori.one/' + comment.user.nickname\"\n                  >@{{ comment.user.nickname }}</a>\n                </strong>\n                <a\n                  class=\"text-lg-right grey--text text--lighten-1 ml-2\"\n                  :href=\"'https://shikimori.one/comments/' + comment.id\"\n                >{{comment.created_at_relative}}</a>\n              </v-list-tile-title>\n              <div class=\"w-100 comment-body\" v-html=\"comment.html_body\"></div>\n            </v-list-tile-content>\n          </v-layout>\n          <v-divider class=\"mb-3\"></v-divider>\n        </template>\n\n        <v-btn\n          v-if=\"comments.items.length < topic.comments_count\"\n          @click=\"loadComments\"\n          :loading=\"layout.moreComments.loading\"\n          flat\n          block\n          class=\"mt-3\"\n        >Загрузить ещё</v-btn>\n      </div>\n\n      <p v-else>Ещё никто не оставил отзыв о серии</p>\n\n      <v-form v-if=\"user\" @submit.prevent=\"createComment\" class=\"mt-3\">\n        <v-textarea\n          box\n          name=\"input-7-4\"\n          label=\"Напишите ваши впечатления от серии\"\n          v-model=\"newCommentText\"\n          required\n          :disabled=\"layout.newComment.loading\"\n        ></v-textarea>\n        <v-btn\n          :disabled=\"!newCommentText || layout.newComment.loading\"\n          block\n          type=\"submit\"\n          :loading=\"layout.newComment.loading\"\n        >Отправить</v-btn>\n      </v-form>\n\n      <v-btn v-else class=\"pl-2\" @click=\"updateAuth\">\n        <v-icon class=\"mr-1\">sync</v-icon>Включить возможность комментирования\n      </v-btn>\n    </template>\n  </section>\n</template>\n\n\n<script>\nimport Vue from \"vue\";\nimport { shikimoriAPI, updateAuth, getAuth } from \"../../helpers\";\n\nexport default {\n  name: \"comments\",\n\n  data() {\n    return {\n      layout: {\n        loading: true,\n        moreComments: {\n          loading: false\n        },\n        newComment: {\n          loading: false\n        }\n      },\n      topic: null,\n      comments: {\n        items: [],\n        page: 1,\n        perPage: 20\n      },\n      newCommentText: \"\"\n    };\n  },\n\n  computed: {\n    user() {\n      return this.$store.state.shikimori.user;\n    },\n\n    anime() {\n      return this.$store.state.shikimori.anime;\n    },\n\n    currentEpisode() {\n      return this.$store.getters[\"player/currentEpisode\"];\n    },\n\n    currentEpisodeID() {\n      return this.$store.state.player.currentEpisodeID;\n    }\n  },\n\n  methods: {\n    updateAuth() {\n      return updateAuth();\n    },\n\n    async init() {\n      if (!this.currentEpisode || !this.anime) return;\n      this.layout.loading = true;\n\n      const topics = await shikimoriAPI(\n        `/animes/${this.anime.id}/topics?kind=episode&episode=${\n          this.currentEpisode.episodeInt\n        }`\n      );\n\n      this.topic = topics[0];\n      this.comments.items = [];\n      this.comments.page = 1;\n\n      await this.loadComments();\n\n      this.layout.loading = false;\n    },\n\n    proccessComment(comment) {\n      comment.html_body = comment.html_body\n        .replace(/(href|src)=\"\\//gimu, '$1=\"https://shikimori.one/')\n        .replace(\"b-quote\", \"blockquote\");\n\n      comment.created_at_relative = this.getCreatedAtRelative(\n        comment.created_at\n      );\n\n      return comment;\n    },\n\n    getCreatedAtRelative(iso) {\n      const date = new Date(iso);\n      const now = new Date();\n      const diff = date - now;\n      const formatter = new Intl.RelativeTimeFormat();\n\n      const msPerMinute = 60 * 1000;\n      const msPerHour = msPerMinute * 60;\n      const msPerDay = msPerHour * 24;\n      const msPerMonth = msPerDay * 30;\n      const msPerYear = msPerDay * 365;\n\n      if (Math.abs(diff) < msPerMinute)\n        return formatter.format(Math.round(diff / 1000), \"seconds\");\n      if (Math.abs(diff) < msPerHour)\n        return formatter.format(Math.round(diff / msPerMinute), \"minutes\");\n      if (Math.abs(diff) < msPerDay)\n        return formatter.format(Math.round(diff / msPerHour), \"hour\");\n      if (Math.abs(diff) < msPerMonth)\n        return formatter.format(Math.round(diff / msPerDay), \"day\");\n      if (Math.abs(diff) < msPerYear)\n        return formatter.format(Math.round(diff / msPerMonth), \"month\");\n      return formatter.format(Math.round(diff / msPerYear), \"year\");\n    },\n\n    async loadComments() {\n      if (!this.topic) {\n        return;\n      }\n\n      this.layout.moreComments.loading = true;\n\n      try {\n        const comments = await shikimoriAPI(\n          `/comments/?desc=0&commentable_id=${\n            this.topic.id\n          }&commentable_type=Topic&limit=${this.comments.perPage}&page=${\n            this.comments.page\n          }`\n        );\n\n        if (comments.length > this.comments.perPage) {\n          comments.pop();\n        }\n\n        this.comments.items.push(...comments.map(c => this.proccessComment(c)));\n        this.comments.page += 1;\n      } catch (error) {\n        const exception = error.message || error;\n        this.$ga.exception(exception);\n      }\n\n      this.layout.moreComments.loading = false;\n    },\n\n    async createComment() {\n      if (!this.user || !this.anime) {\n        return;\n      }\n\n      this.layout.newComment.loading = true;\n\n      let auth = await getAuth();\n      if (!auth || !auth.access_token) {\n        this.layout.newComment.loading = false;\n        return;\n      }\n\n      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {\n        auth = await updateAuth();\n      }\n\n      const headers = {\n        Authorization: `Bearer ${auth.access_token}`\n      };\n\n      if (!this.topic) {\n        let is_fandub = false;\n        let is_raw = false;\n        let is_subtitles = false;\n\n        for (const translation of this.currentEpisode.translations) {\n          switch (translation.typeKind) {\n            case \"raw\":\n              is_raw = true;\n              break;\n\n            case \"sub\":\n              is_subtitles = true;\n              break;\n\n            case \"voice\":\n              is_fandub = true;\n              break;\n          }\n\n          if (is_fandub && is_raw && is_subtitles) {\n            break;\n          }\n        }\n\n        const episode_notifications = await shikimoriAPI(\n          \"/v2/episode_notifications\",\n          {\n            method: \"POST\",\n            headers,\n            body: JSON.stringify({\n              episode_notification: {\n                aired_at: new Date(\n                  this.currentEpisode.firstUploadedDateTime\n                ).toISOString(),\n                anime_id: this.anime.id,\n                episode: this.currentEpisode.episodeInt,\n                is_anime365: true,\n                is_fandub,\n                is_raw,\n                is_subtitles\n              },\n              token: \"b904f15dbd33a8d8ada48a2895c9de00ce91d6268651d798\"\n            })\n          }\n        );\n\n        if (!episode_notifications.topic_id) {\n          this.layout.newComment.loading = false;\n          return;\n        }\n\n        const topic = await shikimoriAPI(\n          `/topics/${episode_notifications.topic_id}`\n        );\n\n        this.topic = topic;\n      }\n\n      const newComment = await shikimoriAPI(`/comments`, {\n        method: \"POST\",\n        headers,\n        body: JSON.stringify({\n          comment: {\n            body: this.newCommentText,\n            commentable_id: this.topic.id,\n            commentable_type: \"Topic\",\n            is_offtopic: false,\n            is_summary: false\n          },\n          frontend: false\n        })\n      });\n\n      if (!newComment.id) {\n        this.layout.newComment.loading = false;\n        return;\n      }\n\n      this.comments.items.push(this.proccessComment(newComment));\n\n      this.newCommentText = \"\";\n      this.layout.newComment.loading = false;\n    }\n  },\n\n  created() {\n    this.init();\n  },\n\n  mounted() {\n    this.$el.addEventListener(\"click\", event => {\n      if (!event.target.matches('.comment-body a[href*=\"/comments/\"]')) {\n        return;\n      }\n\n      event.preventDefault();\n      const commentId = event.target.href.match(/comments\\/(\\d+)/)[1];\n\n      location.hash = `comment-${commentId}`;\n    });\n  },\n\n  watch: {\n    currentEpisodeID() {\n      this.init();\n    }\n  }\n};\n</script>\n\n\n<style >\n.w-100 {\n  width: 100%;\n}\n.comments-container {\n  font-size: 1rem;\n}\n.comment-body {\n  line-height: 1.65;\n  word-break: break-word;\n}\n\n.comment-body img {\n  max-width: 100%;\n}\n.smiley {\n  vertical-align: middle;\n  height: 32px;\n}\n\n.b-replies {\n  text-align: right;\n}\n\n.b-replies:before {\n  content: attr(data-text-ru);\n}\n\n.b-image .marker {\n  display: none;\n}\n\n.comment-container:target {\n  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\n}\n\n@keyframes shake {\n  10%,\n  90% {\n    transform: translate3d(-1px, 0, 0);\n  }\n\n  20%,\n  80% {\n    transform: translate3d(2px, 0, 0);\n  }\n\n  30%,\n  50%,\n  70% {\n    transform: translate3d(-4px, 0, 0);\n  }\n\n  40%,\n  60% {\n    transform: translate3d(4px, 0, 0);\n  }\n}\n</style>\n"]}, media: undefined });
 
   };
   /* scoped */
