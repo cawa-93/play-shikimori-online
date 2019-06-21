@@ -24,8 +24,21 @@ export const mutations = {
 
 export const actions = {
   async initAnime({ commit }) {
+    const headers = {}
+
+    let auth = await getAuth()
+    if (auth && auth.access_token) {
+      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+        auth = await updateAuth()
+      }
+
+      headers.Authorization = `Bearer ${auth.access_token}`
+    }
+
+
+
     const animeId = (new URL(location.href)).searchParams.get('anime')
-    const anime = await shikimoriAPI(`/animes/${animeId}`)
+    const anime = await shikimoriAPI(`/animes/${animeId}`, { headers })
     commit('setAnime', anime)
   },
 
