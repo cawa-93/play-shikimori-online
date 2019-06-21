@@ -3,8 +3,8 @@
     <h2 class="display-1 mt-4">Обсуждение серии</h2>
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
-      <div class="mt-4 mb-2" v-if="topic && comments.length">
-        <template v-for="comment in comments">
+      <div class="mt-4 mb-2" v-if="topic && comments.items.length">
+        <template v-for="comment in comments.items">
           <v-layout row :key="comment.id" class="mb-3" :id="'comment-' + comment.id">
             <v-list-tile-avatar>
               <img :src="comment.user.avatar">
@@ -29,7 +29,7 @@
         </template>
 
         <v-btn
-          v-if="comments.length < topic.comments_count"
+          v-if="comments.items.length < topic.comments_count"
           @click="loadComments"
           :loading="layout.moreComments.loading"
           flat
@@ -84,9 +84,12 @@ export default {
         }
       },
       topic: null,
-      comments: [],
-      newCommentText: "",
-      commentsPerPage: 20
+      comments: {
+        items: [],
+        page: 1,
+        perPage: 20
+      },
+      newCommentText: ""
     };
   },
 
@@ -124,7 +127,8 @@ export default {
       );
 
       this.topic = topics[0];
-      this.comments = [];
+      this.comments.items = [];
+      this.comments.page = 1;
 
       await this.loadComments();
 
@@ -179,17 +183,17 @@ export default {
         const comments = await shikimoriAPI(
           `/comments/?desc=0&commentable_id=${
             this.topic.id
-          }&commentable_type=Topic&limit=${this.commentsPerPage}&page=${this
-            .comments.length /
-            this.commentsPerPage +
-            1}`
+          }&commentable_type=Topic&limit=${this.comments.perPage}&page=${
+            this.comments.page
+          }`
         );
 
-        if (comments.length > this.commentsPerPage) {
+        if (comments.length > this.comments.perPage) {
           comments.pop();
         }
 
-        this.comments.push(...comments.map(c => this.proccessComment(c)));
+        this.comments.items.push(...comments.map(c => this.proccessComment(c)));
+        this.comments.page += 1;
       } catch (error) {
         const exception = error.message || error;
         this.$ga.exception(exception);
@@ -298,7 +302,7 @@ export default {
         return;
       }
 
-      this.comments.push(this.proccessComment(newComment));
+      this.comments.items.push(this.proccessComment(newComment));
 
       this.newCommentText = "";
       this.layout.newComment.loading = false;
