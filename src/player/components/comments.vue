@@ -64,7 +64,7 @@
 
       <div v-else class="text-xs-center mt-4">
         <v-btn class="pl-3" @click="updateAuth" large>
-          <v-icon class="mr-2">sync</v-icon>Включить возможность комментирования
+          <v-icon class="mr-2">sync</v-icon>Оставить отзыв
         </v-btn>
       </div>
     </template>
