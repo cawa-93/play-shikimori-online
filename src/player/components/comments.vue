@@ -8,7 +8,7 @@
           <v-layout
             row
             :key="comment.id"
-            class="mb-3 comment-container"
+            class="mb-3 pt-3 comment-container"
             :id="'comment-' + comment.id"
           >
             <v-list-tile-avatar>
@@ -30,7 +30,7 @@
               <div class="w-100 comment-body" v-html="comment.html_body"></div>
             </v-list-tile-content>
           </v-layout>
-          <v-divider class="mb-3"></v-divider>
+          <v-divider></v-divider>
         </template>
 
         <v-btn
