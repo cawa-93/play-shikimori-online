@@ -20,3 +20,8 @@
 .next-episode:hover {
   opacity: 1;
 }
+
+
+.next-episode[hidden] {
+	display: none;
+}
