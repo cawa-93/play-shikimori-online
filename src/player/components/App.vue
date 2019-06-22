@@ -2,7 +2,7 @@
   <section>
     <v-app id="app" :dark="darkMode">
       <v-container class="__layout">
-        <v-layout column style="	height: calc(100vh - 110px);">
+        <v-layout column style="	height: calc(100vh - 110px);min-height: 378px;">
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
