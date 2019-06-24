@@ -35,7 +35,6 @@ async function main() {
 		return
 	}
 
-
 	const seriesID = await getSeriesId(anime.id)
 
 	if (seriesID) {

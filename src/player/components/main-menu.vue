@@ -41,7 +41,7 @@
 
     <v-divider></v-divider>
 
-    <actions v-if="$store.state.shikimori.anime"></actions>
+    <actions></actions>
 
     <!-- <div>
     <template v-if="!user">

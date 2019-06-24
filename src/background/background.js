@@ -2,10 +2,21 @@ chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     if (request.contentScriptQuery == 'fetchUrl') {
 
-      fetch(request.url, request.options)
-        .then(response => response.json())
-        .then(response => sendResponse({ response }))
-        .catch(error => sendResponse({ error }));
+      const info = new URL(request.url)
+
+      chrome.permissions.contains({
+        origins: [`${info.protocol}//${info.hostname}/*`]
+      }, function (granted) {
+        if (granted) {
+          fetch(request.url, request.options)
+            .then(response => response.json())
+            .then(response => sendResponse({ response }))
+            .catch(error => sendResponse({ error }));
+        } else {
+          sendResponse({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
+        }
+      });
+
 
       return true;  // Will respond asynchronously.
     }

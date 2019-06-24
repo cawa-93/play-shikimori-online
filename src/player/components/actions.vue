@@ -2,6 +2,7 @@
 <template>
   <v-list>
     <v-list-tile
+      v-if="$store.state.shikimori.anime"
       key="open-on-shikimori"
       :href="shikiLink.url"
       rel="noopener noreferrer"
@@ -15,6 +16,7 @@
     </v-list-tile>
 
     <v-list-tile
+      v-if="$store.state.player.currentTranslationID"
       key="report-about-error"
       :href="reportAboutError.url"
       rel="noopener noreferrer"

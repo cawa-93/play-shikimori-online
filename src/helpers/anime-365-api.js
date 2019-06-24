@@ -1,7 +1,6 @@
 function anime365API(path, options = {}) {
 
   return new Promise((resolve, reject) => {
-    const manifest = chrome.runtime.getManifest()
     const url = 'https://smotret-anime-365.ru/api' + path
     let headers = {
       "Accept": "application/json",
