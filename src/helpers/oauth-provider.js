@@ -1,4 +1,5 @@
-import { sync } from "../helpers/chrome-storage";
+import { sync } from "./chrome-storage";
+import { shikimoriOauthAPI } from "./shikimori-api";
 
 export async function getAuth() {
   const { userAuth } = await sync.get('userAuth')
@@ -10,14 +11,8 @@ export async function updateAuth() {
 
   if (!oldAuth || !oldAuth.refresh_token) {
     const code = await getNewCode()
-
-    const response = await fetch('https://shikimori.one/oauth/token', {
+    const newAuth = await shikimoriOauthAPI('/token', {
       method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-      },
       body: JSON.stringify({
         code,
         grant_type: 'authorization_code',
@@ -27,7 +22,6 @@ export async function updateAuth() {
       })
     })
 
-    const newAuth = await response.json()
     if (newAuth.access_token && newAuth.refresh_token) {
       await sync.set({ 'userAuth': newAuth })
       return newAuth
@@ -35,13 +29,8 @@ export async function updateAuth() {
       return Promise.reject(newAuth)
     }
   } else {
-    const response = await fetch('https://shikimori.one/oauth/token', {
+    const newAuth = await shikimoriOauthAPI('/token', {
       method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
-      },
       body: JSON.stringify({
         grant_type: 'refresh_token',
         client_id: process.env.SHIKIMORI_CLIENT_ID,
@@ -50,7 +39,6 @@ export async function updateAuth() {
       })
     })
 
-    const newAuth = await response.json()
     if (newAuth.access_token && newAuth.refresh_token) {
       await sync.set({ 'userAuth': newAuth })
       return newAuth

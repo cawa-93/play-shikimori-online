@@ -1,9 +1,19 @@
-import { getAuth, updateAuth } from './oauth-provider'
-
 export function shikimoriAPI(path, options = {}) {
-  return new Promise((resolve, reject) => {
+  const url = `https://shikimori.one/api${path}`
 
-    const url = `https://shikimori.one/api${path}`
+  return shikimoriCallAPI(url, options)
+}
+
+
+export function shikimoriOauthAPI(path, options = {}) {
+  const url = `https://shikimori.one/oauth${path}`
+
+  return shikimoriCallAPI(url, options)
+}
+
+
+export function shikimoriCallAPI(url, options = {}) {
+  return new Promise((resolve, reject) => {
 
     if (!options.headers) {
       options.headers = {}
@@ -11,7 +21,6 @@ export function shikimoriAPI(path, options = {}) {
 
     options.headers["Accept"] = "application/json"
     options.headers["Content-Type"] = "application/json"
-    options.headers["User-Agent"] = "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
 
     options.credentials = 'omit'
 
@@ -29,15 +38,5 @@ export function shikimoriAPI(path, options = {}) {
       })
   })
 }
-
-// export async function shikimoriAuthAPI(path, options = {}) {
-//   let auth = await getAuth()
-
-//   if (!auth || !auth.access_token || ((auth.created_at + auth.expires_in) * 1000 <= Date.now())) {
-//     auth = await updateAuth()
-//   }
-
-//   return await shikimoriAPI(path, options)
-// }
 
 export default shikimoriAPI

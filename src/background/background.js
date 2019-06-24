@@ -22,7 +22,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
     for (let header of requestHeaders) {
       if (header.name === 'User-Agent') {
-        header.value = 'Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori'
+        const manifest = chrome.runtime.getManifest()
+        header.value = `${manifest.name}; Browser extension; ${manifest.homepage_url}`
         break;
       }
     }

@@ -1,11 +1,11 @@
 function anime365API(path, options = {}) {
 
   return new Promise((resolve, reject) => {
+    const manifest = chrome.runtime.getManifest()
     const url = 'https://smotret-anime-365.ru/api' + path
     let headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "Play Shikimori; Browser extension; https://github.com/cawa-93/play-shikimori"
     };
 
     options.headers = headers
