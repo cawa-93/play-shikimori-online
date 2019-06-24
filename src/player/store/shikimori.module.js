@@ -32,7 +32,7 @@ export const actions = {
         auth = await updateAuth()
       }
 
-      headers.Authorization = `Bearer ${auth.access_token}`
+      headers.Authorization = `${auth.token_type} ${auth.access_token}`
     }
 
 
@@ -55,7 +55,7 @@ export const actions = {
 
     const user = await shikimoriAPI(`/users/whoami`, {
       headers: {
-        Authorization: `Bearer ${auth.access_token}`
+        Authorization: `${auth.token_type} ${auth.access_token}`
       }
     })
 
@@ -97,7 +97,7 @@ export const actions = {
         }
       ),
       headers: {
-        Authorization: `Bearer ${auth.access_token}`
+        Authorization: `${auth.token_type} ${auth.access_token}`
       }
     })
 

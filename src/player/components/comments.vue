@@ -227,7 +227,7 @@ export default {
       }
 
       const headers = {
-        Authorization: `Bearer ${auth.access_token}`
+        Authorization: `${auth.token_type} ${auth.access_token}`
       };
 
       if (!this.topic) {
