@@ -20,7 +20,7 @@ async function main() {
 	WatchButtonSection.classList.add('watch-online-block')
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
-		<a href="#" id="watch-online-button" class="b-link_button dark b-ajax"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
+		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`
 	infoSection.appendChild(WatchButtonSection)
@@ -32,6 +32,7 @@ async function main() {
 	if (!anime || !anime.id) {
 		WatchOnlineButton.textContent = 'Не удалось определить ID аниме'
 		WatchOnlineButton.classList.remove('b-ajax')
+		WatchOnlineButton.style.cursor = 'not-allowed'
 		return
 	}
 
@@ -53,8 +54,10 @@ async function main() {
 		playerURL.searchParams.append('episodeInt', episodeInt)
 
 		WatchOnlineButton.href = playerURL.toString()
+		WatchOnlineButton.style.cursor = 'pointer'
 	} else {
 		WatchOnlineButton.textContent = 'Нет видео'
+		WatchOnlineButton.style.cursor = 'not-allowed'
 	}
 
 	WatchOnlineButton.classList.remove('b-ajax')
