@@ -197,6 +197,12 @@ export default {
 
         if (comments.length > this.comments.perPage) {
           comments.pop();
+        } else if (this.comments.page !== 1) {
+          this.$ga.event(
+            "comments-actions",
+            "load-all-comments",
+            this.comments.page
+          );
         }
 
         this.comments.items.push(...comments.map(c => this.proccessComment(c)));
@@ -313,6 +319,8 @@ export default {
 
       this.newCommentText = "";
       this.layout.newComment.loading = false;
+
+      this.$ga.event("comments-actions", "post-comment");
     }
   },
 
