@@ -29,9 +29,9 @@ module.exports = [{
     copy({
       targets: {
         'src/manifest.json': 'dist/manifest.json',
-        'src/icons/play.png': 'dist/icons/play.png',
-        'src/icons/play-128.png': 'dist/icons/play-128.png',
-        'src/icons/pause.png': 'dist/icons/pause.png',
+        'src/icons': 'dist/icons',
+        // 'src/icons/play-128.png': 'dist/icons/play-128.png',
+        // 'src/icons/pause.png': 'dist/icons/pause.png',
       }
     })
   ]
