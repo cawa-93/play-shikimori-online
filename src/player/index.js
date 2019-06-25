@@ -20,7 +20,8 @@ Vue.use(VueAnalytics, {
     exceptionLogs: true//process.env.NODE_ENV === 'development'
   },
   set: [
-    { field: 'checkProtocolTask', value: function () { } }
+    { field: 'checkProtocolTask', value: function () { } },
+    { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
     enabled: process.env.NODE_ENV === 'development'
