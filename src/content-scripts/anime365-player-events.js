@@ -1,7 +1,13 @@
+import { storage } from "kv-storage-polyfill";
+import { throttle } from "../helpers";
+
 /**
  * @type {videojs.default.Player & {concatenate: {activated: boolean}}}
  */
 const player = window.playerGlobal
+const currentURL = new URL(location.href)
+const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
+const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
 
 /**
  * Главная функция
@@ -13,14 +19,25 @@ function main() {
 
 
 	setCurrentTime()
-	initSaveCurrentTime()
 	initSaveFullScreenState()
-	createNextEpisodeButton()
+	const nextEpisodeButton = createNextEpisodeButton()
 
 	/**
 	 * Инициализирует отправку событий плеера к родительскому окну
 	 */
-	player.on(['play', 'pause', 'ended', 'timeupdate'], proxyEventToParent)
+	player.on(['play', 'pause', 'ended'], proxyEventToParent)
+
+	const saveCurrentTimeThrottled = throttle(saveCurrentTime, 10000)
+	const toggleNextEpisodeButtonThrottled = throttle(toggleNextEpisodeButton, 1000)
+
+	player.on('timeupdate', () => {
+
+		const currentTime = player.currentTime()
+		const duration = player.duration()
+
+		saveCurrentTimeThrottled({ seriesId, episodeId, currentTime })
+		toggleNextEpisodeButtonThrottled({ currentTime, duration, nextEpisodeButton })
+	})
 }
 
 player.on('play', main)
@@ -62,58 +79,68 @@ function createNextEpisodeButton() {
 		window.parent.postMessage(message, '*')
 	})
 
-	window.addEventListener("message", function ({ data: event }) {
-		if (event && event.button === 'next-episode') {
-			nextEpisodeButton.style.display = event.hidden === false ? 'block' : 'none'
-		}
-	});
+	return nextEpisodeButton
 }
 
 /**
- *
+ * Следим за временем и показываем/скрываем кнопку следующей серии
  */
-function setCurrentTime() {
-	const currentURL = new URL(location.href)
-	const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
-	const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
-	let savedTime = localStorage.getItem(`play-${seriesId}-time`)
-	if (!seriesId || !episodeId || !savedTime) return
+function toggleNextEpisodeButton({ nextEpisodeButton, duration, currentTime }) {
+	if (!nextEpisodeButton || !duration || !currentTime) {
+		return
+	}
 
-	savedTime = JSON.parse(savedTime)
-	if (savedTime.episodeId === episodeId) {
-		player.currentTime(Math.max(0, savedTime.time - 10))
+	const endingTime = duration > 600 ? 120 : duration * 0.1;
+	if (nextEpisodeButton.style.display === 'none' && duration - currentTime <= endingTime) {
+		nextEpisodeButton.style.display = 'block'
+	} else if (nextEpisodeButton.style.display !== 'none' && duration - currentTime > endingTime) {
+		nextEpisodeButton.style.display = 'none'
 	}
 }
 
-function initSaveCurrentTime() {
-	const currentURL = new URL(location.href)
-	const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
-	const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
-	if (!seriesId || !episodeId) return
+/**
+ * Загружаем сохранённое время и устанавливаем значение в плеере
+ */
+async function setCurrentTime() {
 
-	player.on('timeupdate', () => {
-		let savedTime = JSON.stringify({
-			episodeId,
-			time: player.currentTime()
-		})
-		localStorage.setItem(`play-${seriesId}-time`, savedTime)
+	let savedTime = await storage.get(`play-${seriesId}-time`)
+	if (!seriesId || !episodeId || !savedTime) return
 
-	})
+	if (savedTime.episodeId === episodeId) {
+		player.currentTime(Math.max(0, savedTime.time))
+	}
+}
+
+
+/**
+ * Сохранение текущей временной метки
+ */
+async function saveCurrentTime({ seriesId, episodeId, currentTime }) {
+
+	if (!seriesId || !episodeId || !currentTime) {
+		return
+	}
+
+	let savedTime = {
+		episodeId,
+		time: currentTime
+	}
+	storage.set(`play-${seriesId}-time`, savedTime)
 }
 
 function initSaveFullScreenState() {
 	player.on('fullscreenchange', () => {
-		localStorage.setItem(`play-fullscreen-state`, player.isFullscreen())
+		storage.set(`play-fullscreen-state`, player.isFullscreen())
 	})
 }
 
 /**
  * Функция автоматически запускает воспроизведение, если нет рекламной вставки
  */
-function autoPlay() {
+async function autoPlay() {
 	if (!player.concatenate.activated) return
 
-	if (localStorage.getItem(`play-fullscreen-state`) === 'true') {
+	if (await storage.get(`play-fullscreen-state`) === true) {
 		player.requestFullscreen()
 	}
 	player.play()
