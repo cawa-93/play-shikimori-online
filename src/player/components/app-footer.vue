@@ -2,13 +2,13 @@
   <footer class="mt-5 text-xs-center">
     <p>
       Разработчик:
-      <a href="https://shikimori.one/Alex+Kozack">Alex Kozack</a>
+      <a :href="manifest.developer.url">{{manifest.developer.name}}</a>
     </p>
 
     <p>
-      <a href="https://shikimori.one/clubs/2372">Клуб на Шикимори</a>
+      <a :href="manifest.homepage_url">Клуб на Шикимори</a>
       •
-      <a href="https://github.com/cawa-93/play-shikimori">Исходынй код на GitHub</a>
+      <a href="https://github.com/cawa-93/play-shikimori-online">Исходынй код на GitHub</a>
     </p>
 
     <p>
@@ -19,3 +19,13 @@
     </p>
   </footer>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      manifest: chrome.runtime.getManifest()
+    };
+  }
+};
+</script>
