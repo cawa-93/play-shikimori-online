@@ -91,9 +91,9 @@ function toggleNextEpisodeButton({ nextEpisodeButton, duration, currentTime }) {
 	}
 
 	const endingTime = duration > 600 ? 120 : duration * 0.1;
-	if (nextEpisodeButton.style.display === 'none' && duration - currentTime <= endingTime) {
+	if (player.isFullscreen() && duration - currentTime <= endingTime) {
 		nextEpisodeButton.style.display = 'block'
-	} else if (nextEpisodeButton.style.display !== 'none' && duration - currentTime > endingTime) {
+	} else {
 		nextEpisodeButton.style.display = 'none'
 	}
 }

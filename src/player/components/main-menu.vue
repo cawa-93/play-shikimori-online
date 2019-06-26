@@ -79,7 +79,6 @@ export default {
 
   computed: {
     user() {
-      console.log({ user: this.$store.state.shikimori.user });
       return this.$store.state.shikimori.user;
     }
   },
