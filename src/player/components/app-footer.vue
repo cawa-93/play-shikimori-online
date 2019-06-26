@@ -1,25 +1,47 @@
 <template>
   <footer class="mt-5 text-xs-center">
-    <a href="https://www.patreon.com/bePatron?u=18212353" id="become-a-patron">
+    <a
+      href="https://www.patreon.com/bePatron?u=18212353"
+      @click="track('https://www.patreon.com/bePatron?u=18212353')"
+      id="become-a-patron"
+    >
       <img src="/icons/Patreon_Mark_NoBackground.png" alt="Patreon logo" width="16px" height="16px">
       <span style="margin-left:8px">Become a patron</span>
     </a>
     <p>
       Разработчик:
-      <a href="https://t.me/kozack">{{manifest.developer.name}}</a>
+      <a
+        href="https://t.me/kozack"
+        @click="track('https://t.me/kozack')"
+      >{{manifest.developer.name}}</a>
     </p>
 
     <p>
-      <a :href="manifest.homepage_url">Клуб на Шикимори</a>
+      <a :href="manifest.homepage_url" @click="track(manifest.homepage_url)">Клуб на Шикимори</a>
       •
-      <a href="https://github.com/cawa-93/play-shikimori-online">Исходынй код на GitHub</a>
+      <a
+        href="https://github.com/cawa-93/play-shikimori-online"
+        @click="track('https://github.com/cawa-93/play-shikimori-online')"
+      >Исходынй код на GitHub</a>
     </p>
 
     <p>
       Работает на базе:
-      <a rel="noopener noreferrer" href="https://shikimori.one">shikimori.one</a>,
-      <a rel="noopener noreferrer" href="https://smotret-anime-365.ru">smotret-anime-365.ru</a>,
-      <a rel="noopener noreferrer" href="https://myanimelist.net">myanimelist.net</a>
+      <a
+        rel="noopener noreferrer"
+        href="https://shikimori.one"
+        @click="track('https://shikimori.one')"
+      >shikimori.one</a>,
+      <a
+        rel="noopener noreferrer"
+        href="https://smotret-anime-365.ru"
+        @click="track('https://smotret-anime-365.ru')"
+      >smotret-anime-365.ru</a>,
+      <a
+        rel="noopener noreferrer"
+        href="https://myanimelist.net"
+        @click="track('https://myanimelist.net')"
+      >myanimelist.net</a>
     </p>
   </footer>
 </template>
@@ -30,6 +52,12 @@ export default {
     return {
       manifest: chrome.runtime.getManifest()
     };
+  },
+
+  methods: {
+    track(label) {
+      this.$ga.event("actions", "footer-link", label);
+    }
   }
 };
 </script>
