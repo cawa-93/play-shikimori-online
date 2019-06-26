@@ -330,14 +330,23 @@ export default {
 
   mounted() {
     this.$el.addEventListener("click", event => {
-      if (!event.target.matches('.comment-body a[href*="/comments/"]')) {
+      if (event.target.matches('.comment-body a[href*="/comments/"]')) {
+        event.preventDefault();
+        const commentId = event.target.href.match(/comments\/(\d+)/)[1];
+
+        location.hash = `comment-${commentId}`;
         return;
       }
 
-      event.preventDefault();
-      const commentId = event.target.href.match(/comments\/(\d+)/)[1];
-
-      location.hash = `comment-${commentId}`;
+      if (
+        event.target.matches(
+          ".comment-body .b-spoiler label, .comment-body .b-spoiler .before, .comment-body .b-spoiler .after "
+        )
+      ) {
+        event.preventDefault();
+        event.target.closest(".b-spoiler").classList.toggle("open");
+        return;
+      }
     });
   },
 
@@ -384,6 +393,46 @@ export default {
 
 .comment-container:target {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.b-spoiler {
+  display: inline;
+}
+
+.b-spoiler label,
+.b-spoiler .content .before,
+.b-spoiler .content .after {
+  /* color: #176093; */
+  cursor: pointer;
+  border-bottom: 1px dashed;
+  display: inline;
+  color: #1976d2 !important;
+  caret-color: #1976d2 !important;
+}
+
+.b-spoiler .content {
+  display: inline;
+}
+.b-spoiler .content .before::before {
+  content: "[spoiler] ";
+}
+
+.b-spoiler .content .after::after {
+  content: " [/spoiler]";
+}
+
+.b-spoiler:not(.open) .content {
+  display: none;
+}
+
+.b-spoiler.open label {
+  display: none;
+}
+
+.b-spoiler .content .inner,
+.b-spoiler .content .inner-prgrph {
+  border-bottom: 1px dashed;
+  display: inline;
 }
 
 @keyframes shake {
