@@ -145,7 +145,7 @@ export default {
     proccessComment(comment) {
       comment.html_body = comment.html_body
         .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
-        .replace("b-quote", "blockquote");
+        .replace(/b-quote/gi, "blockquote");
 
       comment.created_at_relative = this.getCreatedAtRelative(
         comment.created_at
@@ -385,6 +385,12 @@ export default {
 
 .b-replies:before {
   content: attr(data-text-ru);
+}
+
+.bubbled img {
+  border-radius: 9999px;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
 .b-image .marker {
