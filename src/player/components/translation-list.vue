@@ -67,12 +67,12 @@ export default {
   computed: {
     translations() {
       if (
-        !this.$store.getters["player/currentEpisode"] ||
-        !this.$store.getters["player/currentEpisode"].translations
+        !this.$store.getters["player/selectedEpisode"] ||
+        !this.$store.getters["player/selectedEpisode"].translations
       ) {
         return [];
       }
-      return this.$store.getters["player/currentEpisode"].translations;
+      return this.$store.getters["player/selectedEpisode"].translations;
     },
 
     filteredTranslations() {
@@ -117,12 +117,12 @@ export default {
       get() {
         return this.$store.state.player.currentTranslationID;
       },
-      set(id) {
+      async set(id) {
         const translation = this.filteredTranslations.find(
           translation => translation.id === id
         );
         if (translation) {
-          this.$store.dispatch("player/setCurrentTranslation", translation);
+          this.$store.dispatch("player/selectTranslation", translation);
         }
       }
     },
