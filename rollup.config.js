@@ -49,10 +49,22 @@ module.exports = [{
     replace(replaceEnv),
     copy({
       targets: {
-        'src/content-scripts/inject-content-scripts.js': 'dist/content-scripts/inject-content-scripts.js',
         'src/content-scripts/anime365-player-styles.css': 'dist/content-scripts/anime365-player-styles.css'
       }
     })
+  ]
+},
+
+{
+  input: 'src/content-scripts/inject-content-scripts.js',
+  output: {
+    file: 'dist/content-scripts/inject-content-scripts.js',
+    format: 'esm',
+    // sourcemap: 'inline'
+  },
+  plugins: [
+    resolve(),
+    replace(replaceEnv),
   ]
 },
 
