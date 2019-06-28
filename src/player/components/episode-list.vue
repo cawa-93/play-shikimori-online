@@ -66,7 +66,7 @@ export default {
       },
 
       set(id) {
-        return this.$store.dispatch("player/setCurrentEpisode", id);
+        return this.$store.dispatch("player/selectEpisode", id);
       }
     },
 
