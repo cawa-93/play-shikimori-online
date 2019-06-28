@@ -5,7 +5,7 @@
         class="ma-0"
         flat
         :disabled="!$store.getters['player/previousEpisode']"
-        @click="$store.dispatch('player/initPreviousEpisode')"
+        @click="$store.dispatch('player/selectPreviousEpisode')"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
       >
         <v-icon left>skip_previous</v-icon>
@@ -42,7 +42,7 @@ export default {
   methods: {
     async nextEpisode() {
       this.$store.dispatch("shikimori/markAsWatched");
-      this.$store.dispatch("player/initNextEpisode");
+      this.$store.dispatch("player/selectNextEpisode");
     },
 
     async saveRate(value) {

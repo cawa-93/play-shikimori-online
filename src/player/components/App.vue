@@ -82,29 +82,19 @@ export default {
     };
   },
 
-  computed: {
-    translations() {
-      if (
-        !this.$store.getters["player/currentEpisode"] ||
-        !this.$store.getters["player/currentEpisode"].translations
-      ) {
-        return [];
-      }
-      return this.$store.getters["player/currentEpisode"].translations;
-    }
-  },
+  computed: {},
 
   async mounted() {
     await Promise.all([
-      this.$store.dispatch("player/initSeries", {
+      this.$store.dispatch("player/loadSeries", {
         seriesID: new URL(location.href).searchParams.get("series"),
         episodeInt: parseInt(
           new URL(location.href).searchParams.get("episodeInt")
         )
       }),
 
-      this.$store.dispatch("shikimori/initUser"),
-      this.$store.dispatch("shikimori/initAnime")
+      this.$store.dispatch("shikimori/loadUser"),
+      this.$store.dispatch("shikimori/loadAnime")
     ]);
 
     chrome.storage.onChanged.addListener(async (changes, namespace) => {
@@ -113,7 +103,7 @@ export default {
       }
 
       if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
-        await this.$store.dispatch("shikimori/initUser");
+        await this.$store.dispatch("shikimori/loadUser");
       } else {
         this.$store.commit("shikimori/setUser", null);
       }

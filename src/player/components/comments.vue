@@ -110,7 +110,7 @@ export default {
     },
 
     currentEpisode() {
-      return this.$store.getters["player/currentEpisode"];
+      return this.$store.getters["player/selectedEpisode"];
     },
 
     currentEpisodeID() {
