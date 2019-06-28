@@ -30,6 +30,7 @@ declare module anime365 {
 		seriesId: number;
 		countViews: number;
 		translations?: Translation[];
+		preselectedTranslation?: Translation
 	}
 
 	interface Translation {

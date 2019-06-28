@@ -117,7 +117,7 @@ export default {
       get() {
         return this.$store.state.player.currentTranslationID;
       },
-      set(id) {
+      async set(id) {
         const translation = this.filteredTranslations.find(
           translation => translation.id === id
         );

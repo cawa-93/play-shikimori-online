@@ -26,6 +26,10 @@ export function selectEpisode(state, payload) {
  */
 export function setTranslations(state, { episodeID, translations }) {
   const episode = state.series.episodes.find(episode => episode.id === episodeID)
+  if (!episode) {
+    return
+  }
+
   Vue.set(episode, 'translations', translations)
 }
 
@@ -56,4 +60,22 @@ export function loadEpisodesTitle(state, episodes) {
     episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`
   }
 
+}
+
+/**
+ * 
+ * @param {vuex.Player} state 
+ * @param {{episode: anime365.Episode, translation: anime365.Translation}} param1 
+ */
+export function savePreselectedTranslation(state, { episode, translation }) {
+  if (!episode || !translation) {
+    return
+  }
+
+  // const index = state.series.episodes.findIndex(e => e.id === episode.id)
+  // if (index < 0) {
+  //   return
+  // }
+
+  Vue.set(episode, 'preselectedTranslation', translation)
 }

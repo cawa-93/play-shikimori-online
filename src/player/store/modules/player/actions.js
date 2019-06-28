@@ -64,6 +64,9 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
  * @param {number} episodeID 
  */
 export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
+  commit('selectEpisode', episodeID)
+
+
   let targetEpisode
 
   if (getters.nextEpisode && episodeID === getters.nextEpisode.id) {
@@ -79,7 +82,6 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
   }
 
 
-  commit('selectEpisode', targetEpisode.id)
   {
     const currentURL = new URL(location.href)
     currentURL.searchParams.set('episodeInt', targetEpisode.episodeInt)
@@ -87,19 +89,38 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
   }
 
   await dispatch('loadTranslations', targetEpisode)
-  const priorityTranslation = await dispatch('getPriorityTranslation', targetEpisode)
+  let translation = targetEpisode.preselectedTranslation
 
-  dispatch('selectTranslation', priorityTranslation)
+  if (!translation) {
+    /** @type {anime365.Translation} */
+    translation = await dispatch('getPriorityTranslation', targetEpisode)
+  }
+
+  await dispatch('selectTranslation', translation)
 
   // Предварительная загрузка переводов для следующей серии
-  Vue.nextTick(() => {
-    dispatch('loadTranslations', getters.nextEpisode)
+  Vue.nextTick(async () => {
+    if (getters.nextEpisode) {
+      await dispatch('loadTranslations', getters.nextEpisode)
+      if (!getters.nextEpisode.preselectedTranslation) {
+
+        /** @type {anime365.Translation} */
+        const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
+        if (translation) {
+          commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
+
+        }
+      }
+
+    }
   })
 }
 
 
 /**
  * Загружает доступные переводы для серии
+ * Может вызываться неограниченное число раз.
+ * Поэтому необходимо обязательно проверять наличие переводов, чтобы избежать повторной загрузки
  * @param {{commit: Function}} context
  * @param {anime365.Episode} episode 
  */
@@ -127,27 +148,33 @@ export async function loadTranslations({ commit }, episode) {
 /**
  * Устанавливает текущий перевод
  * Сохраняет перевод в хранилище приоритетных переводов
- * @param {{commit: Function}} context
+ * @param {{commit: Function, dispatch: Function, getters: {selectedEpisode: anime365.Episode, nextEpisode: anime365.Episode}}} context
  * @param {anime365.Translation} translation 
  */
-export async function selectTranslation({ commit }, translation) {
-  console.log('selectTranslation', { translation })
-
+export async function selectTranslation({ commit, getters, dispatch }, translation) {
   commit('selectTranslation', translation.id)
+  commit('savePreselectedTranslation', { episode: getters.selectedEpisode, translation })
+  Vue.nextTick(async () => {
 
-  /**
-   * @type {Map<number, anime365.Translation>}
-   */
-  let lastSelectedTranslations = await storage.get("lastSelectedTranslations");
+    /**
+     * @type {Map<number, anime365.Translation>}
+     */
+    let lastSelectedTranslations = await storage.get("lastSelectedTranslations");
 
-  // Если ранее хранилище переводов не создавалось — инициализировать его
-  if (!lastSelectedTranslations) {
-    lastSelectedTranslations = new Map()
-  }
+    // Если ранее хранилище переводов не создавалось — инициализировать его
+    if (!lastSelectedTranslations) {
+      lastSelectedTranslations = new Map()
+    }
 
-  lastSelectedTranslations.set(translation.seriesId, translation)
+    lastSelectedTranslations.set(translation.seriesId, translation)
 
-  await storage.set("lastSelectedTranslations", lastSelectedTranslations);
+    await storage.set("lastSelectedTranslations", lastSelectedTranslations);
+
+    if (getters.nextEpisode && getters.nextEpisode.translations && getters.nextEpisode.translations.length) {
+      const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
+      commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
+    }
+  })
 }
 
 
