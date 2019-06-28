@@ -16,6 +16,7 @@
 
 
 <script>
+import { buildIframeURL } from "../../helpers";
 let _listener = null;
 
 export default {
@@ -26,24 +27,9 @@ export default {
       return this.$store.state.player.currentTranslationID;
     },
     src() {
-      const base = new URL(
-        `https://smotret-anime-365.ru/translations/embed/${this.translationID}`
-      );
-      base.searchParams.append("extension-id", chrome.runtime.id);
-      base.searchParams.append(
-        "play-shikimori[seriesId]",
-        this.$store.getters["player/currentTranslation"].seriesId
-      );
-      base.searchParams.append(
-        "play-shikimori[episodeId]",
-        this.$store.getters["player/currentTranslation"].episodeId
-      );
-      base.searchParams.append(
-        "play-shikimori[id]",
-        this.$store.getters["player/currentTranslation"].id
-      );
-
-      return base.toString();
+      return buildIframeURL(
+        this.$store.getters["player/currentTranslation"]
+      ).toString();
     }
   },
 
