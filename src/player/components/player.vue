@@ -27,9 +27,15 @@ export default {
       return this.$store.state.player.currentTranslationID;
     },
     src() {
-      return buildIframeURL(
+      const src = buildIframeURL(
         this.$store.getters["player/currentTranslation"]
-      ).toString();
+      );
+
+      if (!this.$store.getters["player/nextEpisode"]) {
+        src.searchParams.set("play-shikimori[nextEpisode]", 0);
+      }
+
+      return src;
     }
   },
 

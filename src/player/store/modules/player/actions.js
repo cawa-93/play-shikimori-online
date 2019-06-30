@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { anime365API, myanimelistAPI, buildIframeURL } from "../../../../helpers";
+import { anime365API, myanimelistAPI, buildIframeURL, findEpisode } from "../../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
@@ -17,30 +17,25 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
   const { data } = await anime365API(`/series/${seriesID}`)
   commit('setSeries', data)
 
+  if (!getters.episodes.length) {
+    return
+  }
 
   /**
    * episodeInt — Номер серии которую необходимо запустить
    * 
    * Поиск наиболее подходящей серии для запуска
    */
-
-  // Выбираем episodeInt-елемент по порядку
-  let startEpisode = getters.episodes[episodeInt - 1]
-
-
-  // Если серия не подходящая выполнить поиск следующей серии перебором
-  if (!startEpisode || parseInt(startEpisode.episodeInt) !== episodeInt) {
-    getters.episodes.find(e => parseInt(e.episodeInt) === episodeInt)
-  }
+  let startEpisode = findEpisode(getters.episodes, episodeInt)
 
   // Если следующей серии не найдено — выполнить поиск предыдущей серии перебором
   if (!startEpisode) {
-    startEpisode = getters.episodes.find(e => parseInt(e.episodeInt) === episodeInt - 1)
+    startEpisode = findEpisode(getters.episodes, episodeInt - 1)
   }
 
   // Если предыдущая серия не найдена — выполнить поиск первой серии перебором
-  if (!startEpisode && episodeInt != 1) {
-    startEpisode = getters.episodes.find(e => parseInt(e.episodeInt) === 1)
+  if (!startEpisode && episodeInt > 2) {
+    startEpisode = findEpisode(getters.episodes, 1)
   }
 
   // Если первая серия не найдена — использовать первый элемент из массива серий
@@ -106,7 +101,6 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
 
         /** @type {anime365.Translation} */
         const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
-        console.log({ preload: translation })
         if (translation) {
           commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
           const link = document.createElement('link');
