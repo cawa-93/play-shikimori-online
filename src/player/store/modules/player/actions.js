@@ -101,7 +101,6 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
 
         /** @type {anime365.Translation} */
         const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
-        console.log({ preload: translation })
         if (translation) {
           commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
           const link = document.createElement('link');

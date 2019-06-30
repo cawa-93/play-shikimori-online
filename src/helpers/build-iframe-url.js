@@ -9,6 +9,7 @@ export function buildIframeURL(translation) {
   url.searchParams.append("play-shikimori[seriesId]", translation.seriesId);
   url.searchParams.append("play-shikimori[episodeId]", translation.episodeId);
   url.searchParams.append("play-shikimori[id]", translation.id);
+  url.searchParams.append("play-shikimori[nextEpisode]", 1);
 
   return url
 }

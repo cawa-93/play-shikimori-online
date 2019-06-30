@@ -8,6 +8,7 @@ const player = window.playerGlobal
 const currentURL = new URL(location.href)
 const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
 const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
+const nextEpisode = currentURL.searchParams.get('play-shikimori[nextEpisode]') === '1'
 
 /**
  * Главная функция
@@ -20,7 +21,10 @@ function main() {
 
 	setCurrentTime()
 	initSaveFullScreenState()
-	const nextEpisodeButton = createNextEpisodeButton()
+	let nextEpisodeButton
+	if (nextEpisode) {
+		nextEpisodeButton = createNextEpisodeButton()
+	}
 
 	/**
 	 * Инициализирует отправку событий плеера к родительскому окну
@@ -36,7 +40,9 @@ function main() {
 		const duration = player.duration()
 
 		saveCurrentTimeThrottled({ seriesId, episodeId, currentTime })
-		toggleNextEpisodeButtonThrottled({ currentTime, duration, nextEpisodeButton })
+		if (nextEpisode && nextEpisodeButton) {
+			toggleNextEpisodeButtonThrottled({ currentTime, duration, nextEpisodeButton })
+		}
 	})
 }
 
