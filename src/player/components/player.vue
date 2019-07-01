@@ -1,6 +1,5 @@
 <template>
   <v-card class="player-container d-flex">
-    {{src}}
     <iframe
       id="player"
       ref="player"
@@ -40,15 +39,37 @@ export default {
       this.setTitle();
 
       {
-        const src = buildIframeURL(
-          this.$store.getters["player/currentTranslation"]
+        const src = new URL(
+          this.$store.getters["player/currentTranslation"].embedUrl
+        );
+        const config = new URLSearchParams();
+        config.append("extension-id", chrome.runtime.id);
+
+        config.append(
+          "play-shikimori[seriesId]",
+          this.$store.getters["player/currentTranslation"].seriesId
         );
 
-        if (!this.$store.getters["player/nextEpisode"]) {
-          src.searchParams.set("play-shikimori[nextEpisode]", 0);
-        }
+        config.append(
+          "play-shikimori[episodeId]",
+          this.$store.getters["player/currentTranslation"].episodeId
+        );
 
-        this.src = src;
+        config.append(
+          "play-shikimori[id]",
+          this.$store.getters["player/currentTranslation"].id
+        );
+
+        config.append("play-shikimori[isAutoPlay]", "1");
+
+        config.set(
+          "play-shikimori[nextEpisode]",
+          this.$store.getters["player/nextEpisode"] ? "1" : "0"
+        );
+
+        src.hash = config.toString();
+
+        this.src = src.toString();
       }
     }
   },

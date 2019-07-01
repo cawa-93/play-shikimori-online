@@ -1,14 +1,14 @@
 import { storage } from "kv-storage-polyfill";
 import { throttle } from "../helpers";
-
+const config = new URLSearchParams(location.hash.slice(1))
 /**
  * @type {videojs.default.Player & {concatenate: {activated: boolean}}}
  */
 const player = window.playerGlobal
-const currentURL = new URL(location.href)
-const seriesId = currentURL.searchParams.get('play-shikimori[seriesId]')
-const episodeId = currentURL.searchParams.get('play-shikimori[episodeId]')
-const nextEpisode = currentURL.searchParams.get('play-shikimori[nextEpisode]') === '1'
+const seriesId = config.get('play-shikimori[seriesId]')
+const episodeId = config.get('play-shikimori[episodeId]')
+const nextEpisode = config.get('play-shikimori[nextEpisode]') === '1'
+const isAutoPlay = config.get('play-shikimori[isAutoPlay]') === '1'
 
 /**
  * Главная функция
@@ -152,4 +152,6 @@ async function autoPlay() {
 	player.play()
 }
 
-autoPlay()
+if (isAutoPlay) {
+	autoPlay()
+}

@@ -237,8 +237,10 @@ export async function preloadNextEpisode({ getters, dispatch }) {
   const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
   if (translation) {
     const link = document.createElement('link');
-    link.href = buildIframeURL(translation).toString()
+    link.href = translation.embedUrl
     link.as = 'document'
     document.head.appendChild(link);
   }
+
+  return translation
 }
