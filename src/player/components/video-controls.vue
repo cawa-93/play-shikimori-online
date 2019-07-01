@@ -5,7 +5,9 @@
         class="ma-0"
         flat
         :disabled="!$store.getters['player/previousEpisode']"
-        @click="$store.dispatch('player/selectPreviousEpisode')"
+        @click.prevent="$store.dispatch('player/selectPreviousEpisode')"
+        :href="urls.previous"
+        target="_self"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
       >
         <v-icon left>skip_previous</v-icon>
@@ -21,7 +23,9 @@
         class="ma-0"
         flat
         :disabled="!$store.getters['player/nextEpisode']"
-        @click="nextEpisode"
+        @click.prevent="nextEpisode"
+        :href="urls.next"
+        target="_self"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
       >
         Следующая
@@ -38,6 +42,47 @@ import { shikimoriAPI, anime365API } from "../../helpers";
 
 export default {
   name: "video-controls",
+
+  computed: {
+    urls() {
+      const anime = this.$store.state.shikimori.anime
+        ? this.$store.state.shikimori.anime.id
+        : new URL(location.href).searchParams.get("anime");
+      let next, previous;
+
+      if (this.$store.getters["player/previousEpisode"]) {
+        previous = new URL(chrome.runtime.getURL(`player/index.html`));
+        previous.searchParams.append("anime", anime);
+        previous.searchParams.append(
+          "series",
+          this.$store.getters["player/previousEpisode"].seriesId
+        );
+        previous.searchParams.append(
+          "episodeInt",
+          this.$store.getters["player/previousEpisode"].episodeInt
+        );
+
+        previous = previous.toString();
+      }
+
+      if (this.$store.getters["player/nextEpisode"]) {
+        next = new URL(chrome.runtime.getURL(`player/index.html`));
+        next.searchParams.append("anime", anime);
+        next.searchParams.append(
+          "series",
+          this.$store.getters["player/nextEpisode"].seriesId
+        );
+        next.searchParams.append(
+          "episodeInt",
+          this.$store.getters["player/nextEpisode"].episodeInt
+        );
+
+        next = next.toString();
+      }
+
+      return { next, previous };
+    }
+  },
 
   methods: {
     async nextEpisode() {
