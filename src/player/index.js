@@ -16,15 +16,15 @@ Vue.use(VueAnalytics, {
   id: 'UA-71609511-7',
   autoTracking: {
     pageviewOnLoad: false,
-    exception: true,
-    exceptionLogs: true//process.env.NODE_ENV === 'development'
+    exception: process.env.NODE_ENV === 'production',
+    exceptionLogs: process.env.NODE_ENV === 'development'
   },
   set: [
     { field: 'checkProtocolTask', value: function () { } },
     { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
-    enabled: false// process.env.NODE_ENV === 'development'
+    enabled: process.env.NODE_ENV === 'development'
   },
 
   commands: {
