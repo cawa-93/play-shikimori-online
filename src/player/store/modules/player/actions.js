@@ -84,34 +84,10 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
   }
 
   await dispatch('loadTranslations', targetEpisode)
-  let translation = targetEpisode.preselectedTranslation
+  let translation = await dispatch('getPriorityTranslation', targetEpisode)
 
-  if (!translation) {
-    /** @type {anime365.Translation} */
-    translation = await dispatch('getPriorityTranslation', targetEpisode)
-  }
+  await dispatch('selectTranslation', { translation })
 
-  await dispatch('selectTranslation', translation)
-
-  // Предварительная загрузка переводов для следующей серии
-  Vue.nextTick(async () => {
-    if (getters.nextEpisode) {
-      await dispatch('loadTranslations', getters.nextEpisode)
-      if (!getters.nextEpisode.preselectedTranslation) {
-
-        /** @type {anime365.Translation} */
-        const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
-        if (translation) {
-          commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
-          const link = document.createElement('link');
-          link.href = buildIframeURL(translation).toString()
-          link.as = 'document'
-          document.head.appendChild(link);
-        }
-      }
-
-    }
-  })
 }
 
 
@@ -139,7 +115,8 @@ export async function loadTranslations({ commit }, episode) {
     return translation
   })
 
-  commit('setTranslations', { episodeID: episode.id, translations: data.translations })
+  commit('setTranslations', { episode, translations: data.translations })
+  return data
 }
 
 
@@ -147,13 +124,13 @@ export async function loadTranslations({ commit }, episode) {
  * Устанавливает текущий перевод
  * Сохраняет перевод в хранилище приоритетных переводов
  * @param {{commit: Function, dispatch: Function, getters: {selectedEpisode: anime365.Episode, nextEpisode: anime365.Episode}}} context
- * @param {anime365.Translation} translation 
+ * @param {{translation: anime365.Translation, trusted: boolean}} translation 
  */
-export async function selectTranslation({ commit, getters, dispatch }, translation) {
+export async function selectTranslation({ commit }, { translation }) {
   commit('selectTranslation', translation.id)
-  commit('savePreselectedTranslation', { episode: getters.selectedEpisode, translation })
-  Vue.nextTick(async () => {
 
+
+  Vue.nextTick(async () => {
     /**
      * @type {Map<number, anime365.Translation>}
      */
@@ -167,12 +144,8 @@ export async function selectTranslation({ commit, getters, dispatch }, translati
     lastSelectedTranslations.set(translation.seriesId, translation)
 
     await storage.set("lastSelectedTranslations", lastSelectedTranslations);
-
-    if (getters.nextEpisode && getters.nextEpisode.translations && getters.nextEpisode.translations.length) {
-      const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
-      commit('savePreselectedTranslation', { episode: getters.nextEpisode, translation })
-    }
   })
+
 }
 
 
@@ -248,4 +221,24 @@ export function getPriorityTranslation({ }, episode) {
     }
     worker.postMessage({ episode })
   })
+}
+
+/**
+ * Загружает переводы для следующей серии
+ * @param {{getters: {nextEpisode: anime365.Episode}, dispatch: Function}} context 
+ */
+export async function preloadNextEpisode({ getters, dispatch }) {
+  if (!getters.nextEpisode) {
+    return
+  }
+
+  await dispatch('loadTranslations', getters.nextEpisode)
+  /** @type {anime365.Translation} */
+  const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
+  if (translation) {
+    const link = document.createElement('link');
+    link.href = buildIframeURL(translation).toString()
+    link.as = 'document'
+    document.head.appendChild(link);
+  }
 }

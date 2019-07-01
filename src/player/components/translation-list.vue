@@ -122,7 +122,10 @@ export default {
           translation => translation.id === id
         );
         if (translation) {
-          this.$store.dispatch("player/selectTranslation", translation);
+          this.$store.dispatch("player/selectTranslation", {
+            translation,
+            trusted: true
+          });
         }
       }
     },

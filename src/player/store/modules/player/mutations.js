@@ -22,10 +22,9 @@ export function selectEpisode(state, payload) {
 /**
  * Сохраняет массив переводов для серии
  * @param {vuex.Player} state 
- * @param {{episodeID: number, translations: anime365.Translation[]}} param1 
+ * @param {{episode: anime365.Episode, translations: anime365.Translation[]}} param1 
  */
-export function setTranslations(state, { episodeID, translations }) {
-  const episode = state.series.episodes.find(episode => episode.id === episodeID)
+export function setTranslations(state, { episode, translations }) {
   if (!episode) {
     return
   }
@@ -60,22 +59,4 @@ export function loadEpisodesTitle(state, episodes) {
     episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`
   }
 
-}
-
-/**
- * 
- * @param {vuex.Player} state 
- * @param {{episode: anime365.Episode, translation: anime365.Translation}} param1 
- */
-export function savePreselectedTranslation(state, { episode, translation }) {
-  if (!episode || !translation) {
-    return
-  }
-
-  // const index = state.series.episodes.findIndex(e => e.id === episode.id)
-  // if (index < 0) {
-  //   return
-  // }
-
-  Vue.set(episode, 'preselectedTranslation', translation)
 }

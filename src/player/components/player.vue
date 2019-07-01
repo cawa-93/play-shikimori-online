@@ -1,5 +1,6 @@
 <template>
   <v-card class="player-container d-flex">
+    {{src}}
     <iframe
       id="player"
       ref="player"
@@ -22,35 +23,40 @@ let _listener = null;
 export default {
   name: "player",
 
+  data() {
+    return {
+      src: ""
+    };
+  },
+
   computed: {
     translationID() {
       return this.$store.state.player.currentTranslationID;
-    },
-    src() {
-      const src = buildIframeURL(
-        this.$store.getters["player/currentTranslation"]
-      );
-
-      if (!this.$store.getters["player/nextEpisode"]) {
-        src.searchParams.set("play-shikimori[nextEpisode]", 0);
-      }
-
-      return src;
     }
   },
 
   watch: {
     translationID() {
       this.setTitle();
+
+      {
+        const src = buildIframeURL(
+          this.$store.getters["player/currentTranslation"]
+        );
+
+        if (!this.$store.getters["player/nextEpisode"]) {
+          src.searchParams.set("play-shikimori[nextEpisode]", 0);
+        }
+
+        this.src = src;
+      }
     }
   },
 
   methods: {
     setTitle() {
       if (!this.$store.getters["player/currentTranslation"]) return;
-      document.title = `${
-        this.$store.getters["player/currentTranslation"].title
-      } — онлайн просмотр`;
+      document.title = `${this.$store.getters["player/currentTranslation"].title} — онлайн просмотр`;
     }
   },
 
@@ -60,6 +66,7 @@ export default {
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");
+        this.$store.dispatch("player/preloadNextEpisode");
       } else if (event.name === "ended" || event.name === "mark-as-watched") {
         if (event.name === "mark-as-watched") {
           // console.log({ event: event.name });
@@ -68,19 +75,22 @@ export default {
 
         this.$store.dispatch("shikimori/markAsWatched");
         this.$store.dispatch("player/selectNextEpisode");
-      } else if (event.name === "timeupdate") {
-        if (this.$store.getters["player/nextEpisode"]) {
-          const endingTime = event.duration > 600 ? 120 : event.duration * 0.1;
-          const hidden = event.duration - event.currentTime >= endingTime;
-          this.$refs.player.contentWindow.postMessage(
-            { button: "next-episode", hidden },
-            "*"
-          );
-        }
-      } else if (event.name === "play" || event.name === "pause") {
-        document.head.querySelector('link[rel="icon"]').href = `/icons/${
-          event.name
-        }.png`;
+      }
+
+      // else if (event.name === "timeupdate") {
+      //   if (this.$store.getters["player/nextEpisode"]) {
+      //     const endingTime = event.duration > 600 ? 120 : event.duration * 0.1;
+      //     const hidden = event.duration - event.currentTime >= endingTime;
+      //     this.$refs.player.contentWindow.postMessage(
+      //       { button: "next-episode", hidden },
+      //       "*"
+      //     );
+      //   }
+      // }
+      else if (event.name === "play" || event.name === "pause") {
+        document.head.querySelector(
+          'link[rel="icon"]'
+        ).href = `/icons/${event.name}.png`;
       }
     };
     window.addEventListener("message", _listener);
