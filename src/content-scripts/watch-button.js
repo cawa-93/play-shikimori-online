@@ -37,7 +37,8 @@ async function main() {
 		} else {
 			// Определяем максимальный номер серии. Он не всегда соответствует количеству серий
 			const max = Math.min(anime.episodes, Math.max(...series.episodes.map(e => parseFloat(e.episodeInt))))
-			WatchOnlineButton.textContent = `Просмотрено ${episodeInt} из ${max}`
+			const from = max > 0 ? `из ${max}` : ''
+			WatchOnlineButton.textContent = `Просмотрено ${episodeInt} ${from} серий`
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
@@ -95,9 +96,9 @@ async function getSeries(myAnimeListId) {
 
 function getEpisodeInt() {
 	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')
-	if (!episodeElement) return 1
+	if (!episodeElement) return 0
 
 	const episodeItn = parseInt(episodeElement.textContent)
 
-	return isNaN(episodeItn) ? 1 : episodeItn
+	return isNaN(episodeItn) ? 0 : episodeItn
 }
