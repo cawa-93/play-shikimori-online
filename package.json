@@ -23,7 +23,10 @@
   },
   "scripts": {
     "build": "NODE_ENV=development rollup -c rollup.config.js",
-    "release": "NODE_ENV=production rollup -c rollup.config.js"
+    "release": "NODE_ENV=production rollup -c rollup.config.js",
+    "zip:dist": "cd ./dist && zip -r ../dist.zip ./*  --exclude='*__MACOSX*' --exclude='*.DS_Store*'",
+    "zip:src": "zip -r ./src.zip ./* --exclude='*.zip' --exclude='*__MACOSX*' --exclude='*.DS_Store*' --exclude='node_modules*' --exclude='dist*'",
+    "zip": "npm run zip:src && npm run zip:dist"
   },
   "keywords": [],
   "author": "",
