@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-5 text-xs-center">
+  <footer class="mt-5 text-xs-center" id="app-footer">
     <a
       href="https://www.patreon.com/bePatron?u=18212353"
       @click="track('https://www.patreon.com/bePatron?u=18212353')"
@@ -100,5 +100,9 @@ export default {
 
 #become-a-patron:hover {
   background-color: rgb(231, 81, 59);
+}
+
+#app-footer {
+  font-size: 0.9rem;
 }
 </style>
