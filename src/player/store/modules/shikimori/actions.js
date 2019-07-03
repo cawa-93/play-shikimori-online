@@ -35,7 +35,7 @@ export async function loadUser({ commit }) {
   }
 
   if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-    return await updateAuth()
+    return updateAuth()
   }
 
   /** @type {shikimori.User} */

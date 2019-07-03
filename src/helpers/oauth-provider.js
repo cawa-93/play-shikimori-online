@@ -40,7 +40,7 @@ export async function updateAuth() {
     })
 
     if (newAuth.access_token && newAuth.refresh_token) {
-      await sync.set({ 'userAuth': newAuth })
+      await sync.set({ userAuth: newAuth })
       return newAuth
     } else {
       return Promise.reject(newAuth)
