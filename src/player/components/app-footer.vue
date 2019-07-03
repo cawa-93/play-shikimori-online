@@ -5,7 +5,7 @@
       @click="track('https://www.patreon.com/bePatron?u=18212353')"
       id="become-a-patron"
     >
-      <img src="/icons/Patreon_Mark_NoBackground.png" alt="Patreon logo" width="16px" height="16px">
+      <img src="/icons/Patreon_Mark_NoBackground.png" alt="Patreon logo" width="16px" height="16px" />
       <span style="margin-left:8px">Become a patron</span>
     </a>
     <p>
@@ -22,7 +22,7 @@
       <a
         href="https://github.com/cawa-93/play-shikimori-online"
         @click="track('https://github.com/cawa-93/play-shikimori-online')"
-      >Исходынй код на GitHub</a>
+      >Исходный код на GitHub</a>
     </p>
 
     <p>
