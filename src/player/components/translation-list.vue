@@ -17,10 +17,8 @@
         </template>
         <template v-else>
           <v-list-tile-action>
-            <span
-              class="qualityType"
-              v-if="item.qualityType !== 'tv'"
-            >{{item.qualityType.toUpperCase()}}</span>
+            <v-icon v-if="item.qualityType === 'uncensored'">explicit</v-icon>
+            <v-icon v-else-if="item.qualityType !== 'tv' ">high_quality</v-icon>
           </v-list-tile-action>
 
           <v-list-tile-content>
@@ -122,7 +120,10 @@ export default {
           translation => translation.id === id
         );
         if (translation) {
-          this.$store.dispatch("player/selectTranslation", translation);
+          this.$store.dispatch("player/selectTranslation", {
+            translation,
+            trusted: true
+          });
         }
       }
     },

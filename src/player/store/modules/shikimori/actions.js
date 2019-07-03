@@ -35,7 +35,7 @@ export async function loadUser({ commit }) {
   }
 
   if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-    return await updateAuth()
+    return updateAuth()
   }
 
   /** @type {shikimori.User} */
@@ -73,21 +73,23 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     auth = await updateAuth()
   }
 
+  let newUserRate = Object.assign(
+    {},
+    {
+      target_type: 'Anime',
+      target_id: anime.id,
+      user_id: user.id,
+      status: anime.user_rate ? anime.user_rate.status : 'watching'
+    },
+    user_rate)
+
+
   /** @type {shikimori.UserRate} */
-  const newUserRate = await shikimoriAPI('/v2/user_rates', {
+  newUserRate = await shikimoriAPI('/v2/user_rates', {
     method: 'POST',
-    body: JSON.stringify(
-      {
-        user_rate: Object.assign(
-          {},
-          {
-            target_type: 'Anime',
-            target_id: anime.id,
-            user_id: user.id
-          },
-          user_rate)
-      }
-    ),
+    body: JSON.stringify({
+      user_rate: newUserRate
+    }),
     headers: {
       Authorization: `${auth.token_type} ${auth.access_token}`
     }

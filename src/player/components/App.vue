@@ -85,7 +85,7 @@ export default {
   computed: {},
 
   async mounted() {
-    await Promise.all([
+    const promises = Promise.all([
       this.$store.dispatch("player/loadSeries", {
         seriesID: new URL(location.href).searchParams.get("series"),
         episodeInt: parseInt(
@@ -97,17 +97,19 @@ export default {
       this.$store.dispatch("shikimori/loadAnime")
     ]);
 
-    chrome.storage.onChanged.addListener(async (changes, namespace) => {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
       if (!changes.userAuth) {
         return;
       }
 
       if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
-        await this.$store.dispatch("shikimori/loadUser");
+        this.$store.dispatch("shikimori/loadUser");
       } else {
         this.$store.commit("shikimori/setUser", null);
       }
     });
+
+    await promises;
   }
 };
 </script>

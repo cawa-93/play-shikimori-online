@@ -8,23 +8,15 @@ main()
 
 
 async function main() {
-	const infoSection = document.querySelector('body#animes_show .c-info-right')
+
+	/** @type {HTMLDivElement} */
+	const infoSection = document.body.querySelector('#animes_show .c-info-right')
 	/** @type {HTMLAnchorElement} */
-	let WatchOnlineButton = document.querySelector('#watch-online-button')
+	let WatchOnlineButton = document.body.querySelector('#watch-online-button')
 
 	if (!infoSection || WatchOnlineButton) return
 
-	// Создание кнопки для перехода к плееру
-	const WatchButtonSection = document.createElement('section')
-	WatchButtonSection.classList.add('block')
-	WatchButtonSection.classList.add('watch-online-block')
-	WatchButtonSection.innerHTML = `
-		<div class="subheadline m10">Онлайн просмотр</div>
-		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
-		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
-		`
-	infoSection.appendChild(WatchButtonSection)
-	WatchOnlineButton = WatchButtonSection.querySelector('#watch-online-button')
+	WatchOnlineButton = createButton(infoSection)
 
 	// Загрузка метаданных аниме
 	const anime = getAnime()
@@ -36,32 +28,52 @@ async function main() {
 		return
 	}
 
-	const seriesID = await getSeriesId(anime.id)
+	const series = await getSeries(anime.id)
 
-	if (seriesID) {
+	if (series && series.episodes && series.episodes.length) {
 		const episodeInt = getEpisodeInt()
-		if (episodeInt === 1) {
+		if (!episodeInt) {
 			WatchOnlineButton.textContent = 'Начать просмотр'
-		} else if (episodeInt >= anime.episodes) {
-			WatchOnlineButton.textContent = 'Пересмотреть'
 		} else {
-			WatchOnlineButton.textContent = 'Продолжить просмотр'
+			// Определяем максимальный номер серии. Он не всегда соответствует количеству серий
+			const max = Math.min(anime.episodes, Math.max(...series.episodes.map(e => parseFloat(e.episodeInt))))
+			const from = max > 0 ? `из ${max}` : ''
+			WatchOnlineButton.textContent = `Просмотрено ${episodeInt} ${from} серий`
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
-		playerURL.searchParams.append('series', seriesID)
-		playerURL.searchParams.append('anime', anime.id)
-		playerURL.searchParams.append('episodeInt', episodeInt)
+		playerURL.searchParams.set('series', series.id)
+		playerURL.searchParams.set('anime', anime.id)
+		playerURL.searchParams.set('episodeInt', episodeInt + 1) // Открываем следующую после просмотренной серию
 
 		WatchOnlineButton.href = playerURL.toString()
 		WatchOnlineButton.style.cursor = 'pointer'
 	} else {
-		WatchOnlineButton.textContent = 'Нет видео'
+		WatchOnlineButton.textContent = 'Пока нет серий'
 		WatchOnlineButton.style.cursor = 'not-allowed'
 	}
 
 	WatchOnlineButton.classList.remove('b-ajax')
 
+}
+
+/**
+ * 
+ * @param {HTMLElement} infoSection 
+ * @returns {HTMLAnchorElement}
+ */
+function createButton(infoSection) {
+	// Создание кнопки для перехода к плееру
+	const WatchButtonSection = document.createElement('section')
+	WatchButtonSection.classList.add('block')
+	WatchButtonSection.classList.add('watch-online-block')
+	WatchButtonSection.innerHTML = `
+		<div class="subheadline m10">Онлайн просмотр</div>
+		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
+		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
+		`
+	infoSection.appendChild(WatchButtonSection)
+	return WatchButtonSection.querySelector('#watch-online-button')
 }
 
 
@@ -75,27 +87,18 @@ function getAnime() {
 	}
 }
 
-async function getSeriesId(myAnimeListId) {
-	const cacheKey = `series-cache-${myAnimeListId}`
-	let cache = sessionStorage.getItem(cacheKey)
-	if (cache) {
-		return cache
-	}
 
+async function getSeries(myAnimeListId) {
+	/** @type {anime365.api.SeriesCollection} */
 	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
-	if (!series) {
-		return
-	}
-	cache = series.id
-	sessionStorage.setItem(cacheKey, cache)
-	return cache
+	return series
 }
 
 function getEpisodeInt() {
 	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')
-	if (!episodeElement) return 1
+	if (!episodeElement) return 0
 
 	const episodeItn = parseInt(episodeElement.textContent)
 
-	return isNaN(episodeItn) ? 1 : episodeItn + 1
+	return isNaN(episodeItn) ? 0 : episodeItn
 }

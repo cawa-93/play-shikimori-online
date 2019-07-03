@@ -12,7 +12,7 @@
         :menu-props="{auto:false}"
         no-data-text="Пока нет ни одной серии"
       >
-        <template v-slot:item="{item, parent, tile}">
+        <template v-slot:item="{item}">
           <v-list-tile-action @click.stop>
             <v-checkbox
               :input-value="item.episodeInt <= watchedEpisodes"
@@ -22,6 +22,15 @@
 
           <v-list-tile-content class="inset">
             <v-list-tile-title>{{item.episodeFull}}</v-list-tile-title>
+          </v-list-tile-content>
+        </template>
+
+        <template v-slot:selection="{item}">
+          <v-list-tile-content class="inset">
+            <v-list-tile-title>
+              {{item.episodeFull}}
+              <span v-if="item.episodeInt <= watchedEpisodes">— просмотрено</span>
+            </v-list-tile-title>
           </v-list-tile-content>
         </template>
 
