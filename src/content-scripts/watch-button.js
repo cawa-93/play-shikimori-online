@@ -30,7 +30,7 @@ async function main() {
 
 	const series = await getSeries(anime.id)
 
-	if (series && series.episodes.length) {
+	if (series && series.episodes && series.episodes.length) {
 		const episodeInt = getEpisodeInt()
 		if (!episodeInt) {
 			WatchOnlineButton.textContent = 'Начать просмотр'
@@ -49,7 +49,7 @@ async function main() {
 		WatchOnlineButton.href = playerURL.toString()
 		WatchOnlineButton.style.cursor = 'pointer'
 	} else {
-		WatchOnlineButton.textContent = 'Нет видео'
+		WatchOnlineButton.textContent = 'Пока нет серий'
 		WatchOnlineButton.style.cursor = 'not-allowed'
 	}
 
