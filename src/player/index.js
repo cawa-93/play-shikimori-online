@@ -24,7 +24,7 @@ Vue.use(VueAnalytics, {
     { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
-    enabled: process.env.NODE_ENV === 'development'
+    enabled: false //process.env.NODE_ENV === 'development'
   },
 
   commands: {
