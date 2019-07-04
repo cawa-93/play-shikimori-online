@@ -54,7 +54,7 @@ export function loadEpisodesTitle(state, episodes) {
   for (const { title, episode_id } of episodes) {
     if (!title) continue
 
-    const episode = state.series.episodes.find(e => parseInt(e.episodeInt) === episode_id)
+    const episode = state.series.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
 
     if (!episode || episode.episodeTitle) continue
 

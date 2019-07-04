@@ -88,7 +88,7 @@ export default {
     const promises = Promise.all([
       this.$store.dispatch("player/loadSeries", {
         seriesID: new URL(location.href).searchParams.get("series"),
-        episodeInt: parseInt(
+        episodeInt: parseFloat(
           new URL(location.href).searchParams.get("episodeInt")
         )
       }),
