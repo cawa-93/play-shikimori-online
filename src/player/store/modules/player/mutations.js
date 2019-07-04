@@ -46,17 +46,19 @@ export function selectTranslation(state, payload) {
 /**
  * Обновляет заголовки для серий
  * @param {vuex.Player} state 
- * @param {Map} episodes
+ * @param {myanimelist.Episode[]} episodes
  */
 export function loadEpisodesTitle(state, episodes) {
-  if (!state.series.episodes) return
-  for (const episode of state.series.episodes) {
-    if (episode.episodeTitle || episode.episodeType === 'special') continue
+  if (!state.series.episodes || !state.series.episodes.length || !episodes || !episodes.length) return
 
-    const episodeInfo = episodes.get(parseInt(episode.episodeInt))
-    if (!episodeInfo || !episodeInfo.title) continue
+  for (const { title, episode_id } of episodes) {
+    if (!title) continue
 
-    episode.episodeTitle = episodeInfo.title
+    const episode = state.series.episodes.find(e => parseInt(e.episodeInt) === episode_id)
+
+    if (!episode || episode.episodeTitle) continue
+
+    episode.episodeTitle = title
     episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`
   }
 
