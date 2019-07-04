@@ -8,6 +8,7 @@ import Vue from "vue";
  */
 export function setSeries(state, series) {
   state.series = series
+  state.series.episodes = state.series.episodes.filter(e => e.isActive)
 }
 
 /**
@@ -29,7 +30,7 @@ export function setTranslations(state, { episode, translations }) {
     return
   }
 
-  Vue.set(episode, 'translations', translations)
+  Vue.set(episode, 'translations', translations.filter(t => t.isActive))
 }
 
 /**

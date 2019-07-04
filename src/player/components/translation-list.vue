@@ -8,7 +8,7 @@
       box
       :label="label"
       v-model="currentTranslationID"
-      :loading="filteredTranslations.length === 0"
+      :loading="translations.length === 0"
       no-data-text="Пока нет ни одного перевода"
     >
       <template v-slot:item="{item}">
@@ -73,10 +73,6 @@ export default {
       return this.$store.getters["player/selectedEpisode"].translations;
     },
 
-    filteredTranslations() {
-      return this.translations.filter(t => t.isActive);
-    },
-
     groupedTranslations() {
       const groups = [
         { type: "voiceRu", label: "Озвучка" },
@@ -89,9 +85,7 @@ export default {
       const items = [];
 
       groups.forEach(({ type, label }) => {
-        const translations = this.filteredTranslations.filter(
-          t => t.type === type
-        );
+        const translations = this.translations.filter(t => t.type === type);
 
         if (translations.length) {
           items.push({
@@ -116,7 +110,7 @@ export default {
         return this.$store.state.player.currentTranslationID;
       },
       async set(id) {
-        const translation = this.filteredTranslations.find(
+        const translation = this.translations.find(
           translation => translation.id === id
         );
         if (translation) {
@@ -130,9 +124,7 @@ export default {
 
     label() {
       if (!this.$store.getters["player/currentTranslation"]) {
-        return this.filteredTranslations.length
-          ? "Выберите перевод"
-          : "Загрузка...";
+        return this.translations.length ? "Выберите перевод" : "Загрузка...";
       }
       switch (this.$store.getters["player/currentTranslation"].type) {
         case "voiceRu":
