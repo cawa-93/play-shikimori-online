@@ -39,7 +39,8 @@
 		{
 			"matches": [
 				"https://smotretanime.ru/translations/embed/*",
-				"https://smotret-anime-365.ru/translations/embed/*"
+				"https://smotret-anime-365.ru/translations/embed/*",
+				"https://hentai365.ru/translations/embed/*"
 			],
 			"js": [
 				"content-scripts/inject-content-scripts.js"
