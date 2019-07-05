@@ -33,6 +33,13 @@
       </v-container>
 
       <app-footer></app-footer>
+
+      <v-snackbar v-model="snackbar.show" :top="100" :timeout="0" multi-line>
+        <span v-html="snackbar.html"></span>
+        <v-btn icon @click="closeSnackbar">
+          <v-icon color="pink">close</v-icon>
+        </v-btn>
+      </v-snackbar>
     </v-app>
   </section>
 </template>
@@ -43,8 +50,6 @@ import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
 import videoControls from "./video-controls.vue";
-// import origins from "./origins.vue";
-// import actions from "./actions.vue";
 import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 import appFooter from "./app-footer.vue";
@@ -55,8 +60,6 @@ export default {
     translationList,
     player,
     videoControls,
-    // origins,
-    // actions,
     mainMenu,
     comments,
     appFooter
@@ -78,7 +81,11 @@ export default {
     }
 
     return {
-      darkMode
+      darkMode,
+      snackbar: {
+        show: false,
+        html: null
+      }
     };
   },
 
@@ -98,18 +105,53 @@ export default {
     ]);
 
     chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (!changes.userAuth) {
-        return;
+      if (changes.userAuth) {
+        if (
+          changes.userAuth.newValue &&
+          changes.userAuth.newValue.access_token
+        ) {
+          this.$store.dispatch("shikimori/loadUser");
+        } else {
+          this.$store.commit("shikimori/setUser", null);
+        }
       }
 
-      if (changes.userAuth.newValue && changes.userAuth.newValue.access_token) {
-        this.$store.dispatch("shikimori/loadUser");
-      } else {
-        this.$store.commit("shikimori/setUser", null);
+      if (changes.runtimeMessages && this.snackbar.html === null) {
+        this.loadOneRuntimeMessage();
       }
     });
 
     await promises;
+
+    this.loadOneRuntimeMessage();
+  },
+
+  methods: {
+    loadOneRuntimeMessage() {
+      chrome.storage.local.get(
+        { runtimeMessages: [] },
+        ({ runtimeMessages }) => {
+          if (!runtimeMessages.length) {
+            return;
+          }
+
+          const message = runtimeMessages.shift();
+          this.snackbar.html = message.html;
+          this.snackbar.show = true;
+
+          chrome.storage.local.set({ runtimeMessages });
+        }
+      );
+    },
+
+    closeSnackbar() {
+      this.snackbar.show = false;
+
+      setTimeout(() => {
+        this.snackbar.html = null;
+        this.loadOneRuntimeMessage();
+      }, 1000);
+    }
   }
 };
 </script>

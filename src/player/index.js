@@ -9,6 +9,8 @@ import store from './store/index.js'
 import App from './components/App.vue';
 import VueAnalytics from 'vue-analytics'
 
+chrome.runtime.onInstalled.addListener(console.log);
+
 
 Vue.use(Vuetify)
 
