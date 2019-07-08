@@ -15,8 +15,8 @@ export function setSeries(state, series) {
     series.episodes = series.episodes
       .filter(e =>
         e.isActive
-        && parseFloat(e.episodeInt) <= series.numberOfEpisodes
         && e.episodeType === series.type
+        && (series.numberOfEpisodes === 0 || parseFloat(e.episodeInt) <= series.numberOfEpisodes)
       )
   }
   state.series = series
