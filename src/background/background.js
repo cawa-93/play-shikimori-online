@@ -1,3 +1,5 @@
+import retry from 'async-retry'
+
 chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
   if (reason !== 'update') {  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
     return
@@ -25,15 +27,17 @@ chrome.runtime.onMessage.addListener(
 
       chrome.permissions.contains({
         origins: [`${info.protocol}//${info.hostname}/*`]
-      }, function (granted) {
-        if (granted) {
-          fetch(request.url, request.options)
-            .then(response => response.json())
-            .then(response => sendResponse({ response }))
-            .catch(error => sendResponse({ error }));
-        } else {
+      }, async function (granted) {
+        if (!granted) {
           sendResponse({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
+          return
         }
+
+        await retry(async bail => {
+          const resp = await fetch(request.url, request.options)
+          const response = await resp.json()
+          sendResponse({ response })
+        })
       });
 
 
