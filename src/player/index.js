@@ -9,9 +9,6 @@ import store from './store/index.js'
 import App from './components/App.vue';
 import VueAnalytics from 'vue-analytics'
 
-chrome.runtime.onInstalled.addListener(console.log);
-
-
 Vue.use(Vuetify)
 
 Vue.use(VueAnalytics, {
@@ -26,14 +23,16 @@ Vue.use(VueAnalytics, {
     { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
-    enabled: false //process.env.NODE_ENV === 'development'
+    enabled: process.env.NODE_ENV === 'development'
   },
 
   commands: {
     trackView() {
+      /** @type {anime365.Translation} */
       const currentTranslation = this.$store.getters["player/currentTranslation"]
+      this.$ga.set('dimension2', currentTranslation.typeKind)
       this.$ga.page({
-        page: `/player/series/${currentTranslation.seriesId}/episode/${currentTranslation.episodeId}/translation/${currentTranslation.id}`,
+        page: `/player/series/${currentTranslation.seriesId}`,
         title: currentTranslation.title
       })
     },
