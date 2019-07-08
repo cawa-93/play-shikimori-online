@@ -4,7 +4,7 @@
       <v-select
         item-text="episodeFull"
         item-value="id"
-        :items="filteredEpisodes"
+        :items="episodes"
         box
         label="Серия"
         v-model="currentEpisodeID"
@@ -63,10 +63,6 @@ export default {
   computed: {
     episodes() {
       return this.$store.getters["player/episodes"];
-    },
-
-    filteredEpisodes() {
-      return this.episodes.filter(e => e.isActive);
     },
 
     currentEpisodeID: {

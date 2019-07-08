@@ -177,20 +177,20 @@ export function selectNextEpisode({ getters: { nextEpisode }, dispatch }) {
  */
 export async function loadEpisodesTitle({ commit, state }) {
   let currentPage = 1
-  let episodeMap = new Map()
+  let episodesToCommit = []
 
   while (true) {
     const promise = myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/${currentPage}`);
 
-    if (episodeMap.size) {
-      commit('loadEpisodesTitle', episodeMap)
-      episodeMap = new Map()
+    if (episodesToCommit.length) {
+      commit('loadEpisodesTitle', episodesToCommit)
+      episodesToCommit = []
     }
 
     const resp = await promise
     if (!resp.episodes || !resp.episodes.length) break
 
-    resp.episodes.forEach(e => episodeMap.set(e.episode_id, e))
+    episodesToCommit = resp.episodes
 
     if (currentPage >= resp.episodes_last_page) {
       break
@@ -199,8 +199,8 @@ export async function loadEpisodesTitle({ commit, state }) {
     currentPage++
   }
 
-  if (episodeMap.size) {
-    commit('loadEpisodesTitle', episodeMap)
+  if (episodesToCommit.length) {
+    commit('loadEpisodesTitle', episodesToCommit)
   }
 
 }

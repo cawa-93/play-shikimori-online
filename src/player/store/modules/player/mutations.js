@@ -7,6 +7,12 @@ import Vue from "vue";
  * @param {anime365.Series} series 
  */
 export function setSeries(state, series) {
+  series.episodes = series.episodes
+    .filter(e =>
+      e.isActive
+      && parseFloat(e.episodeInt) <= series.numberOfEpisodes
+      && e.episodeType === series.type
+    )
   state.series = series
 }
 
@@ -29,7 +35,7 @@ export function setTranslations(state, { episode, translations }) {
     return
   }
 
-  Vue.set(episode, 'translations', translations)
+  Vue.set(episode, 'translations', translations.filter(t => t.isActive))
 }
 
 /**
@@ -45,17 +51,19 @@ export function selectTranslation(state, payload) {
 /**
  * Обновляет заголовки для серий
  * @param {vuex.Player} state 
- * @param {Map} episodes
+ * @param {myanimelist.Episode[]} episodes
  */
 export function loadEpisodesTitle(state, episodes) {
-  if (!state.series.episodes) return
-  for (const episode of state.series.episodes) {
-    if (episode.episodeTitle || episode.episodeType === 'special') continue
+  if (!state.series.episodes || !state.series.episodes.length || !episodes || !episodes.length) return
 
-    const episodeInfo = episodes.get(parseInt(episode.episodeInt))
-    if (!episodeInfo || !episodeInfo.title) continue
+  for (const { title, episode_id } of episodes) {
+    if (!title) continue
 
-    episode.episodeTitle = episodeInfo.title
+    const episode = state.series.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
+
+    if (!episode || episode.episodeTitle) continue
+
+    episode.episodeTitle = title
     episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`
   }
 

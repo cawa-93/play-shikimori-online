@@ -16,6 +16,9 @@ async function main() {
 
 	if (!infoSection || WatchOnlineButton) return
 
+	// Скрываем старый блок с кнопкой, так как в некоторых темах он ломает отображение
+	infoSection.querySelector('.watch-online-placeholer').remove()
+
 	WatchOnlineButton = createButton(infoSection)
 
 	// Загрузка метаданных аниме
@@ -72,7 +75,7 @@ function createButton(infoSection) {
 		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`
-	infoSection.appendChild(WatchButtonSection)
+	infoSection.querySelector('.block[itemprop="aggregateRating"] + .block').after(WatchButtonSection)
 	return WatchButtonSection.querySelector('#watch-online-button')
 }
 

@@ -1,3 +1,22 @@
+chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+  if (reason !== 'update') {  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
+    return
+  }
+
+  const manifest = chrome.runtime.getManifest()
+
+  chrome.storage.local.get({ runtimeMessages: [] }, ({ runtimeMessages }) => {
+
+    runtimeMessages.push({
+      html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
+      data: { previousVersion }
+    })
+
+    chrome.storage.local.set({ runtimeMessages })
+  })
+})
+
+
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     if (request.contentScriptQuery == 'fetchUrl') {
