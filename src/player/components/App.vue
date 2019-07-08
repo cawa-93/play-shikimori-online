@@ -23,10 +23,6 @@
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
-
-          <!-- <v-flex class="flex-grow-unset mt-3">
-            <origins v-if="$store.state.shikimori.anime"></origins>
-          </v-flex>-->
         </v-layout>
 
         <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>

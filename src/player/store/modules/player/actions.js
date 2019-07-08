@@ -88,6 +88,13 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
 
   await dispatch('selectTranslation', { translation })
 
+  Vue.nextTick(() => {
+    if (!getters.nextEpisode) {
+      dispatch('shikimori/loadNextSeason', null, { root: true })
+
+    }
+  })
+
 }
 
 

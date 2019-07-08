@@ -15,13 +15,16 @@
         <span class="hide-on-xs ml-1">серия</span>
       </v-btn>
     </v-flex>
+
     <v-flex class="text-xs-center main-menu">
       <slot></slot>
     </v-flex>
+
     <v-flex class="text-xs-right">
       <v-btn
         class="ma-0"
         flat
+        v-if="$store.getters['player/nextEpisode'] || !$store.state.shikimori.nextSeason"
         :disabled="!$store.getters['player/nextEpisode']"
         @click.prevent="nextEpisode"
         :href="urls.next"
@@ -30,6 +33,19 @@
       >
         Следующая
         <span class="hide-on-xs ml-1">серия</span>
+        <v-icon right>skip_next</v-icon>
+      </v-btn>
+
+      <v-btn
+        class="ma-0"
+        flat
+        v-else
+        :href="urls.next"
+        target="_self"
+        @click="$store.dispatch('shikimori/markAsWatched')"
+        v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
+      >
+        {{$store.state.shikimori.nextSeason.name}}
         <v-icon right>skip_next</v-icon>
       </v-btn>
     </v-flex>
@@ -78,6 +94,20 @@ export default {
         );
 
         next = next.toString();
+      } else if (this.$store.state.shikimori.nextSeason) {
+        next = new URL(chrome.runtime.getURL(`player/index.html`));
+        next.searchParams.append(
+          "anime",
+          this.$store.state.shikimori.nextSeason.id
+        );
+        next.searchParams.append(
+          "series",
+          this.$store.state.shikimori.nextSeason.series
+        );
+        next.searchParams.append(
+          "episodeInt",
+          this.$store.state.shikimori.nextSeason.episodeInt
+        );
       }
 
       return { next, previous };
@@ -88,12 +118,6 @@ export default {
     async nextEpisode() {
       this.$store.dispatch("shikimori/markAsWatched");
       this.$store.dispatch("player/selectNextEpisode");
-    },
-
-    async saveRate(value) {
-      return this.$store.dispatch("shikimori/saveUserRate", {
-        score: value * 2
-      });
     }
   }
 };

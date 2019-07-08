@@ -9,6 +9,10 @@ export function setAnime(state, anime) {
   state.anime = anime
 }
 
+export function setNextSeason(state, nextSeason) {
+  state.nextSeason = nextSeason
+}
+
 /**
  * Обновляет текущую оценку
  * @param {vuex.Shikimori} state 
