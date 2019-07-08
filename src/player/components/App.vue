@@ -34,7 +34,7 @@
 
       <app-footer></app-footer>
 
-      <v-snackbar v-model="snackbar.show" :top="100" :timeout="0" multi-line>
+      <v-snackbar v-model="snackbar.show" top :timeout="0" multi-line>
         <span v-html="snackbar.html"></span>
         <v-btn icon @click="closeSnackbar">
           <v-icon color="pink">close</v-icon>
