@@ -75,7 +75,15 @@ function createButton(infoSection) {
 		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`
-	infoSection.querySelector('.block[itemprop="aggregateRating"] + .block').after(WatchButtonSection)
+
+	if (infoSection.querySelector('.block[itemprop="aggregateRating"] + .block')) {
+		infoSection.querySelector('.block[itemprop="aggregateRating"] + .block').after(WatchButtonSection)
+	} else if (infoSection.querySelector('.block[itemprop="aggregateRating"]')) {
+		infoSection.querySelector('.block[itemprop="aggregateRating"]').after(WatchButtonSection)
+	} else {
+		infoSection.prepend(WatchButtonSection)
+	}
+
 	return WatchButtonSection.querySelector('#watch-online-button')
 }
 
