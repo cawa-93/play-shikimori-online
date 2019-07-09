@@ -1,21 +1,19 @@
 import retry from 'async-retry'
+import { local } from '../helpers'
 
-chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   if (reason !== 'update') {  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
     return
   }
 
   const manifest = chrome.runtime.getManifest()
 
-  chrome.storage.local.get({ runtimeMessages: [] }, ({ runtimeMessages }) => {
-
-    runtimeMessages.push({
-      html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
-      data: { previousVersion }
-    })
-
-    chrome.storage.local.set({ runtimeMessages })
+  const { runtimeMessages } = await local.get({ runtimeMessages: [] })
+  runtimeMessages.push({
+    html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
+    data: { previousVersion }
   })
+  await local.set({ runtimeMessages })
 })
 
 

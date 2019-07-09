@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { myanimelistAPI } from "../../helpers";
+import { myanimelistAPI, local } from "../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
@@ -129,21 +129,17 @@ export default {
   },
 
   methods: {
-    loadOneRuntimeMessage() {
-      chrome.storage.local.get(
-        { runtimeMessages: [] },
-        ({ runtimeMessages }) => {
-          if (!runtimeMessages.length) {
-            return;
-          }
+    async loadOneRuntimeMessage() {
+      const { runtimeMessages } = await local.get({ runtimeMessages: [] });
+      if (!runtimeMessages.length) {
+        return;
+      }
 
-          const message = runtimeMessages.shift();
-          this.snackbar.html = message.html;
-          this.snackbar.show = true;
+      const message = runtimeMessages.shift();
+      this.snackbar.html = message.html;
+      this.snackbar.show = true;
 
-          chrome.storage.local.set({ runtimeMessages });
-        }
-      );
+      await local.set({ runtimeMessages });
     },
 
     closeSnackbar() {
