@@ -7,16 +7,20 @@ import Vue from "vue";
  * @param {anime365.Series} series 
  */
 export function setSeries(state, series) {
+  series.episodes = series.episodes.filter(
+    e =>
+      e.isActive
+      && (!series.numberOfEpisodes || parseFloat(e.episodeInt) <= series.numberOfEpisodes)
+  )
 
   const episodeType = series.episodes[0].episodeType
   if (series.episodes.every(e => e.episodeType === episodeType)) {
     series.type = episodeType
   } else {
     series.episodes = series.episodes
-      .filter(e =>
-        e.isActive
-        && e.episodeType === series.type
-        && (series.numberOfEpisodes === 0 || parseFloat(e.episodeInt) <= series.numberOfEpisodes)
+      .filter(
+        e =>
+          e.episodeType === series.type
       )
   }
   state.series = series
