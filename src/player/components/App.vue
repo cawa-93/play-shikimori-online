@@ -26,9 +26,13 @@
         </v-layout>
 
         <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
-      </v-container>
 
-      <app-footer></app-footer>
+        <app-footer></app-footer>
+
+        <v-flex class="mt-5 mt-5 text-xs-center">
+          <clear-btn class>Сбросить все данные</clear-btn>
+        </v-flex>
+      </v-container>
 
       <v-snackbar v-model="snackbar.show" top :timeout="0" multi-line>
         <span v-html="snackbar.html"></span>
@@ -49,6 +53,7 @@ import videoControls from "./video-controls.vue";
 import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 import appFooter from "./app-footer.vue";
+import clearBtn from "./clear-btn.vue";
 
 export default {
   components: {
@@ -58,7 +63,8 @@ export default {
     videoControls,
     mainMenu,
     comments,
-    appFooter
+    appFooter,
+    clearBtn
   },
 
   data() {
