@@ -12,7 +12,7 @@
             :id="'comment-' + comment.id"
           >
             <v-list-tile-avatar>
-              <img :src="comment.user.avatar">
+              <img :src="comment.user.avatar" />
             </v-list-tile-avatar>
 
             <v-list-tile-content>
@@ -74,7 +74,12 @@
 
 <script>
 import Vue from "vue";
-import { shikimoriAPI, updateAuth, getAuth } from "../../helpers";
+import {
+  shikimoriAPI,
+  updateAuth,
+  getAuth,
+  push as message
+} from "../../helpers";
 
 export default {
   name: "comments",
@@ -128,9 +133,7 @@ export default {
       this.layout.loading = true;
 
       const topics = await shikimoriAPI(
-        `/animes/${this.anime.id}/topics?kind=episode&episode=${
-          this.currentEpisode.episodeInt
-        }`
+        `/animes/${this.anime.id}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`
       );
 
       this.topic = topics[0];
@@ -188,11 +191,7 @@ export default {
 
       try {
         const comments = await shikimoriAPI(
-          `/comments/?desc=0&commentable_id=${
-            this.topic.id
-          }&commentable_type=Topic&limit=${this.comments.perPage}&page=${
-            this.comments.page
-          }`
+          `/comments/?desc=0&commentable_id=${this.topic.id}&commentable_type=Topic&limit=${this.comments.perPage}&page=${this.comments.page}`
         );
 
         if (comments.length > this.comments.perPage) {
@@ -295,32 +294,46 @@ export default {
         this.topic = topic;
       }
 
-      const newComment = await shikimoriAPI(`/comments`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          comment: {
-            body: this.newCommentText,
-            commentable_id: this.topic.id,
-            commentable_type: "Topic",
-            is_offtopic: false,
-            is_summary: false
-          },
-          frontend: false
-        })
-      });
+      try {
+        const newComment = await shikimoriAPI(`/comments`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            comment: {
+              body: this.newCommentText,
+              commentable_id: this.topic.id,
+              commentable_type: "Topic",
+              is_offtopic: false,
+              is_summary: false
+            },
+            frontend: false
+          })
+        });
 
-      if (!newComment.id) {
+        if (!newComment.id) {
+          this.layout.newComment.loading = false;
+          return;
+        }
+
+        this.comments.items.push(this.proccessComment(newComment));
+
+        this.newCommentText = "";
         this.layout.newComment.loading = false;
-        return;
+
+        this.$ga.event("comments-actions", "post-comment");
+      } catch (error) {
+        this.$ga.exception(
+          `New Comment Error: ${error.message || error}`,
+          true
+        );
+
+        console.error("Не удалось создать комментарий", { error });
+        message({
+          color: "error",
+          html:
+            "Не удалось создать комментарий.\nОткройте консоль для информации об ошибке"
+        });
       }
-
-      this.comments.items.push(this.proccessComment(newComment));
-
-      this.newCommentText = "";
-      this.layout.newComment.loading = false;
-
-      this.$ga.event("comments-actions", "post-comment");
     }
   },
 

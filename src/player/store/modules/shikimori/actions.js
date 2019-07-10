@@ -1,4 +1,4 @@
-import { shikimoriAPI, getAuth, updateAuth, anime365API } from "../../../../helpers";
+import { shikimoriAPI, getAuth, updateAuth, anime365API, push as message } from "../../../../helpers";
 
 /**
  * Загружает данный об аниме
@@ -158,17 +158,24 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     },
     user_rate)
 
-
-  /** @type {shikimori.UserRate} */
-  newUserRate = await shikimoriAPI('/v2/user_rates', {
-    method: 'POST',
-    body: JSON.stringify({
-      user_rate: newUserRate
-    }),
-    headers: {
-      Authorization: `${auth.token_type} ${auth.access_token}`
-    }
-  })
+  try {
+    /** @type {shikimori.UserRate} */
+    newUserRate = await shikimoriAPI('/v2/user_rates', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_rate: newUserRate
+      }),
+      headers: {
+        Authorization: `${auth.token_type} ${auth.access_token}`
+      }
+    })
+  } catch (error) {
+    console.error('Не удалось синхронизироваться с Шикимори', { error })
+    message({
+      color: 'error',
+      html: 'Не удалось синхронизироваться с Шикимори.\nОткройте консоль для информации об ошибке'
+    })
+  }
 
   commit('setUserRate', newUserRate)
 

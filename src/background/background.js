@@ -32,7 +32,11 @@ chrome.runtime.onMessage.addListener(
         await retry(async bail => {
           const resp = await fetch(request.url, request.options)
           const response = await resp.json()
-          sendResponse({ response })
+          if (!resp.ok || resp.status >= 400) {
+            sendResponse({ error: response })
+          } else {
+            sendResponse({ response })
+          }
         })
       });
 

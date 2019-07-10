@@ -1,4 +1,4 @@
-import { local } from '../helpers'
+import { local } from './chrome-storage'
 
 
 export async function push(message) {
