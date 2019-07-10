@@ -47,7 +47,9 @@ async function main() {
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
 		playerURL.searchParams.set('series', series.id)
 		playerURL.searchParams.set('anime', anime.id)
-		playerURL.searchParams.set('episodeInt', episodeInt + 1) // Открываем следующую после просмотренной серию
+		if (episodeInt) {
+			playerURL.searchParams.set('episodeInt', episodeInt + 1) // Открываем следующую после просмотренной серию
+		}
 
 		WatchOnlineButton.href = playerURL.toString()
 		WatchOnlineButton.style.cursor = 'pointer'
