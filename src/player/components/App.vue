@@ -23,29 +23,24 @@
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
-
-          <!-- <v-flex class="flex-grow-unset mt-3">
-            <origins v-if="$store.state.shikimori.anime"></origins>
-          </v-flex>-->
         </v-layout>
 
         <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
+
+        <app-footer></app-footer>
+
+        <v-flex class="mt-5 mt-5 text-xs-center">
+          <clear-btn class>Сбросить все данные</clear-btn>
+        </v-flex>
       </v-container>
 
-      <app-footer></app-footer>
-
-      <v-snackbar v-model="snackbar.show" top :timeout="0" multi-line>
-        <span v-html="snackbar.html"></span>
-        <v-btn icon @click="closeSnackbar">
-          <v-icon color="pink">close</v-icon>
-        </v-btn>
-      </v-snackbar>
+      <messages></messages>
     </v-app>
   </section>
 </template>
 
 <script>
-import { myanimelistAPI } from "../../helpers";
+import { myanimelistAPI, local } from "../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
@@ -53,6 +48,8 @@ import videoControls from "./video-controls.vue";
 import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 import appFooter from "./app-footer.vue";
+import clearBtn from "./clear-btn.vue";
+import messages from "./messages.vue";
 
 export default {
   components: {
@@ -62,7 +59,9 @@ export default {
     videoControls,
     mainMenu,
     comments,
-    appFooter
+    appFooter,
+    clearBtn,
+    messages
   },
 
   data() {
@@ -81,11 +80,7 @@ export default {
     }
 
     return {
-      darkMode,
-      snackbar: {
-        show: false,
-        html: null
-      }
+      darkMode
     };
   },
 
@@ -115,43 +110,9 @@ export default {
           this.$store.commit("shikimori/setUser", null);
         }
       }
-
-      if (changes.runtimeMessages && this.snackbar.html === null) {
-        this.loadOneRuntimeMessage();
-      }
     });
 
     await promises;
-
-    this.loadOneRuntimeMessage();
-  },
-
-  methods: {
-    loadOneRuntimeMessage() {
-      chrome.storage.local.get(
-        { runtimeMessages: [] },
-        ({ runtimeMessages }) => {
-          if (!runtimeMessages.length) {
-            return;
-          }
-
-          const message = runtimeMessages.shift();
-          this.snackbar.html = message.html;
-          this.snackbar.show = true;
-
-          chrome.storage.local.set({ runtimeMessages });
-        }
-      );
-    },
-
-    closeSnackbar() {
-      this.snackbar.show = false;
-
-      setTimeout(() => {
-        this.snackbar.html = null;
-        this.loadOneRuntimeMessage();
-      }, 1000);
-    }
   }
 };
 </script>

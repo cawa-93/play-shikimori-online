@@ -26,6 +26,7 @@ module.exports = [{
   plugins: [
     resolve(),
     replace(replaceEnv),
+    commonjs(),
     copy({
       targets: {
         'src/manifest.json': 'dist/manifest.json',

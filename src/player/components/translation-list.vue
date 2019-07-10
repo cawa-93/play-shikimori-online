@@ -76,6 +76,7 @@ export default {
     groupedTranslations() {
       const groups = [
         { type: "voiceRu", label: "Озвучка" },
+        { type: "voiceEn", label: "Английская Озвучка" },
         { type: "subRu", label: "Русские Субтитры" },
         { type: "subEn", label: "Английские Субтитры" },
         { type: "subJa", label: "Японские Субтитры" },
@@ -129,6 +130,8 @@ export default {
       switch (this.$store.getters["player/currentTranslation"].type) {
         case "voiceRu":
           return "Озвучка";
+        case "voiceEn":
+          return "Английская Озвучка";
         case "subRu":
           return "Русские Субтитры";
         case "subEn":

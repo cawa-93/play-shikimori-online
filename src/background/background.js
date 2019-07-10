@@ -1,18 +1,16 @@
-chrome.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+import retry from 'async-retry'
+import { push as message } from '../helpers/runtime-messages'
+
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   if (reason !== 'update') {  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
     return
   }
 
   const manifest = chrome.runtime.getManifest()
-
-  chrome.storage.local.get({ runtimeMessages: [] }, ({ runtimeMessages }) => {
-
-    runtimeMessages.push({
-      html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
-      data: { previousVersion }
-    })
-
-    chrome.storage.local.set({ runtimeMessages })
+  message({
+    html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
+    color: 'success',
+    payload: { previousVersion }
   })
 })
 
@@ -25,15 +23,21 @@ chrome.runtime.onMessage.addListener(
 
       chrome.permissions.contains({
         origins: [`${info.protocol}//${info.hostname}/*`]
-      }, function (granted) {
-        if (granted) {
-          fetch(request.url, request.options)
-            .then(response => response.json())
-            .then(response => sendResponse({ response }))
-            .catch(error => sendResponse({ error }));
-        } else {
+      }, async function (granted) {
+        if (!granted) {
           sendResponse({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
+          return
         }
+
+        await retry(async bail => {
+          const resp = await fetch(request.url, request.options)
+          const response = await resp.json()
+          if (!resp.ok || resp.status >= 400) {
+            sendResponse({ error: response })
+          } else {
+            sendResponse({ response })
+          }
+        })
       });
 
 

@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { anime365API, myanimelistAPI, buildIframeURL, findEpisode } from "../../../../helpers";
+import { anime365API, myanimelistAPI, findEpisode } from "../../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
@@ -10,7 +10,7 @@ const worker = new Worker('/player/worker.js')
  * @param {{getters: {episodes: anime365.Episode[]}, commit: Function, dispatch: Function}} context 
  * @param {{seriesID: number, episodeInt: number}} payload 
  */
-export async function loadSeries({ getters, commit, dispatch }, { seriesID = null, episodeInt = 1 }) {
+export async function loadSeries({ getters, commit, dispatch }, { seriesID = null, episodeInt = 0 }) {
   /**
    * @type {anime365.api.SeriesSelf}
    */
@@ -19,6 +19,10 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
 
   if (!getters.episodes.length) {
     return
+  }
+
+  if (isNaN(episodeInt)) {
+    episodeInt = 0
   }
 
   /**
@@ -33,7 +37,13 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
     startEpisode = findEpisode(getters.episodes, episodeInt - 1)
   }
 
-  // Если предыдущая серия не найдена — выполнить поиск первой серии перебором
+
+  // Если предыдущая серия не найдена — выполнить поиск нулевой серии перебором
+  if (!startEpisode && episodeInt > 2) {
+    startEpisode = findEpisode(getters.episodes, 0)
+  }
+
+  // Если нулевая серия не найдена — выполнить поиск первой серии перебором
   if (!startEpisode && episodeInt > 2) {
     startEpisode = findEpisode(getters.episodes, 1)
   }
@@ -87,6 +97,13 @@ export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
   let translation = await dispatch('getPriorityTranslation', targetEpisode)
 
   await dispatch('selectTranslation', { translation })
+
+  Vue.nextTick(() => {
+    if (!getters.nextEpisode) {
+      dispatch('shikimori/loadNextSeason', null, { root: true })
+
+    }
+  })
 
 }
 

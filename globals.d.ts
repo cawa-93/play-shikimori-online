@@ -237,6 +237,29 @@ declare module shikimori {
 		locale: string;
 	}
 
+	interface FranchiseLink {
+		id: number;
+		source_id: number;
+		target_id: number;
+		source: number;
+		target: number;
+		weight: number;
+		relation: string;
+	}
+
+	interface FranchiseNode {
+		id: number;
+		date: number;
+		name: string;
+		image_url: string;
+		url: string;
+		year: number;
+		kind: string;
+		weight: number;
+		series?: number;
+		episodeInt?: number;
+	}
+
 }
 
 declare module myanimelist {
@@ -262,26 +285,27 @@ declare module myanimelist {
 
 namespace vuex {
 	interface Context {
-		state: State,
-		commit: Funtion,
-		dispatch: Function,
+		state: State
+		commit: Funtion
+		dispatch: Function
 		getters: Object
 	}
 
 	interface State {
-		player: Player,
-		shikimori: Shikimori,
+		player: Player
+		shikimori: Shikimori
 	}
 
 	interface Player {
-		series?: anime365.Series,
-		currentEpisodeID?: number,
-		currentTranslationID?: number,
+		series?: anime365.Series
+		currentEpisodeID?: number
+		currentTranslationID?: number
 	}
 
 	interface Shikimori {
-		anime?: shikimori.Anime,
-		user?: shikimori.User,
+		anime?: shikimori.Anime
+		franchise?: shikimori.FranchiseNode
+		user?: shikimori.User
 		domain: string
 	}
 }

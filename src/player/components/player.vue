@@ -16,7 +16,6 @@
 
 
 <script>
-import { buildIframeURL } from "../../helpers";
 let _listener = null;
 
 export default {

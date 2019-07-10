@@ -1,4 +1,4 @@
-import { shikimoriAPI, getAuth, updateAuth } from "../../../../helpers";
+import { shikimoriAPI, getAuth, updateAuth, anime365API, push as message } from "../../../../helpers";
 
 /**
  * Загружает данный об аниме
@@ -21,6 +21,81 @@ export async function loadAnime({ commit }) {
   /** @type {shikimori.Anime} */
   const anime = await shikimoriAPI(`/animes/${animeId}`, { headers })
   commit('setAnime', anime)
+}
+
+/**
+ * Загружает данные о следующем сезоне во франшизе
+ * @param {{state: vuex.Shikimori, commit: Function}} param0 
+ */
+export async function loadNextSeason({ state, commit }) {
+  if (!state.anime || state.franchise) {
+    return
+  }
+
+  /** @type {{links: shikimori.FranchiseLink[], nodes: shikimori.FranchiseNode[]}} */
+  const franchise = await shikimoriAPI(`/animes/${state.anime.id}/franchise`)
+  const sequelLink = franchise.links.find(l => l.source_id === state.anime.id && l.relation === 'sequel')
+
+  if (!sequelLink) {
+    return
+  }
+
+  const sequelNode = franchise.nodes.find(n => n.id === sequelLink.target_id)
+
+  if (!sequelNode) {
+    return
+  }
+
+
+  /** @type {[anime365.api.SeriesCollection, shikimori.Anime]} */
+  const [{ data: [series] }, anime] = await Promise.all([
+    await anime365API(`/series/?myAnimeListId=${sequelNode.id}`),
+
+    (async () => {
+      const headers = {}
+
+      let auth = await getAuth()
+      if (auth && auth.access_token) {
+        if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+          auth = await updateAuth()
+        }
+
+        headers.Authorization = `${auth.token_type} ${auth.access_token}`
+      }
+
+      /** @type {shikimori.Anime} */
+      return await shikimoriAPI(`/animes/${sequelNode.id}`, { headers })
+    })()
+
+  ])
+
+  if (!series.episodes || !series.episodes.length) {
+    return
+  }
+
+  const episodeType = series.episodes[0].episodeType
+  if (series.episodes.every(e => e.episodeType === episodeType)) {
+    series.type = episodeType
+  } else {
+    series.episodes = series.episodes
+      .filter(e =>
+        e.isActive
+        && parseFloat(e.episodeInt) <= series.numberOfEpisodes
+        && e.episodeType === series.type
+      )
+  }
+
+  if (!series.episodes || !series.episodes.length) {
+    return
+  }
+
+  sequelNode.series = series.id
+
+  if (anime.user_rate) {
+    sequelNode.episodeInt = anime.user_rate.episodes
+  }
+
+  commit('setNextSeason', sequelNode)
 }
 
 
@@ -83,17 +158,24 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     },
     user_rate)
 
-
-  /** @type {shikimori.UserRate} */
-  newUserRate = await shikimoriAPI('/v2/user_rates', {
-    method: 'POST',
-    body: JSON.stringify({
-      user_rate: newUserRate
-    }),
-    headers: {
-      Authorization: `${auth.token_type} ${auth.access_token}`
-    }
-  })
+  try {
+    /** @type {shikimori.UserRate} */
+    newUserRate = await shikimoriAPI('/v2/user_rates', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_rate: newUserRate
+      }),
+      headers: {
+        Authorization: `${auth.token_type} ${auth.access_token}`
+      }
+    })
+  } catch (error) {
+    console.error('Не удалось синхронизироваться с Шикимори', { error })
+    message({
+      color: 'error',
+      html: 'Не удалось синхронизироваться с Шикимори.\nОткройте консоль для информации об ошибке'
+    })
+  }
 
   commit('setUserRate', newUserRate)
 
