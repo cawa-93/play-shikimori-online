@@ -11,7 +11,8 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   const { runtimeMessages } = await local.get({ runtimeMessages: [] })
   runtimeMessages.push({
     html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
-    data: { previousVersion }
+    color: 'success',
+    payload: { previousVersion }
   })
   await local.set({ runtimeMessages })
 })

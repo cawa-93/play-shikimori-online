@@ -34,12 +34,7 @@
         </v-flex>
       </v-container>
 
-      <v-snackbar v-model="snackbar.show" top :timeout="0" multi-line>
-        <span v-html="snackbar.html"></span>
-        <v-btn icon @click="closeSnackbar">
-          <v-icon color="pink">close</v-icon>
-        </v-btn>
-      </v-snackbar>
+      <messages></messages>
     </v-app>
   </section>
 </template>
@@ -54,6 +49,7 @@ import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 import appFooter from "./app-footer.vue";
 import clearBtn from "./clear-btn.vue";
+import messages from "./messages.vue";
 
 export default {
   components: {
@@ -64,7 +60,8 @@ export default {
     mainMenu,
     comments,
     appFooter,
-    clearBtn
+    clearBtn,
+    messages
   },
 
   data() {
@@ -83,11 +80,7 @@ export default {
     }
 
     return {
-      darkMode,
-      snackbar: {
-        show: false,
-        html: null
-      }
+      darkMode
     };
   },
 
@@ -117,39 +110,9 @@ export default {
           this.$store.commit("shikimori/setUser", null);
         }
       }
-
-      if (changes.runtimeMessages && this.snackbar.html === null) {
-        this.loadOneRuntimeMessage();
-      }
     });
 
     await promises;
-
-    this.loadOneRuntimeMessage();
-  },
-
-  methods: {
-    async loadOneRuntimeMessage() {
-      const { runtimeMessages } = await local.get({ runtimeMessages: [] });
-      if (!runtimeMessages.length) {
-        return;
-      }
-
-      const message = runtimeMessages.shift();
-      this.snackbar.html = message.html;
-      this.snackbar.show = true;
-
-      await local.set({ runtimeMessages });
-    },
-
-    closeSnackbar() {
-      this.snackbar.show = false;
-
-      setTimeout(() => {
-        this.snackbar.html = null;
-        this.loadOneRuntimeMessage();
-      }, 1000);
-    }
   }
 };
 </script>
