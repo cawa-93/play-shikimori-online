@@ -21,6 +21,7 @@
 
 <script>
 import { local } from "../../helpers";
+import * as runtimeMessages from "../../helpers/runtime-messages";
 
 export default {
   name: "messages",
@@ -36,15 +37,20 @@ export default {
 
   methods: {
     async loadOneRuntimeMessage() {
-      const { runtimeMessages } = await local.get({ runtimeMessages: [] });
-      if (!runtimeMessages.length) {
+      chrome.storage.onChanged.removeListener(this.storageOnChanged);
+
+      let message = await runtimeMessages.shift();
+
+      chrome.storage.onChanged.addListener(this.storageOnChanged);
+
+      if (!message) {
         return;
       }
 
-      const message = Object.assign(
+      message = Object.assign(
         {},
         { y: "top", mode: "multi-line", timeout: 0 },
-        runtimeMessages.shift()
+        message
       );
 
       if (!message.html) {
@@ -54,8 +60,6 @@ export default {
 
       this.snackbar.show = true;
       this.snackbar.message = message;
-
-      await local.set({ runtimeMessages });
     },
 
     closeSnackbar() {
@@ -65,16 +69,21 @@ export default {
         this.snackbar.message = {};
         this.loadOneRuntimeMessage();
       }, 1000);
+    },
+
+    storageOnChanged(changes) {
+      if (
+        changes.runtimeMessages &&
+        changes.runtimeMessages.newValue &&
+        changes.runtimeMessages.newValue.length &&
+        !this.snackbar.message.html
+      ) {
+        this.loadOneRuntimeMessage();
+      }
     }
   },
 
   mounted() {
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (changes.runtimeMessages && !this.snackbar.message.html) {
-        this.loadOneRuntimeMessage();
-      }
-    });
-
     this.loadOneRuntimeMessage();
 
     this.$el.addEventListener("click", event => {
