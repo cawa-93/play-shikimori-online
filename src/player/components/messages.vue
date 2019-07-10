@@ -20,8 +20,7 @@
 </template>
 
 <script>
-import { local } from "../../helpers";
-import * as runtimeMessages from "../../helpers/runtime-messages";
+import { shift as getMessage } from "../../helpers";
 
 export default {
   name: "messages",
@@ -39,7 +38,7 @@ export default {
     async loadOneRuntimeMessage() {
       chrome.storage.onChanged.removeListener(this.storageOnChanged);
 
-      let message = await runtimeMessages.shift();
+      let message = await getMessage();
 
       chrome.storage.onChanged.addListener(this.storageOnChanged);
 
