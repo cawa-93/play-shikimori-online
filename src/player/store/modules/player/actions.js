@@ -40,7 +40,7 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
 
   // Если предыдущая серия не найдена — выполнить поиск нулевой серии перебором
   if (!startEpisode && episodeInt > 2) {
-    startEpisode = findEpisode(getters.episodes, 1)
+    startEpisode = findEpisode(getters.episodes, 0)
   }
 
   // Если нулевая серия не найдена — выполнить поиск первой серии перебором
