@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { anime365API, myanimelistAPI, buildIframeURL, findEpisode } from "../../../../helpers";
+import { anime365API, myanimelistAPI, findEpisode } from "../../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
