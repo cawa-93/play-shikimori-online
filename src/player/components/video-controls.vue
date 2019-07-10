@@ -108,6 +108,8 @@ export default {
           "episodeInt",
           this.$store.state.shikimori.nextSeason.episodeInt
         );
+
+        next = next.toString();
       }
 
       return { next, previous };
