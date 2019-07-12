@@ -40,7 +40,13 @@
 </template>
 
 <script>
-import { myanimelistAPI, local } from "../../helpers";
+import {
+  myanimelistAPI,
+  local,
+  sync,
+  push as message,
+  getReviewUrl
+} from "../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
@@ -113,6 +119,27 @@ export default {
     });
 
     await promises;
+
+    // Если пользователь установил расширение неделю назад
+    // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
+    const { installAt, leaveReview } = await sync.get([
+      "installAt",
+      "leaveReview"
+    ]);
+    const WEEK = 604800000;
+    if (!installAt || installAt + WEEK > Date.now() || leaveReview) {
+      return;
+    }
+
+    const manifest = chrome.runtime.getManifest();
+    const url = getReviewUrl();
+
+    message({
+      color: "info",
+      html: `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`
+    });
+
+    sync.set({ leaveReview: 1 });
   }
 };
 </script>

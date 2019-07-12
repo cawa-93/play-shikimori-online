@@ -1,17 +1,27 @@
 import retry from 'async-retry'
-import { push as message } from '../helpers/runtime-messages'
+import { versionCompare, sync, push as message } from '../helpers'
+
 
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
-  if (reason !== 'update') {  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
-    return
+  // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
+
+  // Сохраняем время установки расширения или время обновления начиная с версии 0.4.11
+  if (reason === 'install' || (reason === 'update' && versionCompare('0.4.11', previousVersion) >= 0)) {
+    sync.set({
+      installAt: Date.now()
+    })
   }
 
-  const manifest = chrome.runtime.getManifest()
-  message({
-    html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
-    color: 'success',
-    payload: { previousVersion }
-  })
+  // Создаем сообщение об обновлении
+  if (reason === 'update') {
+    const manifest = chrome.runtime.getManifest()
+    message({
+      html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
+      color: 'success',
+      payload: { previousVersion }
+    })
+  }
+
 })
 
 

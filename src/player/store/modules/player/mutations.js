@@ -45,7 +45,7 @@ export function setTranslations(state, { episode, translations }) {
     return
   }
 
-  Vue.set(episode, 'translations', translations.filter(t => t.isActive))
+  Vue.set(episode, 'translations', translations)
 }
 
 /**
