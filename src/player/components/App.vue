@@ -1,7 +1,6 @@
 <template>
   <section>
     <v-app id="app" :dark="darkMode">
-      {{$store.state.player.currentTranslation}}
       <v-container class="__layout">
         <v-layout column style="	height: calc(100vh - 110px);min-height: 378px;">
           <v-flex class="flex-grow-unset">
@@ -20,7 +19,7 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.state.player.currentEpisode">
+            <video-controls>
               <main-menu></main-menu>
             </video-controls>
           </v-flex>

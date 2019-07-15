@@ -4,7 +4,7 @@
       <v-btn
         class="ma-0"
         flat
-        :disabled="!$store.getters['player/previousEpisode']"
+        :disabled="!previous"
         @click.prevent="$store.dispatch('player/selectPreviousEpisode')"
         :href="urls.previous"
         target="_self"
@@ -24,8 +24,8 @@
       <v-btn
         class="ma-0"
         flat
-        v-if="$store.getters['player/nextEpisode'] || !$store.state.shikimori.nextSeason"
-        :disabled="!$store.getters['player/nextEpisode']"
+        v-if="next || !$store.state.shikimori.nextSeason"
+        :disabled="!next"
         @click.prevent="nextEpisode"
         :href="urls.next"
         target="_self"
@@ -60,6 +60,18 @@ export default {
   name: "video-controls",
 
   computed: {
+    previous() {
+      return this.$store.state.player.currentEpisode
+        ? this.$store.state.player.currentEpisode.previous
+        : null;
+    },
+
+    next() {
+      return this.$store.state.player.currentEpisode
+        ? this.$store.state.player.currentEpisode.next
+        : null;
+    },
+
     urls() {
       const anime = this.$store.state.shikimori.anime
         ? this.$store.state.shikimori.anime.id

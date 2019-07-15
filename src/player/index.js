@@ -30,13 +30,13 @@ Vue.use(VueAnalytics, {
     { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
-    enabled: process.env.NODE_ENV === 'development'
+    enabled: false //process.env.NODE_ENV === 'development'
   },
 
   commands: {
     trackView() {
       /** @type {anime365.Translation} */
-      const currentTranslation = this.$store.getters["player/currentTranslation"]
+      const currentTranslation = this.$store.state.player.currentTranslation
       this.$ga.set('dimension2', currentTranslation.typeKind)
       this.$ga.page({
         page: `/player/series/${currentTranslation.seriesId}`,

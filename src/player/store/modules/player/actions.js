@@ -163,22 +163,22 @@ export async function selectTranslation({ commit }, { translation }) {
 
 /**
  * Переключает на предыдущую серию
- * @param {{getters: {previousEpisode: anime365.Episode}, dispatch: Function}} context 
+ * @param {{state: vuex.Player, dispatch: Function}} context 
  */
-export function selectPreviousEpisode({ getters: { previousEpisode }, dispatch }) {
-  if (previousEpisode) {
-    dispatch('selectEpisode', previousEpisode.id)
+export function selectPreviousEpisode({ state, dispatch }) {
+  if (state.currentEpisode.previous) {
+    dispatch('selectEpisode', state.currentEpisode.previous)
   }
 }
 
 
 /**
  * Переключает на следующую серию
- * @param {{getters: {nextEpisode: anime365.Episode}, dispatch: Function}} context 
+ * @param {{state: vuex.Player, dispatch: Function}} context 
  */
-export function selectNextEpisode({ getters: { nextEpisode }, dispatch }) {
-  if (nextEpisode) {
-    dispatch('selectEpisode', nextEpisode.id)
+export function selectNextEpisode({ state, dispatch }) {
+  if (state.currentEpisode.next) {
+    dispatch('selectEpisode', state.currentEpisode.next)
   }
 }
 

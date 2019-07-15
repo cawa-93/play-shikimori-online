@@ -30,30 +30,21 @@ export default {
       return this.$store.state.player.currentTranslation;
     },
     src() {
-      const src = new URL(this.$store.state.player.currentTranslation.embedUrl);
+      const src = new URL(this.translation.embedUrl);
       const config = new URLSearchParams();
       config.append("extension-id", chrome.runtime.id);
 
-      config.append(
-        "play-shikimori[seriesId]",
-        this.$store.state.player.currentTranslation.seriesId
-      );
+      config.append("play-shikimori[seriesId]", this.translation.seriesId);
 
-      config.append(
-        "play-shikimori[episodeId]",
-        this.$store.state.player.currentTranslation.episodeId
-      );
+      config.append("play-shikimori[episodeId]", this.translation.episodeId);
 
-      config.append(
-        "play-shikimori[id]",
-        this.$store.state.player.currentTranslation.id
-      );
+      config.append("play-shikimori[id]", this.translation.id);
 
       config.append("play-shikimori[isAutoPlay]", "1");
 
       config.set(
         "play-shikimori[nextEpisode]",
-        this.$store.getters["player/nextEpisode"] ? "1" : "0"
+        this.$store.state.player.currentEpisode.next ? "1" : "0"
       );
 
       src.hash = config.toString();
