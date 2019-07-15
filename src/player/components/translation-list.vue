@@ -7,7 +7,7 @@
       :items="groupedTranslations"
       box
       :label="label"
-      v-model="currentTranslationID"
+      v-model="currentTranslation"
       :loading="translations.length === 0"
       no-data-text="Пока нет ни одного перевода"
     >
@@ -64,16 +64,18 @@ export default {
 
   computed: {
     translations() {
-      if (
-        !this.$store.getters["player/selectedEpisode"] ||
-        !this.$store.getters["player/selectedEpisode"].translations
-      ) {
-        return [];
-      }
-      return this.$store.getters["player/selectedEpisode"].translations;
+      return this.$store.state.player.currentEpisode &&
+        this.$store.state.player.currentEpisode.translations
+        ? this.$store.state.player.currentEpisode.translations
+        : [];
     },
 
     groupedTranslations() {
+      const items = [];
+
+      if (!this.translations.length) {
+        return items;
+      }
       const groups = [
         { type: "voiceRu", label: "Озвучка" },
         { type: "voiceEn", label: "Английская Озвучка" },
@@ -83,10 +85,16 @@ export default {
         { type: "raw", label: "Оригинал" }
       ];
 
-      const items = [];
-
       groups.forEach(({ type, label }) => {
-        const translations = this.translations.filter(t => t.type === type);
+        const translations = this.translations
+          .filter(t => t.type === type)
+          .map(translation => {
+            if (!translation.authorsSummary) {
+              translation.authorsSummary = "Неизвестный";
+            }
+
+            return translation;
+          });
 
         if (translations.length) {
           items.push({
@@ -106,14 +114,17 @@ export default {
       return items;
     },
 
-    currentTranslationID: {
+    currentTranslation: {
       get() {
-        return this.$store.state.player.currentTranslationID;
+        return this.$store.state.player.currentTranslation
+          ? this.$store.state.player.currentTranslation.id
+          : null;
       },
       async set(id) {
         const translation = this.translations.find(
           translation => translation.id === id
         );
+
         if (translation) {
           this.$store.dispatch("player/selectTranslation", {
             translation,
@@ -124,10 +135,10 @@ export default {
     },
 
     label() {
-      if (!this.$store.getters["player/currentTranslation"]) {
+      if (!this.$store.state.player.currentTranslation) {
         return this.translations.length ? "Выберите перевод" : "Загрузка...";
       }
-      switch (this.$store.getters["player/currentTranslation"].type) {
+      switch (this.$store.state.player.currentTranslation.type) {
         case "voiceRu":
           return "Озвучка";
         case "voiceEn":
@@ -140,6 +151,8 @@ export default {
           return "Японские Субтитры";
         case "raw":
           return "Оригинал";
+        default:
+          "Перевод";
       }
     }
   }

@@ -19,13 +19,13 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.state.player.currentEpisodeID">
+            <video-controls>
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
         </v-layout>
 
-        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
+        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
 
         <app-footer></app-footer>
 
@@ -94,13 +94,7 @@ export default {
 
   async mounted() {
     const promises = Promise.all([
-      this.$store.dispatch("player/loadSeries", {
-        seriesID: new URL(location.href).searchParams.get("series"),
-        episodeInt: parseFloat(
-          new URL(location.href).searchParams.get("episodeInt")
-        )
-      }),
-
+      this.$store.dispatch("player/loadEpisodes", window.config),
       this.$store.dispatch("shikimori/loadUser"),
       this.$store.dispatch("shikimori/loadAnime")
     ]);

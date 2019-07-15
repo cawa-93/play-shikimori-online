@@ -2,7 +2,7 @@
  * @type {vuex.Player}
  */
 export default {
-  series: null,
-  currentEpisodeID: null,
-  currentTranslationID: null,
+  episodes: [],
+  currentEpisode: null,
+  currentTranslation: null,
 }

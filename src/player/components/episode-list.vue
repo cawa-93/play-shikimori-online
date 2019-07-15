@@ -7,7 +7,7 @@
         :items="episodes"
         box
         label="Серия"
-        v-model="currentEpisodeID"
+        v-model="selectedEpisode"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"
         no-data-text="Пока нет ни одной серии"
@@ -62,16 +62,21 @@ export default {
 
   computed: {
     episodes() {
-      return this.$store.getters["player/episodes"];
+      return this.$store.state.player.episodes;
     },
 
-    currentEpisodeID: {
+    selectedEpisode: {
       get() {
-        return this.$store.state.player.currentEpisodeID;
+        return this.$store.state.player.currentEpisode
+          ? this.$store.state.player.currentEpisode.id
+          : null;
       },
 
       set(id) {
-        return this.$store.dispatch("player/selectEpisode", id);
+        return this.$store.dispatch(
+          "player/selectEpisode",
+          this.episodes.find(e => e.id === id)
+        );
       }
     },
 

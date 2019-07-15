@@ -1,6 +1,8 @@
 import retry from 'async-retry'
 import { versionCompare, sync, push as message } from '../helpers'
 
+const inMemoryCache = new Map()
+
 
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
@@ -29,6 +31,17 @@ chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     if (request.contentScriptQuery == 'fetchUrl') {
 
+      if (inMemoryCache.has(request.url)) {
+        const { response, date } = inMemoryCache.get(request.url)
+        const MINUTE = 60000
+        if (Date.now() - date <= MINUTE * 5) {
+          sendResponse({ response })
+          return
+        } else {
+          inMemoryCache.delete(request.url)
+        }
+      }
+
       const info = new URL(request.url)
 
       chrome.permissions.contains({
@@ -41,10 +54,25 @@ chrome.runtime.onMessage.addListener(
 
         await retry(async bail => {
           const resp = await fetch(request.url, request.options)
-          const response = await resp.json()
-          if (!resp.ok || resp.status >= 400) {
-            sendResponse({ error: response })
+          if (!resp.ok) {
+
+            if (resp.status >= 400 && resp.status < 500) {
+              sendResponse({
+                error: {
+                  status: resp.status,
+                  message: resp.statusText,
+                  request: request
+                }
+              })
+            } else {
+              throw resp.status
+            }
           } else {
+            const response = await resp.json()
+
+            if (!request.options || !request.options.method || request.options.method === 'GET') {
+              inMemoryCache.set(request.url, { response, date: Date.now() })
+            }
             sendResponse({ response })
           }
         })

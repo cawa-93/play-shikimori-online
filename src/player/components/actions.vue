@@ -2,7 +2,7 @@
 <template>
   <v-list>
     <v-list-tile
-      v-if="$store.state.shikimori.anime"
+      v-if="shikiID"
       key="open-on-shikimori"
       :href="shikiLink.url"
       rel="noopener noreferrer"
@@ -16,7 +16,7 @@
     </v-list-tile>
 
     <v-list-tile
-      v-if="$store.state.player.currentTranslationID"
+      v-if="$store.state.player.currentTranslation"
       key="report-about-error"
       :href="reportAboutError.url"
       rel="noopener noreferrer"
@@ -35,19 +35,24 @@
 export default {
   name: "actions",
   computed: {
+    shikiID() {
+      if (this.$store.state.player.currentEpisode) {
+        return this.$store.state.player.currentEpisode.myAnimelist;
+      }
+
+      return window.config.anime;
+    },
     shikiLink() {
       return {
         label: "Открыть на Шикимори",
-        url: `https://shikimori.one${this.$store.state.shikimori.anime.url}`
+        url: `https://shikimori.one/animes/${this.shikiID}`
       };
     },
 
     reportAboutError() {
       return {
         label: "Сообщить о проблеме с видео",
-        url: `https://smotret-anime-365.ru/translations/report/${
-          this.$store.state.player.currentTranslationID
-        }`
+        url: `https://smotret-anime-365.ru/translations/report/${this.$store.state.player.currentTranslation.id}`
       };
     }
   }

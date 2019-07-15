@@ -185,10 +185,10 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
 
 /**
  * Сохраняет текущую серию как просмотренную
- * @param {{rootGetters: {'player/selectedEpisode' : anime365.Episode },dispatch: Function }}
+ * @param {{rootState: vuex.State,dispatch: Function }}
  */
-export function markAsWatched({ rootGetters, dispatch }) {
+export function markAsWatched({ rootState, dispatch }) {
   return dispatch('saveUserRate', {
-    episodes: rootGetters['player/selectedEpisode'].episodeInt
+    episodes: rootState.player.currentEpisode.episodeInt
   })
 }

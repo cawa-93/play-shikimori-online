@@ -110,16 +110,8 @@ export default {
       return this.$store.state.shikimori.user;
     },
 
-    anime() {
-      return this.$store.state.shikimori.anime;
-    },
-
     currentEpisode() {
-      return this.$store.getters["player/selectedEpisode"];
-    },
-
-    currentEpisodeID() {
-      return this.$store.state.player.currentEpisodeID;
+      return this.$store.state.player.currentEpisode;
     }
   },
 
@@ -129,11 +121,11 @@ export default {
     },
 
     async init() {
-      if (!this.currentEpisode || !this.anime) return;
+      if (!this.currentEpisode) return;
       this.layout.loading = true;
 
       const topics = await shikimoriAPI(
-        `/animes/${this.anime.id}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`
+        `/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`
       );
 
       this.topic = topics[0];
@@ -215,7 +207,7 @@ export default {
     },
 
     async createComment() {
-      if (!this.user || !this.anime) {
+      if (!this.user || !this.currentEpisode) {
         return;
       }
 
@@ -270,7 +262,7 @@ export default {
                 aired_at: new Date(
                   this.currentEpisode.firstUploadedDateTime
                 ).toISOString(),
-                anime_id: this.anime.id,
+                anime_id: this.currentEpisode.myAnimelist,
                 episode: this.currentEpisode.episodeInt,
                 is_anime365: true,
                 is_fandub,
@@ -364,7 +356,7 @@ export default {
   },
 
   watch: {
-    currentEpisodeID() {
+    currentEpisode() {
       this.init();
     }
   }
