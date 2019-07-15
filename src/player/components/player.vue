@@ -4,7 +4,7 @@
       id="player"
       ref="player"
       v-ga.load="'trackView'"
-      v-if="$store.state.player.currentTranslationID"
+      v-if="$store.state.player.currentTranslation"
       :src="src"
       height="100%"
       width="100%"
@@ -22,54 +22,49 @@ export default {
   name: "player",
 
   data() {
-    return {
-      src: ""
-    };
+    return {};
   },
 
   computed: {
-    translationID() {
-      return this.$store.state.player.currentTranslationID;
+    translation() {
+      return this.$store.state.player.currentTranslation;
+    },
+    src() {
+      const src = new URL(this.$store.state.player.currentTranslation.embedUrl);
+      const config = new URLSearchParams();
+      config.append("extension-id", chrome.runtime.id);
+
+      config.append(
+        "play-shikimori[seriesId]",
+        this.$store.state.player.currentTranslation.seriesId
+      );
+
+      config.append(
+        "play-shikimori[episodeId]",
+        this.$store.state.player.currentTranslation.episodeId
+      );
+
+      config.append(
+        "play-shikimori[id]",
+        this.$store.state.player.currentTranslation.id
+      );
+
+      config.append("play-shikimori[isAutoPlay]", "1");
+
+      config.set(
+        "play-shikimori[nextEpisode]",
+        this.$store.getters["player/nextEpisode"] ? "1" : "0"
+      );
+
+      src.hash = config.toString();
+
+      return src.toString();
     }
   },
 
   watch: {
-    translationID() {
+    translation() {
       this.setTitle();
-
-      {
-        const src = new URL(
-          this.$store.getters["player/currentTranslation"].embedUrl
-        );
-        const config = new URLSearchParams();
-        config.append("extension-id", chrome.runtime.id);
-
-        config.append(
-          "play-shikimori[seriesId]",
-          this.$store.getters["player/currentTranslation"].seriesId
-        );
-
-        config.append(
-          "play-shikimori[episodeId]",
-          this.$store.getters["player/currentTranslation"].episodeId
-        );
-
-        config.append(
-          "play-shikimori[id]",
-          this.$store.getters["player/currentTranslation"].id
-        );
-
-        config.append("play-shikimori[isAutoPlay]", "1");
-
-        config.set(
-          "play-shikimori[nextEpisode]",
-          this.$store.getters["player/nextEpisode"] ? "1" : "0"
-        );
-
-        src.hash = config.toString();
-
-        this.src = src.toString();
-      }
     }
   },
 
