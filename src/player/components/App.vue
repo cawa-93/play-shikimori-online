@@ -99,18 +99,18 @@ export default {
       this.$store.dispatch("shikimori/loadAnime")
     ]);
 
-    // chrome.storage.onChanged.addListener((changes, namespace) => {
-    //   if (changes.userAuth) {
-    //     if (
-    //       changes.userAuth.newValue &&
-    //       changes.userAuth.newValue.access_token
-    //     ) {
-    //       this.$store.dispatch("shikimori/loadUser");
-    //     } else {
-    //       this.$store.commit("shikimori/setUser", null);
-    //     }
-    //   }
-    // });
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (changes.userAuth) {
+        if (
+          changes.userAuth.newValue &&
+          changes.userAuth.newValue.access_token
+        ) {
+          this.$store.dispatch("shikimori/loadUser");
+        } else {
+          this.$store.commit("shikimori/setUser", null);
+        }
+      }
+    });
 
     await promises;
 
