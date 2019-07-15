@@ -9,8 +9,15 @@ import store from './store/index.js'
 import App from './components/App.vue';
 import VueAnalytics from 'vue-analytics'
 
-Vue.use(Vuetify)
+{
+  const params = (new URL(location.href)).searchParams
+  window.config = {
+    anime: parseInt(params.get('anime')),
+    episode: parseFloat(params.get('episode')),
+  }
+}
 
+Vue.use(Vuetify)
 Vue.use(VueAnalytics, {
   id: 'UA-71609511-7',
   autoTracking: {

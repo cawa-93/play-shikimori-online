@@ -7,57 +7,76 @@ const worker = new Worker('/player/worker.js')
 
 /**
  * Загружает данные по аниме
- * @param {{getters: {episodes: anime365.Episode[]}, commit: Function, dispatch: Function}} context 
- * @param {{seriesID: number, episodeInt: number}} payload 
+ * @param {{state: vuex.Player, commit: Function, dispatch: Function}} context 
+ * @param {{anime: number, episode: number}} payload 
  */
-export async function loadSeries({ getters, commit, dispatch }, { seriesID = null, episodeInt = 0 }) {
+export async function loadEpisodes({ state, commit, dispatch }, { anime, episode: startEpisodeInt = 0 }) {
   /**
-   * @type {anime365.api.SeriesSelf}
+   * @type {anime365.api.SeriesCollection}
    */
-  const { data } = await anime365API(`/series/${seriesID}`)
-  commit('setSeries', data)
+  let { data: [{ episodes, type, numberOfEpisodes }] } = await anime365API(`/series/?myAnimelist=${anime}`)
 
-  if (!getters.episodes.length) {
+  if (!episodes || !episodes.length) {
     return
   }
 
-  if (isNaN(episodeInt)) {
-    episodeInt = 0
+  episodes = episodes.filter(
+    e =>
+      e.isActive
+      && (!numberOfEpisodes || parseFloat(e.episodeInt) <= numberOfEpisodes)
+  )
+
+  const episodeType = episodes[0].episodeType
+  if (!episodes.every(e => e.episodeType === episodeType)) {
+    episodes = episodes.filter(e => e.episodeType === type)
+  }
+
+  episodes = episodes.map((episode, index) => {
+    episode.myAnimelist = anime
+    episode.next = episodes[index + 1]
+    episode.previous = episodes[index - 1]
+    return episode
+  })
+
+  commit('setEpisodes', episodes)
+
+  if (!startEpisodeInt) {
+    startEpisodeInt = 0
   }
 
   /**
-   * episodeInt — Номер серии которую необходимо запустить
+   * startEpisodeInt — Номер серии которую необходимо запустить
    * 
    * Поиск наиболее подходящей серии для запуска
    */
-  let startEpisode = findEpisode(getters.episodes, episodeInt)
+  let startEpisode = findEpisode(state.episodes, startEpisodeInt)
 
   // Если следующей серии не найдено — выполнить поиск предыдущей серии перебором
   if (!startEpisode) {
-    startEpisode = findEpisode(getters.episodes, episodeInt - 1)
+    startEpisode = findEpisode(state.episodes, startEpisodeInt - 1)
   }
 
 
   // Если предыдущая серия не найдена — выполнить поиск нулевой серии перебором
-  if (!startEpisode && episodeInt > 2) {
-    startEpisode = findEpisode(getters.episodes, 0)
+  if (!startEpisode && startEpisodeInt > 2) {
+    startEpisode = findEpisode(state.episodes, 0)
   }
 
   // Если нулевая серия не найдена — выполнить поиск первой серии перебором
-  if (!startEpisode && episodeInt > 2) {
-    startEpisode = findEpisode(getters.episodes, 1)
+  if (!startEpisode && startEpisodeInt > 2) {
+    startEpisode = findEpisode(state.episodes, 1)
   }
 
   // Если первая серия не найдена — использовать первый элемент из массива серий
   if (!startEpisode) {
-    startEpisode = getters.episodes[0]
+    startEpisode = state.episodes[0]
   }
 
   if (startEpisode) {
-    await dispatch('selectEpisode', startEpisode.id)
+    await dispatch('selectEpisode', startEpisode)
   }
 
-  await dispatch('loadEpisodesTitle')
+  // await dispatch('loadEpisodesTitle')
 }
 
 
@@ -66,42 +85,25 @@ export async function loadSeries({ getters, commit, dispatch }, { seriesID = nul
  * Загружает переводы для текущейсерии
  * Предзагружает данные для следующей серии
  * @param {{getters: {episodes: anime365.Episode[], nextEpisode?: anime365.Episode, previousEpisode?: anime365.Episode}, commit: Function, dispatch: Function}} context 
- * @param {number} episodeID 
+ * @param {anime365.Episode} episode
  */
-export async function selectEpisode({ getters, commit, dispatch }, episodeID) {
-  commit('selectEpisode', episodeID)
-
-
-  let targetEpisode
-
-  if (getters.nextEpisode && episodeID === getters.nextEpisode.id) {
-    targetEpisode = getters.nextEpisode
-  } else if (getters.previousEpisode && episodeID === getters.previousEpisode.id) {
-    targetEpisode = getters.previousEpisode
-  } else {
-    targetEpisode = getters.episodes.find(e => e.id === episodeID)
-  }
-
-  if (!targetEpisode) {
-    return
-  }
-
+export async function selectEpisode({ getters, commit, dispatch }, episode) {
+  commit('selectEpisode', episode)
 
   {
     const currentURL = new URL(location.href)
-    currentURL.searchParams.set('episodeInt', targetEpisode.episodeInt)
+    currentURL.searchParams.set('episode', episode.episodeInt)
     history.replaceState(history.state, '', currentURL.toString())
   }
 
-  await dispatch('loadTranslations', targetEpisode)
-  let translation = await dispatch('getPriorityTranslation', targetEpisode)
+  await dispatch('loadTranslations', episode)
+  let translation = await dispatch('getPriorityTranslation', episode)
 
   await dispatch('selectTranslation', { translation })
 
   Vue.nextTick(() => {
     if (!getters.nextEpisode) {
       dispatch('shikimori/loadNextSeason', null, { root: true })
-
     }
   })
 

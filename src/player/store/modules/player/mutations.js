@@ -4,35 +4,19 @@ import Vue from "vue";
 /**
  * Сохраняет аниме
  * @param {vuex.Player} state 
- * @param {anime365.Series} series 
+ * @param {anime365.Episode[]} episodes 
  */
-export function setSeries(state, series) {
-  series.episodes = series.episodes.filter(
-    e =>
-      e.isActive
-      && (!series.numberOfEpisodes || parseFloat(e.episodeInt) <= series.numberOfEpisodes)
-  )
-
-  const episodeType = series.episodes[0].episodeType
-  if (series.episodes.every(e => e.episodeType === episodeType)) {
-    series.type = episodeType
-  } else {
-    series.episodes = series.episodes
-      .filter(
-        e =>
-          e.episodeType === series.type
-      )
-  }
-  state.series = series
+export function setEpisodes(state, episodes) {
+  state.episodes.push(...episodes)
 }
 
 /**
  * Изменяет ID текущей серии
  * @param {vuex.Player} state 
- * @param {number} payload 
+ * @param {anime365.Episode} episode 
  */
-export function selectEpisode(state, payload) {
-  state.currentEpisodeID = payload
+export function selectEpisode(state, episode) {
+  state.currentEpisode = episode
 }
 
 /**

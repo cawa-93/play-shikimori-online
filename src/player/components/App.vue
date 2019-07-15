@@ -1,6 +1,7 @@
 <template>
   <section>
     <v-app id="app" :dark="darkMode">
+      {{$store.state.player.currentEpisode.episodeInt}}
       <v-container class="__layout">
         <v-layout column style="	height: calc(100vh - 110px);min-height: 378px;">
           <v-flex class="flex-grow-unset">
@@ -19,13 +20,13 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.state.player.currentEpisodeID">
+            <video-controls v-if="$store.state.player.currentEpisode">
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
         </v-layout>
 
-        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
+        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
 
         <app-footer></app-footer>
 
@@ -94,29 +95,24 @@ export default {
 
   async mounted() {
     const promises = Promise.all([
-      this.$store.dispatch("player/loadSeries", {
-        seriesID: new URL(location.href).searchParams.get("series"),
-        episodeInt: parseFloat(
-          new URL(location.href).searchParams.get("episodeInt")
-        )
-      }),
+      this.$store.dispatch("player/loadEpisodes", window.config),
 
       this.$store.dispatch("shikimori/loadUser"),
       this.$store.dispatch("shikimori/loadAnime")
     ]);
 
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (changes.userAuth) {
-        if (
-          changes.userAuth.newValue &&
-          changes.userAuth.newValue.access_token
-        ) {
-          this.$store.dispatch("shikimori/loadUser");
-        } else {
-          this.$store.commit("shikimori/setUser", null);
-        }
-      }
-    });
+    // chrome.storage.onChanged.addListener((changes, namespace) => {
+    //   if (changes.userAuth) {
+    //     if (
+    //       changes.userAuth.newValue &&
+    //       changes.userAuth.newValue.access_token
+    //     ) {
+    //       this.$store.dispatch("shikimori/loadUser");
+    //     } else {
+    //       this.$store.commit("shikimori/setUser", null);
+    //     }
+    //   }
+    // });
 
     await promises;
 

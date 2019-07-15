@@ -31,6 +31,9 @@ declare module anime365 {
 		countViews: number;
 		translations?: Translation[];
 		preselectedTranslation?: Translation
+		myAnimelist?: number
+		next?: Episode
+		previous?: Episode
 	}
 
 	interface Translation {
@@ -297,9 +300,9 @@ namespace vuex {
 	}
 
 	interface Player {
-		series?: anime365.Series
-		currentEpisodeID?: number
-		currentTranslationID?: number
+		episodes?: anime365.Episode[]
+		currentEpisode?: anime365.Episode
+		currentTranslation?: anime365.Translation
 	}
 
 	interface Shikimori {
