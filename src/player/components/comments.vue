@@ -356,7 +356,7 @@ export default {
   },
 
   watch: {
-    currentEpisodeID() {
+    currentEpisode() {
       this.init();
     }
   }
