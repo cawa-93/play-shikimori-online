@@ -125,17 +125,10 @@ export async function loadTranslations({ commit }, episode) {
   /**
    * @type {anime365.api.EpisodeSelf}
    */
-  const { data } = await anime365API(`/episodes/${episode.id}`)
-  data.translations = data.translations.map(translation => {
-    if (!translation.authorsSummary) {
-      translation.authorsSummary = 'Неизвестный'
-    }
+  let { data: { translations } } = await anime365API(`/episodes/${episode.id}`)
 
-    return translation
-  })
-
-  commit('setTranslations', { episode, translations: data.translations })
-  return data
+  commit('setTranslations', { episode, translations })
+  return translations
 }
 
 
@@ -146,7 +139,7 @@ export async function loadTranslations({ commit }, episode) {
  * @param {{translation: anime365.Translation, trusted: boolean}} translation 
  */
 export async function selectTranslation({ commit }, { translation }) {
-  commit('selectTranslation', translation.id)
+  commit('selectTranslation', translation)
 
 
   Vue.nextTick(async () => {

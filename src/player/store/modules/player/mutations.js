@@ -35,10 +35,10 @@ export function setTranslations(state, { episode, translations }) {
 /**
  * Изменяет ID текущего перевода
  * @param {vuex.Player} state 
- * @param {number} payload 
+ * @param {anime365.Translation} translation 
  */
-export function selectTranslation(state, payload) {
-  state.currentTranslationID = payload
+export function selectTranslation(state, translation) {
+  state.currentTranslation = translation
 }
 
 

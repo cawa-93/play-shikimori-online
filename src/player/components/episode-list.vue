@@ -67,7 +67,9 @@ export default {
 
     selectedEpisode: {
       get() {
-        return this.$store.state.player.currentEpisode.id;
+        return this.$store.state.player.currentEpisode
+          ? this.$store.state.player.currentEpisode.id
+          : null;
       },
 
       set(id) {
