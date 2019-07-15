@@ -14,7 +14,7 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
   /**
    * @type {anime365.api.SeriesCollection}
    */
-  let { data: [{ episodes, type, numberOfEpisodes }] } = await anime365API(`/series/?myAnimelist=${anime}`)
+  let { data: [{ episodes, type, numberOfEpisodes }] } = await anime365API(`/series/?myAnimeListId=${anime}`)
 
   if (!episodes || !episodes.length) {
     return
