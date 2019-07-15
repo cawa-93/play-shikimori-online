@@ -73,37 +73,20 @@ export default {
     },
 
     urls() {
-      const anime = this.$store.state.shikimori.anime
-        ? this.$store.state.shikimori.anime.id
-        : new URL(location.href).searchParams.get("anime");
       let next, previous;
 
-      if (this.$store.getters["player/previousEpisode"]) {
+      if (this.previous) {
         previous = new URL(chrome.runtime.getURL(`player/index.html`));
-        previous.searchParams.append("anime", anime);
-        previous.searchParams.append(
-          "series",
-          this.$store.getters["player/previousEpisode"].seriesId
-        );
-        previous.searchParams.append(
-          "episodeInt",
-          this.$store.getters["player/previousEpisode"].episodeInt
-        );
+        previous.searchParams.append("anime", this.previous.myAnimelist);
+        previous.searchParams.append("episode", this.previous.episodeInt);
 
         previous = previous.toString();
       }
 
-      if (this.$store.getters["player/nextEpisode"]) {
+      if (this.next) {
         next = new URL(chrome.runtime.getURL(`player/index.html`));
-        next.searchParams.append("anime", anime);
-        next.searchParams.append(
-          "series",
-          this.$store.getters["player/nextEpisode"].seriesId
-        );
-        next.searchParams.append(
-          "episodeInt",
-          this.$store.getters["player/nextEpisode"].episodeInt
-        );
+        next.searchParams.append("anime", this.next.myAnimelist);
+        next.searchParams.append("episode", this.next.episodeInt);
 
         next = next.toString();
       } else if (this.$store.state.shikimori.nextSeason) {
@@ -113,11 +96,7 @@ export default {
           this.$store.state.shikimori.nextSeason.id
         );
         next.searchParams.append(
-          "series",
-          this.$store.state.shikimori.nextSeason.series
-        );
-        next.searchParams.append(
-          "episodeInt",
+          "episode",
           this.$store.state.shikimori.nextSeason.episodeInt
         );
 

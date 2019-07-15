@@ -84,10 +84,10 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
  * Устанавливает текущую серию
  * Загружает переводы для текущейсерии
  * Предзагружает данные для следующей серии
- * @param {{getters: {episodes: anime365.Episode[], nextEpisode?: anime365.Episode, previousEpisode?: anime365.Episode}, commit: Function, dispatch: Function}} context 
+ * @param {{state: vuex.Player, commit: Function, dispatch: Function}} context 
  * @param {anime365.Episode} episode
  */
-export async function selectEpisode({ getters, commit, dispatch }, episode) {
+export async function selectEpisode({ state, commit, dispatch }, episode) {
   commit('selectEpisode', episode)
 
   {
@@ -102,7 +102,7 @@ export async function selectEpisode({ getters, commit, dispatch }, episode) {
   await dispatch('selectTranslation', { translation })
 
   Vue.nextTick(() => {
-    if (!getters.nextEpisode) {
+    if (!state.currentEpisode.next) {
       dispatch('shikimori/loadNextSeason', null, { root: true })
     }
   })
@@ -135,7 +135,7 @@ export async function loadTranslations({ commit }, episode) {
 /**
  * Устанавливает текущий перевод
  * Сохраняет перевод в хранилище приоритетных переводов
- * @param {{commit: Function, dispatch: Function, getters: {selectedEpisode: anime365.Episode, nextEpisode: anime365.Episode}}} context
+ * @param {{commit: Function, dispatch: Function}} context
  * @param {{translation: anime365.Translation, trusted: boolean}} translation 
  */
 export async function selectTranslation({ commit }, { translation }) {

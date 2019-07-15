@@ -61,8 +61,8 @@ export default {
 
   methods: {
     setTitle() {
-      if (!this.$store.getters["player/currentTranslation"]) return;
-      document.title = `${this.$store.getters["player/currentTranslation"].title} — онлайн просмотр`;
+      if (!this.$store.state.player.currentTranslation) return;
+      document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`;
     }
   },
 
