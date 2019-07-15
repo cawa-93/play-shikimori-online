@@ -237,16 +237,16 @@ export function getPriorityTranslation({ }, episode) {
 
 /**
  * Загружает переводы для следующей серии
- * @param {{getters: {nextEpisode: anime365.Episode}, dispatch: Function}} context 
+ * @param {{state: vuex.Player, dispatch: Function}} context 
  */
-export async function preloadNextEpisode({ getters, dispatch }) {
-  if (!getters.nextEpisode) {
+export async function preloadNextEpisode({ state, dispatch }) {
+  if (!state.currentEpisode.next) {
     return
   }
 
-  await dispatch('loadTranslations', getters.nextEpisode)
+  await dispatch('loadTranslations', state.currentEpisode.next)
   /** @type {anime365.Translation} */
-  const translation = await dispatch('getPriorityTranslation', getters.nextEpisode)
+  const translation = await dispatch('getPriorityTranslation', state.currentEpisode.next)
   if (translation) {
     const link = document.createElement('link');
     link.href = translation.embedUrl
