@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { anime365API, myanimelistAPI, findEpisode } from "../../../../helpers";
+import { anime365API, myanimelistAPI, findEpisode, filterEpisodes } from "../../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 const worker = new Worker('/player/worker.js')
@@ -20,16 +20,7 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
     return
   }
 
-  episodes = episodes.filter(
-    e =>
-      e.isActive
-      && (!numberOfEpisodes || parseFloat(e.episodeInt) <= numberOfEpisodes)
-  )
-
-  const episodeType = episodes[0].episodeType
-  if (!episodes.every(e => e.episodeType === episodeType)) {
-    episodes = episodes.filter(e => e.episodeType === type)
-  }
+  episodes = filterEpisodes({ episodes, type, numberOfEpisodes })
 
   episodes = episodes.map((episode, index) => {
     episode.myAnimelist = anime
