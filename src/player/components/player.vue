@@ -32,14 +32,11 @@ export default {
     src() {
       const src = new URL(this.translation.embedUrl);
       const config = new URLSearchParams();
+
       config.append("extension-id", chrome.runtime.id);
-
       config.append("play-shikimori[seriesId]", this.translation.seriesId);
-
       config.append("play-shikimori[episodeId]", this.translation.episodeId);
-
       config.append("play-shikimori[id]", this.translation.id);
-
       config.append("play-shikimori[isAutoPlay]", "1");
 
       config.set(
