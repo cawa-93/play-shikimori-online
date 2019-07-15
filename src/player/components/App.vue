@@ -95,7 +95,6 @@ export default {
   async mounted() {
     const promises = Promise.all([
       this.$store.dispatch("player/loadEpisodes", window.config),
-
       this.$store.dispatch("shikimori/loadUser"),
       this.$store.dispatch("shikimori/loadAnime")
     ]);
