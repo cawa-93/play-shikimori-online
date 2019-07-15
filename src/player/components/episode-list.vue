@@ -6,7 +6,7 @@
         item-value="id"
         :items="episodes"
         box
-        label="Серия"
+        :label="label"
         v-model="selectedEpisode"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"
@@ -85,6 +85,15 @@ export default {
         this.$store.state.shikimori.anime.user_rate
         ? this.$store.state.shikimori.anime.user_rate.episodes
         : 0;
+    },
+
+    label() {
+      return this.$store.state.shikimori.anime &&
+        (this.$store.state.shikimori.anime.russian ||
+          this.$store.state.shikimori.anime.name)
+        ? this.$store.state.shikimori.anime.russian ||
+            this.$store.state.shikimori.anime.name
+        : "Серия";
     }
   },
 
