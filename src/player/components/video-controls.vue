@@ -95,10 +95,13 @@ export default {
           "anime",
           this.$store.state.shikimori.nextSeason.id
         );
-        next.searchParams.append(
-          "episode",
-          this.$store.state.shikimori.nextSeason.episodeInt
-        );
+
+        if (this.$store.state.shikimori.nextSeason.episodeInt !== undefined) {
+          next.searchParams.append(
+            "episode",
+            this.$store.state.shikimori.nextSeason.episodeInt
+          );
+        }
 
         next = next.toString();
       }

@@ -2,9 +2,9 @@ import { shikimoriAPI, getAuth, updateAuth, anime365API, push as message } from 
 
 /**
  * Загружает данный об аниме
- * @param {vuex.Context} context 
+ * @param {{commit: Function, rootState: vuex.State}} context 
  */
-export async function loadAnime({ commit }) {
+export async function loadAnime({ commit, rootState }, animeId) {
   const headers = {}
 
   let auth = await getAuth()
@@ -16,7 +16,9 @@ export async function loadAnime({ commit }) {
     headers.Authorization = `${auth.token_type} ${auth.access_token}`
   }
 
-  const animeId = (new URL(location.href)).searchParams.get('anime')
+  if (!animeId) {
+    animeId = rootState.player.currentEpisode ? rootState.player.currentEpisode.myAnimelist : window.config.anime
+  }
 
   /** @type {shikimori.Anime} */
   const anime = await shikimoriAPI(`/animes/${animeId}`, { headers })
@@ -55,13 +57,15 @@ export async function loadNextSeason({ state, commit }) {
       const headers = {}
 
       let auth = await getAuth()
-      if (auth && auth.access_token) {
-        if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-          auth = await updateAuth()
-        }
-
-        headers.Authorization = `${auth.token_type} ${auth.access_token}`
+      if (!auth || !auth.access_token) {
+        return {} // Если пользователь не авторизован, нет смысла загружать его оценку
       }
+
+      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+        auth = await updateAuth()
+      }
+
+      headers.Authorization = `${auth.token_type} ${auth.access_token}`
 
       /** @type {shikimori.Anime} */
       return await shikimoriAPI(`/animes/${sequelNode.id}`, { headers })
@@ -92,7 +96,7 @@ export async function loadNextSeason({ state, commit }) {
   sequelNode.series = series.id
 
   if (anime.user_rate) {
-    sequelNode.episodeInt = anime.user_rate.episodes
+    sequelNode.episodeInt = anime.user_rate.episodes + 1
   }
 
   commit('setNextSeason', sequelNode)
