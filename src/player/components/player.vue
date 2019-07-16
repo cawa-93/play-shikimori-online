@@ -64,8 +64,6 @@ export default {
   },
 
   created() {
-    this.setTitle();
-
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");
