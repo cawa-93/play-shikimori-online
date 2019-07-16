@@ -67,7 +67,7 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
     await dispatch('selectEpisode', startEpisode)
   }
 
-  // await dispatch('loadEpisodesTitle')
+  await dispatch('loadEpisodesTitle')
 }
 
 
@@ -183,7 +183,7 @@ export async function loadEpisodesTitle({ commit, state }) {
   let episodesToCommit = []
 
   while (true) {
-    const promise = myanimelistAPI(`/anime/${state.series.myAnimeListId}/episodes/${currentPage}`);
+    const promise = myanimelistAPI(`/anime/${state.currentEpisode.myAnimelist}/episodes/${currentPage}`);
 
     if (episodesToCommit.length) {
       commit('loadEpisodesTitle', episodesToCommit)

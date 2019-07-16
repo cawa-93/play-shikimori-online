@@ -48,12 +48,12 @@ export function selectTranslation(state, translation) {
  * @param {myanimelist.Episode[]} episodes
  */
 export function loadEpisodesTitle(state, episodes) {
-  if (!state.series.episodes || !state.series.episodes.length || !episodes || !episodes.length) return
+  if (!state.episodes || !state.episodes.length || !episodes || !episodes.length) return
 
   for (const { title, episode_id } of episodes) {
     if (!title) continue
 
-    const episode = state.series.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
+    const episode = state.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
 
     if (!episode || episode.episodeTitle) continue
 
