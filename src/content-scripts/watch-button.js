@@ -73,7 +73,7 @@ function createButton(infoSection) {
 	WatchButtonSection.classList.add('watch-online-block')
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
-		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
+		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`
 
