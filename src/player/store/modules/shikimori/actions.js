@@ -139,6 +139,8 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     return null
   }
 
+  console.log(JSON.parse(JSON.stringify({ anime, old_rate: anime.user_rate })))
+
   if (anime.user_rate) {
     commit('setUserRate', Object.assign({}, anime.user_rate, user_rate))
   }
@@ -152,15 +154,21 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     auth = await updateAuth()
   }
 
+
   let newUserRate = Object.assign(
     {},
     {
       target_type: 'Anime',
       target_id: anime.id,
       user_id: user.id,
-      status: anime.user_rate ? anime.user_rate.status : 'watching'
+      status: anime.user_rate && (anime.user_rate.status === 'completed' || anime.user_rate.status === 'rewatching') ? 'rewatching' : 'watching'
     },
     user_rate)
+
+  if (newUserRate.status === 'watching' && newUserRate.episodes && anime.episodes && newUserRate.episodes >= anime.episodes) {
+    newUserRate.status = 'completed'
+  }
+
 
   try {
     /** @type {shikimori.UserRate} */
@@ -180,6 +188,9 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
       html: 'Не удалось синхронизироваться с Шикимори.\nОткройте консоль для информации об ошибке'
     })
   }
+
+  console.log(JSON.parse(JSON.stringify({ new_rate: newUserRate })))
+
 
   commit('setUserRate', newUserRate)
 
