@@ -201,6 +201,7 @@ export default {
       } catch (error) {
         const exception = error.message || error;
         this.$ga.exception(exception);
+        console.error(error);
       }
 
       this.layout.moreComments.loading = false;
@@ -327,10 +328,6 @@ export default {
         });
       }
     }
-  },
-
-  created() {
-    this.init();
   },
 
   mounted() {
