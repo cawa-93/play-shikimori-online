@@ -13,11 +13,8 @@
         no-data-text="Пока нет ни одной серии"
       >
         <template v-slot:item="{item}">
-          <v-list-tile-action @click.stop>
-            <v-checkbox
-              :input-value="item.episodeInt <= watchedEpisodes"
-              @click.prevent="markAsWatched(item)"
-            ></v-checkbox>
+          <v-list-tile-action @click.prevent.stop="markAsWatched(item)">
+            <v-checkbox @click.prevent :input-value="item.episodeInt <= watchedEpisodes"></v-checkbox>
           </v-list-tile-action>
 
           <v-list-tile-content class="inset">
@@ -99,9 +96,13 @@ export default {
 
   methods: {
     markAsWatched(episode) {
-      this.$store.dispatch("shikimori/saveUserRate", {
-        episodes: parseInt(episode.episodeInt)
-      });
+      let episodes = parseInt(episode.episodeInt);
+
+      if (episodes <= this.watchedEpisodes) {
+        episodes--;
+      }
+
+      this.$store.dispatch("shikimori/saveUserRate", { episodes });
     }
   }
 };
