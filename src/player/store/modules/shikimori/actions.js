@@ -139,8 +139,6 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     return null
   }
 
-  console.log(JSON.parse(JSON.stringify({ anime, old_rate: anime.user_rate })))
-
   if (anime.user_rate) {
     commit('setUserRate', Object.assign({}, anime.user_rate, user_rate))
   }
@@ -188,9 +186,6 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
       html: 'Не удалось синхронизироваться с Шикимори.\nОткройте консоль для информации об ошибке'
     })
   }
-
-  console.log(JSON.parse(JSON.stringify({ new_rate: newUserRate })))
-
 
   commit('setUserRate', newUserRate)
 

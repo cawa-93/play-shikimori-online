@@ -4,6 +4,9 @@ import { versionCompare, sync, push as message } from '../helpers'
 const inMemoryCache = new Map()
 
 
+/**
+ * Отслеживание установок и обновлений
+ */
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   // reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
 
@@ -27,6 +30,10 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 })
 
 
+
+/**
+ * Исполнение сетевых запросов
+ */
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     if (request.contentScriptQuery == 'fetchUrl') {

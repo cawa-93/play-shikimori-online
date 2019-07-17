@@ -331,6 +331,7 @@ export default {
   },
 
   mounted() {
+    this.init();
     this.$el.addEventListener("click", event => {
       if (event.target.matches('.comment-body a[href*="/comments/"]')) {
         event.preventDefault();
@@ -353,8 +354,10 @@ export default {
   },
 
   watch: {
-    currentEpisode() {
-      this.init();
+    currentEpisode(newEpisode, oldEpisode) {
+      if (newEpisode.id !== oldEpisode.id) {
+        this.init();
+      }
     }
   }
 };
