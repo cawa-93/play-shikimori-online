@@ -14,7 +14,8 @@
   "devDependencies": {
     "@types/video.js": "^7.2.10",
     "dotenv": "^8.0.0",
-    "rollup": "^1.16.7",
+    "material-design-icons": "^3.0.1",
+    "rollup": "^1.17.0",
     "rollup-plugin-commonjs": "^10.0.1",
     "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-resolve": "^5.2.0",

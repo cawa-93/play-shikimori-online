@@ -30,7 +30,6 @@ module.exports = [{
     copy({
       targets: {
         'src/manifest.json': 'dist/manifest.json',
-        'src/icons': 'dist/icons',
         // 'src/icons/play-128.png': 'dist/icons/play-128.png',
         // 'src/icons/pause.png': 'dist/icons/pause.png',
       }
@@ -97,8 +96,11 @@ module.exports = [{
     VuePlugin(),
     copy({
       targets: {
+        'src/fonts': 'dist/player/fonts',
         'src/player/index.html': 'dist/player/index.html',
+        'node_modules/material-design-icons/iconfont': 'dist/player/fonts/iconfont',
         'node_modules/vuetify/dist/vuetify.min.css': 'dist/player/vuetify.min.css',
+        'src/icons': 'dist/icons',
       }
     })
   ],

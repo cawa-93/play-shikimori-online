@@ -4,7 +4,7 @@
       id="player"
       ref="player"
       v-ga.load="'trackView'"
-      v-if="$store.state.player.currentTranslationID"
+      v-if="$store.state.player.currentTranslation"
       :src="src"
       height="100%"
       width="100%"
@@ -22,67 +22,53 @@ export default {
   name: "player",
 
   data() {
-    return {
-      src: ""
-    };
+    return {};
   },
 
   computed: {
-    translationID() {
-      return this.$store.state.player.currentTranslationID;
+    translation() {
+      return this.$store.state.player.currentTranslation;
+    },
+    src() {
+      const src = new URL(this.translation.embedUrl);
+      const config = new URLSearchParams();
+
+      config.append("extension-id", chrome.runtime.id);
+      config.append("play-shikimori[seriesId]", this.translation.seriesId);
+      config.append("play-shikimori[episodeId]", this.translation.episodeId);
+      config.append("play-shikimori[id]", this.translation.id);
+      config.append("play-shikimori[isAutoPlay]", "1");
+
+      config.set(
+        "play-shikimori[nextEpisode]",
+        this.$store.state.player.currentEpisode.next ? "1" : "0"
+      );
+
+      src.hash = config.toString();
+
+      return src.toString();
     }
   },
 
   watch: {
-    translationID() {
-      this.setTitle();
-
-      {
-        const src = new URL(
-          this.$store.getters["player/currentTranslation"].embedUrl
-        );
-        const config = new URLSearchParams();
-        config.append("extension-id", chrome.runtime.id);
-
-        config.append(
-          "play-shikimori[seriesId]",
-          this.$store.getters["player/currentTranslation"].seriesId
-        );
-
-        config.append(
-          "play-shikimori[episodeId]",
-          this.$store.getters["player/currentTranslation"].episodeId
-        );
-
-        config.append(
-          "play-shikimori[id]",
-          this.$store.getters["player/currentTranslation"].id
-        );
-
-        config.append("play-shikimori[isAutoPlay]", "1");
-
-        config.set(
-          "play-shikimori[nextEpisode]",
-          this.$store.getters["player/nextEpisode"] ? "1" : "0"
-        );
-
-        src.hash = config.toString();
-
-        this.src = src.toString();
+    translation(newTranslation, oldTranslation) {
+      if (
+        (newTranslation && !oldTranslation) ||
+        newTranslation.title !== oldTranslation.title
+      ) {
+        this.setTitle();
       }
     }
   },
 
   methods: {
     setTitle() {
-      if (!this.$store.getters["player/currentTranslation"]) return;
-      document.title = `${this.$store.getters["player/currentTranslation"].title} — онлайн просмотр`;
+      if (!this.$store.state.player.currentTranslation) return;
+      document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`;
     }
   },
 
   created() {
-    this.setTitle();
-
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");

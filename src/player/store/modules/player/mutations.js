@@ -1,42 +1,27 @@
 import Vue from "vue";
+import { clearString } from "../../../../helpers";
 
 
 /**
  * Сохраняет аниме
  * @param {vuex.Player} state 
- * @param {anime365.Series} series 
+ * @param {anime365.Episode[]} episodes 
  */
-export function setSeries(state, series) {
-  series.episodes = series.episodes.filter(
-    e =>
-      e.isActive
-      && (!series.numberOfEpisodes || parseFloat(e.episodeInt) <= series.numberOfEpisodes)
-  )
-
-  const episodeType = series.episodes[0].episodeType
-  if (series.episodes.every(e => e.episodeType === episodeType)) {
-    series.type = episodeType
-  } else {
-    series.episodes = series.episodes
-      .filter(
-        e =>
-          e.episodeType === series.type
-      )
-  }
-  state.series = series
+export function setEpisodes(state, episodes) {
+  state.episodes.push(...episodes)
 }
 
 /**
  * Изменяет ID текущей серии
  * @param {vuex.Player} state 
- * @param {number} payload 
+ * @param {anime365.Episode} episode 
  */
-export function selectEpisode(state, payload) {
-  state.currentEpisodeID = payload
+export function selectEpisode(state, episode) {
+  state.currentEpisode = episode
 }
 
 /**
- * Сохраняет массив переводов для серии
+ * Сохраняет отфильтрованный массив переводов для серии
  * @param {vuex.Player} state 
  * @param {{episode: anime365.Episode, translations: anime365.Translation[]}} param1 
  */
@@ -45,16 +30,28 @@ export function setTranslations(state, { episode, translations }) {
     return
   }
 
-  Vue.set(episode, 'translations', translations.filter(t => t.isActive))
+  Vue.set(episode, 'translations', translations.filter(translation => {
+    if (translation.isActive) return true
+
+    const currentAuthor = clearString(translation.authorsSummary)
+
+    return currentAuthor && !(translations.find(t => {
+      if (!t.isActive || translation.type !== t.type) return false
+
+      const author = clearString(t.authorsSummary)
+
+      return author && author === currentAuthor
+    }))
+  }))
 }
 
 /**
  * Изменяет ID текущего перевода
  * @param {vuex.Player} state 
- * @param {number} payload 
+ * @param {anime365.Translation} translation 
  */
-export function selectTranslation(state, payload) {
-  state.currentTranslationID = payload
+export function selectTranslation(state, translation) {
+  state.currentTranslation = translation
 }
 
 
@@ -64,12 +61,12 @@ export function selectTranslation(state, payload) {
  * @param {myanimelist.Episode[]} episodes
  */
 export function loadEpisodesTitle(state, episodes) {
-  if (!state.series.episodes || !state.series.episodes.length || !episodes || !episodes.length) return
+  if (!state.episodes || !state.episodes.length || !episodes || !episodes.length) return
 
   for (const { title, episode_id } of episodes) {
     if (!title) continue
 
-    const episode = state.series.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
+    const episode = state.episodes.find(e => parseFloat(e.episodeInt) === episode_id)
 
     if (!episode || episode.episodeTitle) continue
 

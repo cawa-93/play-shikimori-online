@@ -1,4 +1,4 @@
-import { anime365API } from '../helpers'
+import { anime365API, filterEpisodes, pluralize } from '../helpers'
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)
@@ -31,24 +31,28 @@ async function main() {
 		return
 	}
 
-	const series = await getSeries(anime.id)
+	const episodes = await getEpisodes(anime.id)
 
-	if (series && series.episodes && series.episodes.length) {
+	if (episodes && episodes.length) {
 		const episodeInt = getEpisodeInt()
 		if (!episodeInt) {
 			WatchOnlineButton.textContent = 'Начать просмотр'
 		} else {
 			// Определяем максимальный номер серии. Он не всегда соответствует количеству серий
-			const max = Math.min(anime.episodes, Math.max(...series.episodes.map(e => parseFloat(e.episodeInt))))
+			const max = Math.min(anime.episodes, Math.max(...episodes.map(e => parseFloat(e.episodeInt))))
 			const from = max > 0 ? `из ${max}` : ''
-			WatchOnlineButton.textContent = `Просмотрено ${episodeInt} ${from} серий`
+
+			const watchedWord = pluralize(episodeInt, ['Просмотрена', 'Просмотрено', 'Просмотрено'])
+			let episodeWord = from ? ['серии', 'серий', 'серий'] : ['серия', 'серии', 'серий']
+			episodeWord = pluralize(max > 0 ? max : episodeInt, episodeWord)
+
+			WatchOnlineButton.textContent = `${watchedWord} ${episodeInt} ${from} ${episodeWord}`
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
-		playerURL.searchParams.set('series', series.id)
 		playerURL.searchParams.set('anime', anime.id)
 		if (episodeInt) {
-			playerURL.searchParams.set('episodeInt', episodeInt + 1) // Открываем следующую после просмотренной серию
+			playerURL.searchParams.set('episode', episodeInt + 1) // Открываем следующую после просмотренной серию
 		}
 
 		WatchOnlineButton.href = playerURL.toString()
@@ -74,7 +78,7 @@ function createButton(infoSection) {
 	WatchButtonSection.classList.add('watch-online-block')
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
-		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
+		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
 		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
 		`
 
@@ -101,10 +105,10 @@ function getAnime() {
 }
 
 
-async function getSeries(myAnimeListId) {
+async function getEpisodes(myAnimeListId) {
 	/** @type {anime365.api.SeriesCollection} */
 	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
-	return series
+	return filterEpisodes(series)
 }
 
 function getEpisodeInt() {

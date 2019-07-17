@@ -19,13 +19,13 @@
           </v-flex>
 
           <v-flex class="flex-grow-unset mt-3">
-            <video-controls v-if="$store.state.player.currentEpisodeID">
+            <video-controls>
               <main-menu></main-menu>
             </video-controls>
           </v-flex>
         </v-layout>
 
-        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisodeID"></comments>
+        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
 
         <app-footer></app-footer>
 
@@ -40,7 +40,12 @@
 </template>
 
 <script>
-import { myanimelistAPI, local } from "../../helpers";
+import {
+  myanimelistAPI,
+  sync,
+  push as message,
+  getReviewUrl
+} from "../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
@@ -87,32 +92,37 @@ export default {
   computed: {},
 
   async mounted() {
-    const promises = Promise.all([
-      this.$store.dispatch("player/loadSeries", {
-        seriesID: new URL(location.href).searchParams.get("series"),
-        episodeInt: parseFloat(
-          new URL(location.href).searchParams.get("episodeInt")
-        )
-      }),
+    const { installAt, leaveReview, userAuth } = await sync.get([
+      "installAt",
+      "leaveReview",
+      "userAuth"
+    ]);
 
+    this.$store.commit("shikimori/saveCredentials", userAuth);
+
+    // Водождать пока загрузится серия и прочая приоритетная информация
+    await Promise.all([
+      this.$store.dispatch("player/loadEpisodes", window.config),
       this.$store.dispatch("shikimori/loadUser"),
       this.$store.dispatch("shikimori/loadAnime")
     ]);
 
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (changes.userAuth) {
-        if (
-          changes.userAuth.newValue &&
-          changes.userAuth.newValue.access_token
-        ) {
-          this.$store.dispatch("shikimori/loadUser");
-        } else {
-          this.$store.commit("shikimori/setUser", null);
-        }
-      }
+    // Если пользователь установил расширение неделю назад
+    // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
+    const WEEK = 604800000;
+    if (!installAt || installAt + WEEK > Date.now() || leaveReview) {
+      return;
+    }
+
+    const manifest = chrome.runtime.getManifest();
+    const url = getReviewUrl();
+
+    message({
+      color: "info",
+      html: `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`
     });
 
-    await promises;
+    sync.set({ leaveReview: 1 });
   }
 };
 </script>

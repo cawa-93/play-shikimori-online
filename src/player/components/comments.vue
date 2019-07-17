@@ -63,7 +63,7 @@
       </v-form>
 
       <div v-else class="text-xs-center mt-4">
-        <v-btn class="pl-3" @click="updateAuth" large>
+        <v-btn class="pl-3" @click="logIn" large>
           <v-icon class="mr-2">sync</v-icon>Оставить отзыв
         </v-btn>
       </div>
@@ -74,12 +74,7 @@
 
 <script>
 import Vue from "vue";
-import {
-  shikimoriAPI,
-  updateAuth,
-  getAuth,
-  push as message
-} from "../../helpers";
+import { shikimoriAPI, push as message } from "../../helpers";
 
 export default {
   name: "comments",
@@ -110,30 +105,22 @@ export default {
       return this.$store.state.shikimori.user;
     },
 
-    anime() {
-      return this.$store.state.shikimori.anime;
-    },
-
     currentEpisode() {
-      return this.$store.getters["player/selectedEpisode"];
-    },
-
-    currentEpisodeID() {
-      return this.$store.state.player.currentEpisodeID;
+      return this.$store.state.player.currentEpisode;
     }
   },
 
   methods: {
-    updateAuth() {
-      return updateAuth();
+    logIn() {
+      return this.$store.dispatch("shikimori/getValidCredentials", true);
     },
 
     async init() {
-      if (!this.currentEpisode || !this.anime) return;
+      if (!this.currentEpisode) return;
       this.layout.loading = true;
 
       const topics = await shikimoriAPI(
-        `/animes/${this.anime.id}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`
+        `/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`
       );
 
       this.topic = topics[0];
@@ -209,26 +196,23 @@ export default {
       } catch (error) {
         const exception = error.message || error;
         this.$ga.exception(exception);
+        console.error(error);
       }
 
       this.layout.moreComments.loading = false;
     },
 
     async createComment() {
-      if (!this.user || !this.anime) {
+      if (!this.user || !this.currentEpisode) {
         return;
       }
 
       this.layout.newComment.loading = true;
 
-      let auth = await getAuth();
-      if (!auth || !auth.access_token) {
+      let auth = await this.$store.dispatch("shikimori/getValidCredentials");
+      if (!auth) {
         this.layout.newComment.loading = false;
         return;
-      }
-
-      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-        auth = await updateAuth();
       }
 
       const headers = {
@@ -270,7 +254,7 @@ export default {
                 aired_at: new Date(
                   this.currentEpisode.firstUploadedDateTime
                 ).toISOString(),
-                anime_id: this.anime.id,
+                anime_id: this.currentEpisode.myAnimelist,
                 episode: this.currentEpisode.episodeInt,
                 is_anime365: true,
                 is_fandub,
@@ -337,11 +321,8 @@ export default {
     }
   },
 
-  created() {
-    this.init();
-  },
-
   mounted() {
+    this.init();
     this.$el.addEventListener("click", event => {
       if (event.target.matches('.comment-body a[href*="/comments/"]')) {
         event.preventDefault();
@@ -364,8 +345,10 @@ export default {
   },
 
   watch: {
-    currentEpisodeID() {
-      this.init();
+    currentEpisode(newEpisode, oldEpisode) {
+      if (newEpisode.id !== oldEpisode.id) {
+        this.init();
+      }
     }
   }
 };

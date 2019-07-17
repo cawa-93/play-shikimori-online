@@ -6,18 +6,15 @@
         item-value="id"
         :items="episodes"
         box
-        label="Серия"
-        v-model="currentEpisodeID"
+        :label="label"
+        v-model="selectedEpisode"
         :loading="episodes.length === 0"
         :menu-props="{auto:false}"
         no-data-text="Пока нет ни одной серии"
       >
         <template v-slot:item="{item}">
-          <v-list-tile-action @click.stop>
-            <v-checkbox
-              :input-value="item.episodeInt <= watchedEpisodes"
-              @click.prevent="markAsWatched(item)"
-            ></v-checkbox>
+          <v-list-tile-action @click.prevent.stop="markAsWatched(item)">
+            <v-checkbox @click.prevent :input-value="item.episodeInt <= watchedEpisodes"></v-checkbox>
           </v-list-tile-action>
 
           <v-list-tile-content class="inset">
@@ -62,16 +59,21 @@ export default {
 
   computed: {
     episodes() {
-      return this.$store.getters["player/episodes"];
+      return this.$store.state.player.episodes;
     },
 
-    currentEpisodeID: {
+    selectedEpisode: {
       get() {
-        return this.$store.state.player.currentEpisodeID;
+        return this.$store.state.player.currentEpisode
+          ? this.$store.state.player.currentEpisode.id
+          : null;
       },
 
       set(id) {
-        return this.$store.dispatch("player/selectEpisode", id);
+        return this.$store.dispatch(
+          "player/selectEpisode",
+          this.episodes.find(e => e.id === id)
+        );
       }
     },
 
@@ -80,14 +82,27 @@ export default {
         this.$store.state.shikimori.anime.user_rate
         ? this.$store.state.shikimori.anime.user_rate.episodes
         : 0;
+    },
+
+    label() {
+      return this.$store.state.shikimori.anime &&
+        (this.$store.state.shikimori.anime.russian ||
+          this.$store.state.shikimori.anime.name)
+        ? this.$store.state.shikimori.anime.russian ||
+            this.$store.state.shikimori.anime.name
+        : "Серия";
     }
   },
 
   methods: {
     markAsWatched(episode) {
-      this.$store.dispatch("shikimori/saveUserRate", {
-        episodes: parseInt(episode.episodeInt)
-      });
+      let episodes = parseInt(episode.episodeInt);
+
+      if (episodes <= this.watchedEpisodes) {
+        episodes--;
+      }
+
+      this.$store.dispatch("shikimori/saveUserRate", { episodes });
     }
   }
 };
