@@ -1,18 +1,14 @@
-import { shikimoriAPI, getAuth, updateAuth, anime365API, push as message } from "../../../../helpers";
+import { shikimoriAPI, updateAuth, anime365API, push as message } from "../../../../helpers";
 
 /**
  * Загружает данный об аниме
- * @param {{commit: Function, rootState: vuex.State}} context 
+ * @param {{commit: Function, rootState: vuex.State, dispatch: Function}} context 
  */
-export async function loadAnime({ commit, rootState }, animeId) {
+export async function loadAnime({ commit, rootState, dispatch }, animeId) {
   const headers = {}
 
-  let auth = await getAuth()
-  if (auth && auth.access_token) {
-    if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-      auth = await updateAuth()
-    }
-
+  let auth = await dispatch('getValidCredentials')
+  if (auth) {
     headers.Authorization = `${auth.token_type} ${auth.access_token}`
   }
 
@@ -27,9 +23,9 @@ export async function loadAnime({ commit, rootState }, animeId) {
 
 /**
  * Загружает данные о следующем сезоне во франшизе
- * @param {{state: vuex.Shikimori, commit: Function}} param0 
+ * @param {{state: vuex.Shikimori, commit: Function, dispatch: Function}} param0 
  */
-export async function loadNextSeason({ state, commit }) {
+export async function loadNextSeason({ state, commit, dispatch }) {
   if (!state.anime || state.franchise) {
     return
   }
@@ -56,13 +52,9 @@ export async function loadNextSeason({ state, commit }) {
     (async () => {
       const headers = {}
 
-      let auth = await getAuth()
-      if (!auth || !auth.access_token) {
+      let auth = await dispatch('getValidCredentials')
+      if (!auth) {
         return {} // Если пользователь не авторизован, нет смысла загружать его оценку
-      }
-
-      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-        auth = await updateAuth()
       }
 
       headers.Authorization = `${auth.token_type} ${auth.access_token}`
@@ -107,14 +99,10 @@ export async function loadNextSeason({ state, commit }) {
  * Загружает данный о текущем пользователе
  * @param {vuex.Context} context 
  */
-export async function loadUser({ commit }) {
-  const auth = await getAuth()
-  if (!auth || !auth.access_token) {
+export async function loadUser({ commit, dispatch }) {
+  const auth = await dispatch('getValidCredentials')
+  if (!auth) {
     return
-  }
-
-  if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-    return updateAuth()
   }
 
   /** @type {shikimori.User} */
@@ -131,10 +119,10 @@ export async function loadUser({ commit }) {
 
 /**
  * Отправляет оценку пользователя на Шикимори
- * @param {{state: vuex.Shikimori, commit: Function}} context
+ * @param {{state: vuex.Shikimori, commit: Function, dispatch: Function}} context
  * @param {shikimori.UserRate} user_rate 
  */
-export async function saveUserRate({ commit, state: { anime, user } }, user_rate) {
+export async function saveUserRate({ dispatch, commit, state: { anime, user } }, user_rate) {
   if (!anime || !user) {
     return null
   }
@@ -143,15 +131,10 @@ export async function saveUserRate({ commit, state: { anime, user } }, user_rate
     commit('setUserRate', Object.assign({}, anime.user_rate, user_rate))
   }
 
-  let auth = await getAuth()
-  if (!auth || !auth.access_token) {
+  let auth = await dispatch('getValidCredentials')
+  if (!auth) {
     return
   }
-
-  if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-    auth = await updateAuth()
-  }
-
 
   let newUserRate = Object.assign(
     {},
@@ -201,4 +184,25 @@ export function markAsWatched({ rootState, dispatch }) {
   return dispatch('saveUserRate', {
     episodes: rootState.player.currentEpisode.episodeInt
   })
+}
+
+export async function getValidCredentials({ state, commit }, force = false) {
+  let auth = state.credentials
+  if (!auth || !auth.access_token) {
+
+    if (!force) {
+      return null
+    }
+
+    auth = await updateAuth()
+    commit('saveCredentials', auth)
+    return auth
+  }
+
+  if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
+    auth = await updateAuth()
+    commit('saveCredentials', auth)
+  }
+
+  return auth
 }

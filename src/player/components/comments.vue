@@ -63,7 +63,7 @@
       </v-form>
 
       <div v-else class="text-xs-center mt-4">
-        <v-btn class="pl-3" @click="updateAuth" large>
+        <v-btn class="pl-3" @click="logIn" large>
           <v-icon class="mr-2">sync</v-icon>Оставить отзыв
         </v-btn>
       </div>
@@ -74,12 +74,7 @@
 
 <script>
 import Vue from "vue";
-import {
-  shikimoriAPI,
-  updateAuth,
-  getAuth,
-  push as message
-} from "../../helpers";
+import { shikimoriAPI, push as message } from "../../helpers";
 
 export default {
   name: "comments",
@@ -116,8 +111,8 @@ export default {
   },
 
   methods: {
-    updateAuth() {
-      return updateAuth();
+    logIn() {
+      return this.$store.dispatch("shikimori/getValidCredentials", true);
     },
 
     async init() {
@@ -214,14 +209,10 @@ export default {
 
       this.layout.newComment.loading = true;
 
-      let auth = await getAuth();
-      if (!auth || !auth.access_token) {
+      let auth = await this.$store.dispatch("shikimori/getValidCredentials");
+      if (!auth) {
         this.layout.newComment.loading = false;
         return;
-      }
-
-      if (1000 * (auth.created_at + auth.expires_in) <= Date.now()) {
-        auth = await updateAuth();
       }
 
       const headers = {

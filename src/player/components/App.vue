@@ -42,7 +42,6 @@
 <script>
 import {
   myanimelistAPI,
-  local,
   sync,
   push as message,
   getReviewUrl
@@ -93,33 +92,23 @@ export default {
   computed: {},
 
   async mounted() {
-    const promises = Promise.all([
+    const { installAt, leaveReview, userAuth } = await sync.get([
+      "installAt",
+      "leaveReview",
+      "userAuth"
+    ]);
+
+    this.$store.commit("shikimori/saveCredentials", userAuth);
+
+    // Водождать пока загрузится серия и прочая приоритетная информация
+    await Promise.all([
       this.$store.dispatch("player/loadEpisodes", window.config),
       this.$store.dispatch("shikimori/loadUser"),
       this.$store.dispatch("shikimori/loadAnime")
     ]);
 
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (changes.userAuth) {
-        if (
-          changes.userAuth.newValue &&
-          changes.userAuth.newValue.access_token
-        ) {
-          this.$store.dispatch("shikimori/loadUser");
-        } else {
-          this.$store.commit("shikimori/setUser", null);
-        }
-      }
-    });
-
-    await promises;
-
     // Если пользователь установил расширение неделю назад
     // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
-    const { installAt, leaveReview } = await sync.get([
-      "installAt",
-      "leaveReview"
-    ]);
     const WEEK = 604800000;
     if (!installAt || installAt + WEEK > Date.now() || leaveReview) {
       return;

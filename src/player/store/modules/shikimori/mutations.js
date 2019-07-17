@@ -30,3 +30,18 @@ export function setUserRate(state, userRate) {
 export function setUser(state, user) {
   state.user = user
 }
+
+export function saveCredentials(state, credentials) {
+  state.credentials = credentials
+}
+
+export function logout(state) {
+  state.user = null
+  if (!state.credentials || !state.credentials.access_token) return
+  state.credentials.access_token = null
+}
+
+
+export function loadCredentialsFromServer(state, credentials) {
+  state.credentials = credentials
+}

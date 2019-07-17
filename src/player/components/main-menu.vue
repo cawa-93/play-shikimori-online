@@ -12,7 +12,7 @@
       <!-- Виджет пользователя когда он авторизован -->
       <v-list-tile avatar v-if="user">
         <v-list-tile-avatar>
-          <img :src="user.image.x80" :alt="user.nickname">
+          <img :src="user.image.x80" :alt="user.nickname" />
         </v-list-tile-avatar>
 
         <v-list-tile-content>
@@ -22,13 +22,13 @@
 
         <v-list-tile-action>
           <v-btn icon @click="logout">
-            <v-icon>logout</v-icon>
+            <v-icon>exit_to_app</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
 
       <!-- Ссылка на авторизацию -->
-      <v-list-tile avatar v-else @click="updateAuth">
+      <v-list-tile avatar v-else @click="logIn">
         <v-list-tile-avatar>
           <v-icon>sync</v-icon>
         </v-list-tile-avatar>
@@ -70,7 +70,6 @@
 </template>
 
 <script>
-import { sync, updateAuth, getAuth } from "../../helpers";
 import actions from "./actions.vue";
 export default {
   name: "main-menu",
@@ -84,16 +83,12 @@ export default {
   },
 
   methods: {
-    updateAuth() {
-      return updateAuth();
+    logIn() {
+      return this.$store.dispatch("shikimori/getValidCredentials", true);
     },
 
-    async logout() {
-      const auth = await getAuth();
-      if (!auth || !auth.access_token) return;
-
-      auth.access_token = "";
-      sync.set({ userAuth: auth });
+    logout() {
+      return this.$store.commit("shikimori/logout");
     }
   }
 };
