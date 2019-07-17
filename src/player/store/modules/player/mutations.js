@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { clearString } from "../../../../helpers";
 
 
 /**
@@ -20,7 +21,7 @@ export function selectEpisode(state, episode) {
 }
 
 /**
- * Сохраняет массив переводов для серии
+ * Сохраняет отфильтрованный массив переводов для серии
  * @param {vuex.Player} state 
  * @param {{episode: anime365.Episode, translations: anime365.Translation[]}} param1 
  */
@@ -29,7 +30,19 @@ export function setTranslations(state, { episode, translations }) {
     return
   }
 
-  Vue.set(episode, 'translations', translations)
+  Vue.set(episode, 'translations', translations.filter(translation => {
+    if (translation.isActive) return true
+
+    const currentAuthor = clearString(translation.authorsSummary)
+
+    return currentAuthor && !(translations.find(t => {
+      if (!t.isActive || translation.type !== t.type) return false
+
+      const author = clearString(t.authorsSummary)
+
+      return author && author === currentAuthor
+    }))
+  }))
 }
 
 /**
