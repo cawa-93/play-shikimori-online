@@ -51,8 +51,13 @@ export default {
   },
 
   watch: {
-    translation() {
-      this.setTitle();
+    translation(newTranslation, oldTranslation) {
+      if (
+        (newTranslation && !oldTranslation) ||
+        newTranslation.title !== oldTranslation.title
+      ) {
+        this.setTitle();
+      }
     }
   },
 
