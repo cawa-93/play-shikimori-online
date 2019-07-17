@@ -1,4 +1,4 @@
-import { anime365API, filterEpisodes } from '../helpers'
+import { anime365API, filterEpisodes, pluralize } from '../helpers'
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)
@@ -41,7 +41,12 @@ async function main() {
 			// Определяем максимальный номер серии. Он не всегда соответствует количеству серий
 			const max = Math.min(anime.episodes, Math.max(...episodes.map(e => parseFloat(e.episodeInt))))
 			const from = max > 0 ? `из ${max}` : ''
-			WatchOnlineButton.textContent = `Просмотрено ${episodeInt} ${from} серий`
+
+			const watchedWord = pluralize(episodeInt, ['Просмотрена', 'Просмотрено', 'Просмотрено'])
+			let episodeWord = from ? ['серии', 'серий', 'серий'] : ['серия', 'серии', 'серий']
+			episodeWord = pluralize(max > 0 ? max : episodeInt, episodeWord)
+
+			WatchOnlineButton.textContent = `${watchedWord} ${episodeInt} ${from} ${episodeWord}`
 		}
 
 		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
