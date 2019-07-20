@@ -9,6 +9,10 @@ import store from './store/index.js'
 import App from './components/App.vue';
 import VueAnalytics from 'vue-analytics'
 
+import workerpool from 'workerpool'
+
+window.pool = workerpool.pool()
+
 {
   const params = (new URL(location.href)).searchParams
   window.config = {

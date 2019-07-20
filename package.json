@@ -9,7 +9,8 @@
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.0",
     "vuetify": "^1.5.16",
-    "vuex": "^3.1.1"
+    "vuex": "^3.1.1",
+    "workerpool": "^3.1.2"
   },
   "devDependencies": {
     "@types/video.js": "^7.2.10",
