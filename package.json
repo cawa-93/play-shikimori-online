@@ -24,11 +24,13 @@
     "vue-template-compiler": "^2.6.10"
   },
   "scripts": {
-    "build": "NODE_ENV=development rollup -c rollup.config.js",
-    "release": "NODE_ENV=production rollup -c rollup.config.js",
+    "build:dev": "NODE_ENV=development rollup -c rollup.config.js",
+    "build:prod": "NODE_ENV=production rollup -c rollup.config.js",
     "zip:dist": "cd ./dist && zip -r ../dist.zip ./*  --exclude='*__MACOSX*' --exclude='*.DS_Store*'",
     "zip:src": "zip -r ./src.zip ./* --exclude='*.zip' --exclude='*__MACOSX*' --exclude='*.DS_Store*' --exclude='node_modules*' --exclude='dist*'",
-    "zip": "npm run zip:src && npm run zip:dist"
+    "zip": "npm run zip:src && npm run zip:dist",
+    "dev": "npm run build:dev -- --watch",
+    "release": "rm -f ./*.zip && rm -rf ./dist && npm run build:prod && npm run zip"
   },
   "keywords": [],
   "author": "",
