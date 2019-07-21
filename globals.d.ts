@@ -21,7 +21,7 @@ declare module anime365 {
 	interface Episode {
 		id: number;
 		episodeFull: string;
-		episodeInt: string;
+		episodeInt: number;
 		episodeTitle: string;
 		episodeType: string;
 		firstUploadedDateTime: string;

@@ -64,11 +64,19 @@ chrome.runtime.onMessage.addListener(
           if (!resp.ok) {
 
             if (resp.status >= 400 && resp.status < 500) {
+              let response = await resp.text()
+
+              if (response) {
+                try {
+                  response = JSON.parse(response)
+                } catch (e) { }
+              }
               sendResponse({
                 error: {
                   status: resp.status,
                   message: resp.statusText,
-                  request: request
+                  request,
+                  response,
                 }
               })
             } else {

@@ -26,6 +26,8 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
     episode.myAnimelist = anime
     episode.next = episodes[index + 1]
     episode.previous = episodes[index - 1]
+    // @ts-ignore
+    episode.episodeInt = parseFloat(episode.episodeInt)
     return episode
   })
 
@@ -83,6 +85,7 @@ export async function selectEpisode({ state, commit, dispatch }, episode) {
 
   {
     const currentURL = new URL(location.href)
+    // @ts-ignore
     currentURL.searchParams.set('episode', episode.episodeInt)
     history.replaceState(history.state, '', currentURL.toString())
   }

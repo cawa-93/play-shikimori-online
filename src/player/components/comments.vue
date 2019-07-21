@@ -317,6 +317,8 @@ export default {
           html:
             "Не удалось создать комментарий.\nОткройте консоль для информации об ошибке"
         });
+
+        this.layout.newComment.loading = false;
       }
     }
   },

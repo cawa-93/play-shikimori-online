@@ -181,6 +181,10 @@ export async function saveUserRate({ dispatch, commit, state: { anime, user } },
  * @param {{rootState: vuex.State,dispatch: Function }}
  */
 export function markAsWatched({ rootState, dispatch }) {
+  if (rootState.shikimori.anime && rootState.shikimori.anime.user_rate && rootState.shikimori.anime.user_rate.episodes === rootState.player.currentEpisode.episodeInt) {
+    return rootState.shikimori.anime.user_rate
+  }
+
   return dispatch('saveUserRate', {
     episodes: rootState.player.currentEpisode.episodeInt
   })

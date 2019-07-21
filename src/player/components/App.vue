@@ -98,14 +98,11 @@ export default {
       "userAuth"
     ]);
 
-    this.$store.commit("shikimori/saveCredentials", userAuth);
+    this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
 
-    // Водождать пока загрузится серия и прочая приоритетная информация
-    await Promise.all([
-      this.$store.dispatch("player/loadEpisodes", window.config),
-      this.$store.dispatch("shikimori/loadUser"),
-      this.$store.dispatch("shikimori/loadAnime")
-    ]);
+    this.$store.dispatch("player/loadEpisodes", window.config); // Загрузка списка серий и запуск видео
+    this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
+    this.$store.dispatch("shikimori/loadAnime"); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
 
     // Если пользователь установил расширение неделю назад
     // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
