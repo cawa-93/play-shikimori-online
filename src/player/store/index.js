@@ -24,8 +24,8 @@ export default new Vuex.Store({
         // вызывается после каждой мутации
         // мутация передаётся в формате `{ type, payload }`.
 
-        if (mutation.type === 'saveCredentials' || mutation.type === 'logout') {
-          sync.set({ userAuth: state.credentials });
+        if (mutation.type === 'shikimori/saveCredentials' || mutation.type === 'shikimori/logout') {
+          sync.set({ userAuth: state.shikimori.credentials });
         }
       });
     }
