@@ -19,6 +19,9 @@
 		"192": "icons/play.png",
 		"128": "icons/play-128.png"
 	},
+	"browser_action": {
+		"default_title": "Открыть историю просмотров"
+	},
 	"background": {
 		"scripts": [
 			"background/background.js"

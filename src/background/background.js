@@ -34,88 +34,85 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 /**
  * Исполнение сетевых запросов
  */
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    if (request.contentScriptQuery == 'fetchUrl') {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.contentScriptQuery == 'fetchUrl') {
 
-      if (inMemoryCache.has(request.url)) {
-        const { response, date } = inMemoryCache.get(request.url)
-        const MINUTE = 60000
-        if (Date.now() - date <= MINUTE * 5) {
-          sendResponse({ response })
-          return
-        } else {
-          inMemoryCache.delete(request.url)
-        }
+    if (inMemoryCache.has(request.url)) {
+      const { response, date } = inMemoryCache.get(request.url)
+      const MINUTE = 60000
+      if (Date.now() - date <= MINUTE * 5) {
+        sendResponse({ response })
+        return
+      } else {
+        inMemoryCache.delete(request.url)
+      }
+    }
+
+    const info = new URL(request.url)
+
+    chrome.permissions.contains({
+      origins: [`${info.protocol}//${info.hostname}/*`]
+    }, async function (granted) {
+      if (!granted) {
+        sendResponse({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
+        return
       }
 
-      const info = new URL(request.url)
+      await retry(async bail => {
+        const resp = await fetch(request.url, request.options)
+        if (!resp.ok) {
 
-      chrome.permissions.contains({
-        origins: [`${info.protocol}//${info.hostname}/*`]
-      }, async function (granted) {
-        if (!granted) {
-          sendResponse({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
-          return
-        }
+          if (resp.status >= 400 && resp.status < 500) {
+            let response = await resp.text()
 
-        await retry(async bail => {
-          const resp = await fetch(request.url, request.options)
-          if (!resp.ok) {
-
-            if (resp.status >= 400 && resp.status < 500) {
-              let response = await resp.text()
-
-              if (response) {
-                try {
-                  response = JSON.parse(response)
-                } catch (e) { }
+            if (response) {
+              try {
+                response = JSON.parse(response)
+              } catch (e) { }
+            }
+            sendResponse({
+              error: {
+                status: resp.status,
+                message: resp.statusText,
+                request,
+                response,
               }
-              sendResponse({
-                error: {
-                  status: resp.status,
-                  message: resp.statusText,
-                  request,
-                  response,
-                }
-              })
-            } else {
-              throw resp.status
-            }
+            })
           } else {
-            const response = await resp.json()
-
-            if (!request.options || !request.options.method || request.options.method === 'GET') {
-              inMemoryCache.set(request.url, { response, date: Date.now() })
-            }
-            sendResponse({ response })
+            throw resp.status
           }
-        })
-      });
+        } else {
+          const response = await resp.json()
+
+          if (!request.options || !request.options.method || request.options.method === 'GET') {
+            inMemoryCache.set(request.url, { response, date: Date.now() })
+          }
+          sendResponse({ response })
+        }
+      })
+    });
 
 
-      return true;  // Will respond asynchronously.
+    return true;  // Will respond asynchronously.
+  }
+});
+
+
+chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+  const requestHeaders = details.requestHeaders
+  if (details.initiator !== `chrome-extension://${chrome.runtime.id}`) {
+    return { requestHeaders }
+  }
+
+  for (let header of requestHeaders) {
+    if (header.name === 'User-Agent') {
+      const manifest = chrome.runtime.getManifest()
+      header.value = `${manifest.name}; Browser extension; ${manifest.homepage_url}`
+      break;
     }
   }
-);
-
-
-chrome.webRequest.onBeforeSendHeaders.addListener(
-  function (details) {
-    const requestHeaders = details.requestHeaders
-    if (details.initiator !== `chrome-extension://${chrome.runtime.id}`) {
-      return { requestHeaders }
-    }
-
-    for (let header of requestHeaders) {
-      if (header.name === 'User-Agent') {
-        const manifest = chrome.runtime.getManifest()
-        header.value = `${manifest.name}; Browser extension; ${manifest.homepage_url}`
-        break;
-      }
-    }
-    return { requestHeaders };
-  },
+  return { requestHeaders };
+},
   {
     urls: [
       "https://shikimori.org/api/*",
@@ -126,3 +123,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ]
   },
   ["requestHeaders", 'blocking']);
+
+
+chrome.browserAction.onClicked.addListener(function () { //Fired when User Clicks ICON
+  const url = chrome.runtime.getURL('/history/index.html')
+  chrome.tabs.create({ url, active: true })
+});

@@ -1,4 +1,4 @@
-import { shikimoriAPI, updateAuth, anime365API, push as message } from "../../../../helpers";
+import { shikimoriAPI, updateAuth, anime365API, push as message, rotate } from "../../../../helpers";
 
 /**
  * Загружает данный об аниме
@@ -171,6 +171,13 @@ export async function saveUserRate({ dispatch, commit, state: { anime, user } },
   }
 
   commit('setUserRate', newUserRate)
+
+  rotate('watching_history', {
+    id: anime.id,
+    name: anime.russian || anime.name,
+    image: anime.image.original,
+    episodes: newUserRate.episodes,
+  })
 
   return newUserRate
 }
