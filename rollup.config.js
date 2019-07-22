@@ -96,10 +96,10 @@ module.exports = [{
     VuePlugin(),
     copy({
       targets: {
-        'src/fonts': 'dist/player/fonts',
+        'src/fonts': 'dist/fonts',
         'src/player/index.html': 'dist/player/index.html',
-        'node_modules/material-design-icons/iconfont': 'dist/player/fonts/iconfont',
-        'node_modules/vuetify/dist/vuetify.min.css': 'dist/player/vuetify.min.css',
+        'node_modules/material-design-icons/iconfont': 'dist/fonts/iconfont',
+        'node_modules/vuetify/dist/vuetify.min.css': 'dist/vuetify.min.css',
         'src/icons': 'dist/icons',
       }
     })
@@ -118,4 +118,26 @@ module.exports = [{
     commonjs(),
     replace(replaceEnv),
   ],
-}]
+},
+
+{
+  input: 'src/history/index.js',
+  output: {
+    file: 'dist/history/bundle.js',
+    format: 'esm',
+    // sourcemap: process.env.NODE_ENV !== 'production' ? 'inline' : false
+  },
+  plugins: [
+    resolve(),
+    commonjs(),
+    replace(replaceEnv),
+    VuePlugin(),
+    copy({
+      targets: {
+        'src/history/index.html': 'dist/history/index.html',
+      }
+    })
+  ],
+},
+
+]

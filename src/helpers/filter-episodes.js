@@ -1,4 +1,8 @@
 export function filterEpisodes({ episodes, type, numberOfEpisodes }) {
+  if (!episodes || !episodes.length) {
+    return []
+  }
+
   let filteredEpisodes = episodes.filter(e => e.isActive && (!numberOfEpisodes || parseFloat(e.episodeInt) <= numberOfEpisodes))
 
   if (!filteredEpisodes.length) {
