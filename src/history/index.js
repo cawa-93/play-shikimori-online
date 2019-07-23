@@ -23,14 +23,6 @@ Vue.use(VueAnalytics, {
   debug: {
     enabled: false //process.env.NODE_ENV === 'development'
   },
-
-  commands: {
-    trackView() {
-      this.$ga.page({
-        page: `/history`,
-      })
-    },
-  }
 })
 
 const app = new Vue({

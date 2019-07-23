@@ -94,6 +94,8 @@ export default {
 
       this.history = changes.watching_history.newValue || [];
     });
+
+    this.$ga.page(`/history`); // Отправляем данные в аналитику
   }
 };
 </script>
