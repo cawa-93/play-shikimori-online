@@ -1,45 +1,44 @@
 <template>
-  <section>
-    <v-app id="app" :dark="darkMode">
-      <v-container>
-        <div class="d-grid" v-if="history.length">
-          <div v-for="anime of history" :key="anime.id" xs12 sm6 md3 class="grid-item">
-            <v-card
-              :href="'/player/index.html?anime=' + anime.id + 'episode=' + (anime.episodes + 1)"
+  <v-app id="app" :dark="darkMode">
+    <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
+    <v-container>
+      <div class="d-grid" v-if="history.length">
+        <div v-for="anime of history" :key="anime.id" xs12 sm6 md3 class="grid-item">
+          <v-card
+            :href="'/player/index.html?anime=' + anime.id + 'episode=' + (anime.episodes + 1)"
+          >
+            <v-img
+              :src="'https://shikimori.one' + anime.image"
+              :aspect-ratio="225/314"
+              gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
             >
-              <v-img
-                :src="'https://shikimori.one' + anime.image"
-                :aspect-ratio="225/314"
-                gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
-              >
-                <v-container fill-height fluid class="fill-height">
-                  <v-layout fill-height>
-                    <v-flex xs12 align-end d-flex>
-                      <span class="white--text body-1">{{anime.name}}</span>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-img>
-            </v-card>
-          </div>
+              <v-container fill-height fluid class="fill-height">
+                <v-layout fill-height>
+                  <v-flex xs12 align-end d-flex>
+                    <span class="white--text body-1">{{anime.name}}</span>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-img>
+          </v-card>
         </div>
+      </div>
 
-        <div v-else class="text-xs-center py-5">
-          <p class="headline">Здесь будет отображаться ваша история просмотров</p>
-          <p class="body-2">
-            Откройте любое аниме на
-            <a href="https://shikimori.one/animes">Шикимори</a> и нажмине "Начать просмотр"
-          </p>
-        </div>
+      <div v-else class="text-xs-center py-5">
+        <p class="headline">Здесь будет отображаться ваша история просмотров</p>
+        <p class="body-2">
+          Откройте любое аниме на
+          <a href="https://shikimori.one/animes">Шикимори</a> и нажмине "Начать просмотр"
+        </p>
+      </div>
 
-        <app-footer></app-footer>
+      <app-footer></app-footer>
 
-        <v-flex class="mt-5 mt-5 text-xs-center">
-          <clear-btn class>Сбросить все данные</clear-btn>
-        </v-flex>
-      </v-container>
-    </v-app>
-  </section>
+      <v-flex class="mt-5 mt-5 text-xs-center">
+        <clear-btn class>Сбросить все данные</clear-btn>
+      </v-flex>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
