@@ -1,5 +1,5 @@
 import { storage } from "kv-storage-polyfill";
-import { throttle } from "../helpers";
+import { throttle } from "../helpers/throttle";
 const config = new URLSearchParams(location.hash.slice(1))
 /**
  * @type {videojs.default.Player & {concatenate: {activated: boolean}}}
