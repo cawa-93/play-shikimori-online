@@ -21,7 +21,13 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon @click="logout">
+          <v-btn icon href="/history/index.html" title="История просмотров">
+            <v-icon>history</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+
+        <v-list-tile-action>
+          <v-btn icon @click="logout" title="Выключить синхронизацию">
             <v-icon>exit_to_app</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -36,6 +42,12 @@
         <v-list-tile-content>
           <v-list-tile-title>Включить синхронизацию</v-list-tile-title>
         </v-list-tile-content>
+
+        <v-list-tile-action @click.stop>
+          <v-btn icon href="/history/index.html" title="История просмотров">
+            <v-icon>history</v-icon>
+          </v-btn>
+        </v-list-tile-action>
       </v-list-tile>
     </v-list>
 
