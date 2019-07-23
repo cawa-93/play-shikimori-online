@@ -5,6 +5,7 @@
       <div class="d-grid" v-if="history.length">
         <div v-for="anime of history" :key="anime.id" xs12 sm6 md3 class="grid-item">
           <v-card
+            hover
             :href="'/player/index.html?anime=' + anime.id + 'episode=' + (anime.episodes + 1)"
           >
             <v-img
