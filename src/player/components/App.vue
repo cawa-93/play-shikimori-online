@@ -1,8 +1,8 @@
 <template>
   <section>
-    <v-app id="app" :dark="darkMode">
+    <v-app id="app" :dark="theme.dark">
       <v-container class="__layout">
-        <v-layout column style="	height: calc(100vh - 110px);min-height: 378px;">
+        <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
           <v-flex class="flex-grow-unset">
             <v-layout row>
               <v-flex xs6 mr-3>
@@ -56,6 +56,8 @@ import appFooter from "./app-footer.vue";
 import clearBtn from "./clear-btn.vue";
 import messages from "./messages.vue";
 
+import theme from "../../mixins/theme";
+
 export default {
   components: {
     episodeList,
@@ -69,27 +71,7 @@ export default {
     messages
   },
 
-  data() {
-    let darkMode = true;
-
-    if (window.matchMedia) {
-      darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      if (!darkMode) {
-        darkMode = !window.matchMedia("(prefers-color-scheme: light)").matches;
-      }
-    }
-
-    if (darkMode) {
-      document.querySelector("html").style.backgroundColor = "#303030";
-    }
-
-    return {
-      darkMode
-    };
-  },
-
-  computed: {},
+  mixins: [theme],
 
   async mounted() {
     const { installAt, leaveReview, userAuth } = await sync.get([

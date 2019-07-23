@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app" :dark="darkMode">
+  <v-app id="app" :dark="theme.dark">
     <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
     <v-container>
       <div class="d-grid" v-if="history.length">
@@ -50,31 +50,19 @@ import {
 } from "../../helpers";
 import appFooter from "../../player/components/app-footer.vue";
 import clearBtn from "../../player/components/clear-btn.vue";
-
+import theme from "../../mixins/theme";
 export default {
   components: {
     appFooter,
     clearBtn
   },
 
+  mixins: [theme],
+
   data() {
-    let darkMode = true;
-
-    if (window.matchMedia) {
-      darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      if (!darkMode) {
-        darkMode = !window.matchMedia("(prefers-color-scheme: light)").matches;
-      }
-    }
-
-    if (darkMode) {
-      document.querySelector("html").style.backgroundColor = "#303030";
-    }
     return {
       history: [],
-      loading: true,
-      darkMode
+      loading: true
     };
   },
 
