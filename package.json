@@ -12,7 +12,7 @@
     "vuex": "^3.1.1"
   },
   "devDependencies": {
-    "@types/video.js": "^7.2.10",
+    "@types/video.js": "^7.2.11",
     "dotenv": "^8.0.0",
     "material-design-icons": "^3.0.1",
     "rollup": "^1.17.0",
