@@ -8,6 +8,7 @@
 		"name": "Alex Kozack",
 		"url": "https://shikimori.one/clubs/2372"
 	},
+	"incognito": "split",
 	"minimum_chrome_version": "73",
 	"browser_specific_settings": {
 		"gecko": {
