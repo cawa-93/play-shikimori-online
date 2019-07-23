@@ -21,7 +21,7 @@ module.exports = [{
   output: {
     file: 'dist/background/background.js',
     format: 'esm',
-    // sourcemap: 'inline'
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -42,7 +42,7 @@ module.exports = [{
   output: {
     file: 'dist/content-scripts/anime365-player-events.js',
     format: 'esm',
-    // sourcemap: 'inline'
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -60,7 +60,7 @@ module.exports = [{
   output: {
     file: 'dist/content-scripts/inject-content-scripts.js',
     format: 'esm',
-    // sourcemap: 'inline'
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -73,7 +73,7 @@ module.exports = [{
   output: {
     file: 'dist/content-scripts/watch-button.js',
     format: 'esm',
-    // sourcemap: 'inline'
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -87,7 +87,7 @@ module.exports = [{
   output: {
     file: 'dist/player/bundle.js',
     format: 'esm',
-    // sourcemap: process.env.NODE_ENV !== 'production' ? 'inline' : false
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -111,7 +111,7 @@ module.exports = [{
   output: {
     file: 'dist/player/worker.js',
     format: 'esm',
-    // sourcemap: process.env.NODE_ENV !== 'production' ? 'inline' : false
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
@@ -125,7 +125,7 @@ module.exports = [{
   output: {
     file: 'dist/history/bundle.js',
     format: 'esm',
-    // sourcemap: process.env.NODE_ENV !== 'production' ? 'inline' : false
+    // sourcemap: process.env.NODE_ENV === 'development'
   },
   plugins: [
     resolve(),
