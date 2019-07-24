@@ -1,7 +1,19 @@
-export const sync = {
-  get: (keys) => {
+
+class ChromeStorageArea {
+  /**
+   * @param {'sync' | 'local'} namespace 
+   */
+  constructor(namespace) {
+    this.namespace = chrome.storage[namespace]
+  }
+
+  /**
+   * 
+   * @param {string | Object | string[]} keys 
+   */
+  get(keys) {
     let promise = new Promise((resolve, reject) => {
-      chrome.storage.sync.get(keys, (items) => {
+      this.namespace.get(keys, (items) => {
         let err = chrome.runtime.lastError;
         if (err) {
           reject(err);
@@ -11,10 +23,15 @@ export const sync = {
       });
     });
     return promise;
-  },
-  set: (items) => {
+  }
+
+  /**
+   * 
+   * @param {Object} items 
+   */
+  set(items) {
     let promise = new Promise((resolve, reject) => {
-      chrome.storage.sync.set(items, () => {
+      this.namespace.set(items, () => {
         let err = chrome.runtime.lastError;
         if (err) {
           reject(err);
@@ -24,10 +41,15 @@ export const sync = {
       });
     });
     return promise;
-  },
-  getBytesInUse: (keys) => {
+  }
+
+  /**
+   * 
+   * @param {string | string[] | undefined} keys 
+   */
+  getBytesInUse(keys) {
     let promise = new Promise((resolve, reject) => {
-      chrome.storage.sync.getBytesInUse(keys, (items) => {
+      this.namespace.getBytesInUse(keys, (items) => {
         let err = chrome.runtime.lastError;
         if (err) {
           reject(err);
@@ -37,10 +59,15 @@ export const sync = {
       });
     });
     return promise;
-  },
-  remove: (keys) => {
+  }
+
+  /**
+   * 
+   * @param {string | string[] | undefined} keys 
+   */
+  remove(keys) {
     let promise = new Promise((resolve, reject) => {
-      chrome.storage.sync.remove(keys, () => {
+      this.namespace.remove(keys, () => {
         let err = chrome.runtime.lastError;
         if (err) {
           reject(err);
@@ -50,10 +77,12 @@ export const sync = {
       });
     });
     return promise;
-  },
-  clear: () => {
+  }
+
+
+  clear() {
     let promise = new Promise((resolve, reject) => {
-      chrome.storage.sync.clear(() => {
+      this.namespace.clear(() => {
         let err = chrome.runtime.lastError;
         if (err) {
           reject(err);
@@ -63,73 +92,38 @@ export const sync = {
       });
     });
     return promise;
+  }
+
+  /**
+   * Выполняет unshift в массив данных в Chrome Storage. 
+   * Если новый массив превышает квоту — удаляет елементы массива, начиная от самых старых,
+   * до тех пор пока результирующий массив данных не поместится в квоту
+   * 
+   * @param {string} key Ключ переменной в хранилище
+   * @param {{id: any, [key: string]: any}} value Данные для сохранения в массыв в хранилище
+   * @returns {Promise<any[]>} Массив сохраненных данных
+   */
+  async unshift(key, value) {
+    let { [key]: array } = await this.get({ [key]: [] })
+    array = (array || []).filter(item => item && item.id !== value.id)
+    array.unshift(value)
+
+    while (array.length) {
+      try {
+        await this.set({ [key]: array })
+        break
+      } catch (error) {
+        if (error.message.indexOf('QUOTA_BYTES') !== -1) {
+          array.pop()
+        } else {
+          return Promise.reject(error)
+        }
+      }
+    }
+
+    return array
   }
 }
 
-export const local = {
-  get: (keys) => {
-    let promise = new Promise((resolve, reject) => {
-      chrome.storage.local.get(keys, (items) => {
-        let err = chrome.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve(items);
-        }
-      });
-    });
-    return promise;
-  },
-  set: (items) => {
-    let promise = new Promise((resolve, reject) => {
-      chrome.storage.local.set(items, () => {
-        let err = chrome.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-    return promise;
-  },
-  getBytesInUse: (keys) => {
-    let promise = new Promise((resolve, reject) => {
-      chrome.storage.local.getBytesInUse(keys, (items) => {
-        let err = chrome.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve(items);
-        }
-      });
-    });
-    return promise;
-  },
-  remove: (keys) => {
-    let promise = new Promise((resolve, reject) => {
-      chrome.storage.local.remove(keys, () => {
-        let err = chrome.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-    return promise;
-  },
-  clear: () => {
-    let promise = new Promise((resolve, reject) => {
-      chrome.storage.local.clear(() => {
-        let err = chrome.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-    return promise;
-  }
-}
+export const sync = new ChromeStorageArea('sync')
+export const local = new ChromeStorageArea('local')

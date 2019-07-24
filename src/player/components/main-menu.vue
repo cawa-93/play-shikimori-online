@@ -21,7 +21,13 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon @click="logout">
+          <v-btn icon href="/history/index.html" title="История просмотров">
+            <v-icon>history</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+
+        <v-list-tile-action>
+          <v-btn icon @click="logout" title="Выключить синхронизацию">
             <v-icon>exit_to_app</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -36,36 +42,18 @@
         <v-list-tile-content>
           <v-list-tile-title>Включить синхронизацию</v-list-tile-title>
         </v-list-tile-content>
+
+        <v-list-tile-action @click.stop>
+          <v-btn icon href="/history/index.html" title="История просмотров">
+            <v-icon>history</v-icon>
+          </v-btn>
+        </v-list-tile-action>
       </v-list-tile>
     </v-list>
 
     <v-divider></v-divider>
 
     <actions></actions>
-
-    <!-- <div>
-    <template v-if="!user">
-      <v-btn color="error" large class="ma-0" @click="updateAuth">Включить синхронизацию</v-btn>
-    </template>
-    <template v-else>
-      <v-list-tile style="height: 44px">
-        <v-list-tile-avatar>
-          <img :src="user.image.x80" :alt="user.nickname">
-        </v-list-tile-avatar>
-
-        <v-list-tile-content>
-          <v-list-tile-title>{{user.nickname}}</v-list-tile-title>
-          <v-list-tile-sub-title>Синхронизация включена</v-list-tile-sub-title>
-        </v-list-tile-content>
-
-        <v-list-tile-action>
-          <v-btn icon @click="logout">
-            <v-icon>more_vert</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
-    </template>
-    </div>-->
   </v-menu>
 </template>
 
