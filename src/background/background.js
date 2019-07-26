@@ -21,6 +21,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   if (reason === 'update') {
     const manifest = chrome.runtime.getManifest()
     message({
+      id: 'update-notify',
       html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`,
       color: 'success',
       payload: { previousVersion }

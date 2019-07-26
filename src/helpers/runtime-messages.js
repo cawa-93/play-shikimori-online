@@ -2,7 +2,15 @@ import { local } from './chrome-storage'
 
 
 export async function push(message) {
-  const { runtimeMessages } = await local.get({ runtimeMessages: [] })
+  let { runtimeMessages } = await local.get({ runtimeMessages: [] })
+
+  // Если у сообщения указан уникальный ID,
+  // необходимо удалить из очереди сообщений все сообщения с аналогичным ID.
+  // Это необходимо, чтобы избегать повторяющихся однотипных сообщений
+  if (message.id) {
+    runtimeMessages = runtimeMessages.filter(m => m.id && m.id !== message.id)
+  }
+
   runtimeMessages.push(message)
   await local.set({ runtimeMessages })
 }
