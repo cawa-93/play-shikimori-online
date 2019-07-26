@@ -1,6 +1,21 @@
 <template>
   <section class="comments-container">
-    <h2 class="display-1 mt-4">Обсуждение серии</h2>
+    <div class="display-1 mt-4 d-flex topic-title">
+      <h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            v-if="topic"
+            v-on="on"
+            :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
+          >
+            <v-icon>link</v-icon>
+          </v-btn>
+        </template>
+        <span>Открыть обсуждение на Шикимори</span>
+      </v-tooltip>
+    </div>
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
       <div class="mt-4 mb-2" v-if="topic && comments.items.length">
@@ -357,7 +372,7 @@ export default {
 </script>
 
 
-<style >
+<style>
 .w-100 {
   width: 100%;
 }
@@ -460,5 +475,14 @@ export default {
   60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+.topic-title .v-btn,
+.topic-title > h2 {
+  flex-grow: 0 !important;
+}
+
+.topic-title:not(:hover) .v-btn {
+  opacity: 0;
 }
 </style>

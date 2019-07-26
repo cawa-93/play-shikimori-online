@@ -75,9 +75,9 @@ export default {
 
   async mounted() {
     const { installAt, leaveReview, userAuth } = await sync.get([
-      "installAt",
-      "leaveReview",
-      "userAuth"
+      "installAt", // Timestamp когда пользователь установил расширение
+      "leaveReview", // Оставлял ли пользователь отзыв
+      "userAuth" // Данные для авторизации пользователя
     ]);
 
     this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
