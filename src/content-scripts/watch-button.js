@@ -17,7 +17,7 @@ async function main() {
 	if (!infoSection || WatchOnlineButton) return
 
 	// Скрываем старый блок с кнопкой, так как в некоторых темах он ломает отображение
-	infoSection.querySelector('.watch-online-placeholer').remove()
+	// infoSection.querySelector('.watch-online-placeholer').remove() // Это может сломать работу других расширений
 
 	WatchOnlineButton = createButton(infoSection)
 

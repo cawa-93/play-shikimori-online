@@ -12,8 +12,13 @@
       :color="snackbar.message.color"
     >
       <span v-html="snackbar.message.html" id="runtime-message-content"></span>
-      <v-btn icon @click="closeSnackbar">
-        <v-icon>close</v-icon>
+      <v-btn
+        :icon="snackbar.message.mode !== 'vertical'"
+        :flat="snackbar.message.mode === 'vertical'"
+        @click="closeSnackbar"
+      >
+        <v-icon v-if="snackbar.message.mode !== 'vertical'">close</v-icon>
+        <span v-else>Закрыть</span>
       </v-btn>
     </v-snackbar>
   </div>
@@ -93,3 +98,15 @@ export default {
   }
 };
 </script>
+
+<style>
+@media only screen and (min-width: 600px) {
+  .v-snack__wrapper {
+    max-width: 852px;
+  }
+}
+
+.v-snack__content {
+  height: auto !important;
+}
+</style>

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Play Шикимори Online",
-	"version": "0.4.15",
+	"version": "0.4.16",
 	"description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
 	"homepage_url": "https://shikimori.one/clubs/2372",
 	"developer": {
@@ -54,6 +54,18 @@
 			],
 			"run_at": "document_end",
 			"all_frames": true
+		},
+		{
+			"matches": [
+				"https://myanimelist.net/anime/*"
+			],
+			"js": [
+				"content-scripts/myanimelist.js"
+			],
+			"css": [
+				"content-scripts/myanimelist.css"
+			],
+			"run_at": "document_end"
 		}
 	],
 	"permissions": [
@@ -69,6 +81,7 @@
 	],
 	"web_accessible_resources": [
 		"player/*",
+		"history/*",
 		"content-scripts/anime365-player-events.js"
 	],
 	"content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://www.google-analytics.com; object-src 'self'"

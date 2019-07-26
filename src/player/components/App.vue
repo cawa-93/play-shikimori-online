@@ -74,11 +74,14 @@ export default {
   mixins: [theme],
 
   async mounted() {
-    const { installAt, leaveReview, userAuth } = await sync.get([
-      "installAt",
-      "leaveReview",
-      "userAuth"
-    ]);
+    const { installAt, leaveReview, userAuth, isAlreadyShare } = await sync.get(
+      [
+        "installAt", // Timestamp когда пользователь установил расширение
+        "leaveReview", // Оставлял ли пользователь отзыв
+        "userAuth", // Данные для авторизации пользователя
+        "isAlreadyShare" // Получал ли пользователь предложение поделиться в ВК
+      ]
+    );
 
     this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
 
@@ -86,22 +89,47 @@ export default {
     this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
     this.$store.dispatch("shikimori/loadAnime"); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
 
-    // Если пользователь установил расширение неделю назад
-    // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
-    const WEEK = 604800000;
-    if (!installAt || installAt + WEEK > Date.now() || leaveReview) {
+    if (!installAt) {
       return;
     }
 
-    const manifest = chrome.runtime.getManifest();
-    const url = getReviewUrl();
+    const WEEK = 604800000;
 
-    message({
-      color: "info",
-      html: `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`
-    });
+    // Если пользователь установил расширение неделю назад
+    // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
+    if (installAt + WEEK < Date.now() && !leaveReview) {
+      const url = getReviewUrl();
 
-    sync.set({ leaveReview: 1 });
+      message({
+        color: "info",
+        html: `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`
+      });
+
+      sync.set({ leaveReview: 1 });
+    }
+
+    // Если пользователь установил расширение 3 недели назад
+    // и ещё не получал предложения поделиться в ВК — создать сообщение с предложением
+    if (installAt + WEEK * 3 < Date.now() && !isAlreadyShare) {
+      const url = new URL("https://vk.com/share.php");
+      url.searchParams.append(
+        "url",
+        "https://github.com/cawa-93/play-shikimori-online/blob/master/README.md#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0"
+      );
+      url.searchParams.append("title", "Play Шикимори Online");
+      url.searchParams.append(
+        "comment",
+        "Лучший способ смотреть аниме прямо на сайте shikimori.one"
+      );
+
+      message({
+        color: "info",
+        html: `Чем больше пользователей в расширении, тем чаще выходят обновления с приятными бонусами<br><b><a href="${url.toString()}" class="white--text">Расскажи о нас друзьям и жди новых возможностей в ближайшее время!</a> 😎</b>`,
+        mode: this.$vuetify.breakpoint.smAndDown ? "vertical" : "multi-line"
+      });
+
+      sync.set({ isAlreadyShare: 1 });
+    }
   }
 };
 </script>
