@@ -54,6 +54,18 @@
 			],
 			"run_at": "document_end",
 			"all_frames": true
+		},
+		{
+			"matches": [
+				"https://myanimelist.net/anime/*"
+			],
+			"js": [
+				"content-scripts/myanimelist.js"
+			],
+			"css": [
+				"content-scripts/myanimelist.css"
+			],
+			"run_at": "document_end"
 		}
 	],
 	"permissions": [

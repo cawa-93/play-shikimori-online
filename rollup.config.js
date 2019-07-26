@@ -56,6 +56,24 @@ module.exports = [{
 },
 
 {
+  input: 'src/content-scripts/myanimelist.js',
+  output: {
+    file: 'dist/content-scripts/myanimelist.js',
+    format: 'esm',
+    // sourcemap: process.env.NODE_ENV === 'development'
+  },
+  plugins: [
+    resolve(),
+    replace(replaceEnv),
+    copy({
+      targets: {
+        'src/content-scripts/myanimelist.css': 'dist/content-scripts/myanimelist.css'
+      }
+    })
+  ]
+},
+
+{
   input: 'src/content-scripts/inject-content-scripts.js',
   output: {
     file: 'dist/content-scripts/inject-content-scripts.js',
