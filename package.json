@@ -1,7 +1,7 @@
 {
-  "name": "play-shikimori-rollup",
-  "version": "1.0.0",
-  "description": "",
+  "name": "play-shikimori-online",
+  "version": "0.4.16",
+  "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "main": "index.js",
   "dependencies": {
     "async-retry": "^1.2.3",
@@ -27,16 +27,10 @@
     "vue-template-compiler": "^2.6.10"
   },
   "scripts": {
-    "build:dev": "NODE_ENV=development rollup -c rollup.config.js",
-    "build:prod": "NODE_ENV=production rollup -c rollup.config.js",
-    "build": "rollup -c rollup.config.js",
-    "zip:dist": "cd ./dist && zip -r ../dist.zip ./*  --exclude='*__MACOSX*' --exclude='*.DS_Store*'",
-    "zip:src": "zip -r ./src.zip ./* --exclude='*.zip' --exclude='*__MACOSX*' --exclude='*.DS_Store*' --exclude='node_modules*' --exclude='dist*'",
-    "zip": "npm run zip:src && npm run zip:dist",
-    "dev": "npm run build:dev -- --watch",
-    "release": "rm -f ./*.zip && rm -rf ./dist && npm run build:prod && npm run zip"
+    "build": "rollup -c rollup.config.js && node ./build/generate_manifest.js",
+    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Alex Kozack",
+  "license": "GPL-3"
 }

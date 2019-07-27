@@ -13,7 +13,7 @@
       <a
         href="https://t.me/kozack"
         @click="track('https://t.me/kozack')"
-      >{{manifest.developer.name}}</a>
+      >{{manifest.author}}</a>
     </p>
 
     <p>

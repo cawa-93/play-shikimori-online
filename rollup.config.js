@@ -14,6 +14,7 @@ const replaceEnv = {
   'process.env.SHIKIMORI_CLIENT_SECRET': JSON.stringify(process.env.SHIKIMORI_CLIENT_SECRET),
   'process.env.SHIKIMORI_REDIRECT_URI': JSON.stringify(process.env.SHIKIMORI_REDIRECT_URI),
   'process.env.SHIKIMORI_SYSTEM_TOKEN': JSON.stringify(process.env.SHIKIMORI_SYSTEM_TOKEN),
+  'process.env.BROWSER': JSON.stringify(process.env.BROWSER ? process.env.BROWSER : 'chrome'),
 }
 
 const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
@@ -34,13 +35,6 @@ module.exports = [{
     resolve(),
     replace(replaceEnv),
     commonjs(),
-    copy({
-      targets: {
-        [`${path.src}/manifest.json`]: `${path.dist}/manifest.json`,
-        // `${path.src}/icons/play-128.png`: `${path.dist}/icons/play-128.png`,
-        // `${path.src}/icons/pause.png`: `${path.dist}/icons/pause.png`,
-      }
-    })
   ]
 },
 
