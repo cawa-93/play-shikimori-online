@@ -16,12 +16,19 @@ const replaceEnv = {
   'process.env.SHIKIMORI_SYSTEM_TOKEN': JSON.stringify(process.env.SHIKIMORI_SYSTEM_TOKEN),
 }
 
+const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
+
+const path = {
+  src: 'src',
+  dist: `dist/${browser}`
+}
+
 module.exports = [{
-  input: 'src/background/background.js',
+  input: `${path.src}/background/background.js`,
   output: {
-    file: 'dist/background/background.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/background/background.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
@@ -29,56 +36,56 @@ module.exports = [{
     commonjs(),
     copy({
       targets: {
-        'src/manifest.json': 'dist/manifest.json',
-        // 'src/icons/play-128.png': 'dist/icons/play-128.png',
-        // 'src/icons/pause.png': 'dist/icons/pause.png',
+        [`${path.src}/manifest.json`]: `${path.dist}/manifest.json`,
+        // `${path.src}/icons/play-128.png`: `${path.dist}/icons/play-128.png`,
+        // `${path.src}/icons/pause.png`: `${path.dist}/icons/pause.png`,
       }
     })
   ]
 },
 
 {
-  input: 'src/content-scripts/anime365-player-events.js',
+  input: `${path.src}/content-scripts/anime365-player-events.js`,
   output: {
-    file: 'dist/content-scripts/anime365-player-events.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/content-scripts/anime365-player-events.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
     replace(replaceEnv),
     copy({
       targets: {
-        'src/content-scripts/anime365-player-styles.css': 'dist/content-scripts/anime365-player-styles.css'
+        [`${path.src}/content-scripts/anime365-player-styles.css`]: `${path.dist}/content-scripts/anime365-player-styles.css`
       }
     })
   ]
 },
 
 {
-  input: 'src/content-scripts/myanimelist.js',
+  input: `${path.src}/content-scripts/myanimelist.js`,
   output: {
-    file: 'dist/content-scripts/myanimelist.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/content-scripts/myanimelist.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
     replace(replaceEnv),
     copy({
       targets: {
-        'src/content-scripts/myanimelist.css': 'dist/content-scripts/myanimelist.css'
+        [`${path.src}/content-scripts/myanimelist.css`]: `${path.dist}/content-scripts/myanimelist.css`
       }
     })
   ]
 },
 
 {
-  input: 'src/content-scripts/inject-content-scripts.js',
+  input: `${path.src}/content-scripts/inject-content-scripts.js`,
   output: {
-    file: 'dist/content-scripts/inject-content-scripts.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/content-scripts/inject-content-scripts.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
@@ -87,11 +94,11 @@ module.exports = [{
 },
 
 {
-  input: 'src/content-scripts/watch-button.js',
+  input: `${path.src}/content-scripts/watch-button.js`,
   output: {
-    file: 'dist/content-scripts/watch-button.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/content-scripts/watch-button.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
@@ -101,49 +108,11 @@ module.exports = [{
 
 
 {
-  input: 'src/player/index.js',
+  input: `${path.src}/player/index.js`,
   output: {
-    file: 'dist/player/bundle.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
-  },
-  plugins: [
-    resolve(),
-    commonjs(),
-    replace(replaceEnv),
-    VuePlugin(),
-    copy({
-      targets: {
-        'src/fonts': 'dist/fonts',
-        'src/player/index.html': 'dist/player/index.html',
-        'node_modules/material-design-icons/iconfont': 'dist/fonts/iconfont',
-        'node_modules/vuetify/dist/vuetify.min.css': 'dist/vuetify.min.css',
-        'src/icons': 'dist/icons',
-      }
-    })
-  ],
-},
-
-{
-  input: 'src/player/worker.js',
-  output: {
-    file: 'dist/player/worker.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
-  },
-  plugins: [
-    resolve(),
-    commonjs(),
-    replace(replaceEnv),
-  ],
-},
-
-{
-  input: 'src/history/index.js',
-  output: {
-    file: 'dist/history/bundle.js',
-    format: 'esm',
-    // sourcemap: process.env.NODE_ENV === 'development'
+    file: `${path.dist}/player/bundle.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
   },
   plugins: [
     resolve(),
@@ -152,7 +121,45 @@ module.exports = [{
     VuePlugin(),
     copy({
       targets: {
-        'src/history/index.html': 'dist/history/index.html',
+        [`${path.src}/fonts`]: `${path.dist}/fonts`,
+        [`${path.src}/player/index.html`]: `${path.dist}/player/index.html`,
+        [`node_modules/material-design-icons/iconfont`]: `${path.dist}/fonts/iconfont`,
+        [`node_modules/vuetify/${path.dist}/vuetify.min.css`]: `${path.dist}/vuetify.min.css`,
+        [`${path.src}/icons`]: `${path.dist}/icons`,
+      }
+    })
+  ],
+},
+
+{
+  input: `${path.src}/player/worker.js`,
+  output: {
+    file: `${path.dist}/player/worker.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
+  },
+  plugins: [
+    resolve(),
+    commonjs(),
+    replace(replaceEnv),
+  ],
+},
+
+{
+  input: `${path.src}/history/index.js`,
+  output: {
+    file: `${path.dist}/history/bundle.js`,
+    format: `esm`,
+    // sourcemap: process.env.NODE_ENV === `development`
+  },
+  plugins: [
+    resolve(),
+    commonjs(),
+    replace(replaceEnv),
+    VuePlugin(),
+    copy({
+      targets: {
+        [`${path.src}/history/index.html`]: `${path.dist}/history/index.html`,
       }
     })
   ],
