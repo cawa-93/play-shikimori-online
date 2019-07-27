@@ -3,7 +3,7 @@ function createButton(infoSection) {
   const link = document.createElement('a')
   link.classList.add('btn-user-status-add-list')
   link.classList.add('watch-online-button')
-  link.innerText = 'Watch Onlisne'
+  link.innerText = 'Watch now'
   const animeId = getAnimeId()
   let episodeInt = getEpisodeInt()
 
