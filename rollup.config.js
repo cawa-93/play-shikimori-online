@@ -124,7 +124,7 @@ module.exports = [{
         [`${path.src}/fonts`]: `${path.dist}/fonts`,
         [`${path.src}/player/index.html`]: `${path.dist}/player/index.html`,
         [`node_modules/material-design-icons/iconfont`]: `${path.dist}/fonts/iconfont`,
-        [`node_modules/vuetify/${path.dist}/vuetify.min.css`]: `${path.dist}/vuetify.min.css`,
+        [`node_modules/vuetify/dist/vuetify.min.css`]: `${path.dist}/vuetify.min.css`,
         [`${path.src}/icons`]: `${path.dist}/icons`,
       }
     })
