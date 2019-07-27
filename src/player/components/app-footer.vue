@@ -20,9 +20,9 @@
       <a :href="manifest.homepage_url" @click="track(manifest.homepage_url)">Клуб на Шикимори</a>
       •
       <a
-        href="https://github.com/cawa-93/play-shikimori-online"
-        @click="track('https://github.com/cawa-93/play-shikimori-online')"
-      >Исходный код на GitHub</a>
+        href="https://gitlab.com/kozackunisoft/play-shikimori-online"
+        @click="track('https://gitlab.com/kozackunisoft/play-shikimori-online')"
+      >Исходный код на GitLab</a>
     </p>
 
     <p>
