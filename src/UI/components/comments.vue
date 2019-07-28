@@ -1,6 +1,6 @@
 <template>
   <section class="comments-container">
-    <div class="display-1 mt-4 d-flex topic-title">
+    <div class="display-1 mt-6 d-flex topic-title">
       <h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
       <v-tooltip right>
         <template v-slot:activator="{ on }">
@@ -18,20 +18,20 @@
     </div>
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
-      <div class="mt-4 mb-2" v-if="topic && comments.items.length">
+      <div class="mt-6 mb-2" v-if="topic && comments.items.length">
         <template v-for="comment in comments.items">
           <v-layout
             row
             :key="comment.id"
-            class="mb-3 pt-3 comment-container"
+            class="mb-4 pt-4 comment-container"
             :id="'comment-' + comment.id"
           >
-            <v-list-tile-avatar>
+            <v-list-item-avatar>
               <img :src="comment.user.avatar" />
-            </v-list-tile-avatar>
+            </v-list-item-avatar>
 
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-content>
+              <v-list-item-title>
                 <strong>
                   <a
                     :href="'https://shikimori.one/' + comment.user.nickname"
@@ -41,9 +41,9 @@
                   class="text-lg-right grey--text text--lighten-1 ml-2"
                   :href="'https://shikimori.one/comments/' + comment.id"
                 >{{comment.created_at_relative}}</a>
-              </v-list-tile-title>
+              </v-list-item-title>
               <div class="w-100 comment-body" v-html="comment.html_body"></div>
-            </v-list-tile-content>
+            </v-list-item-content>
           </v-layout>
           <v-divider></v-divider>
         </template>
@@ -52,17 +52,17 @@
           v-if="comments.items.length < topic.comments_count"
           @click="loadComments"
           :loading="layout.moreComments.loading"
-          flat
+          text
           block
-          class="mt-3"
+          class="mt-4"
         >Загрузить ещё</v-btn>
       </div>
 
       <p v-else class="pl-0 blockquote">Ещё никто не оставил отзыв о серии</p>
 
-      <v-form v-if="user" @submit.prevent="createComment" class="mt-3">
+      <v-form v-if="user" @submit.prevent="createComment" class="mt-4">
         <v-textarea
-          box
+          filled
           name="input-7-4"
           label="Напишите ваши впечатления от серии"
           v-model="newCommentText"
@@ -77,8 +77,8 @@
         >Отправить</v-btn>
       </v-form>
 
-      <div v-else class="text-xs-center mt-4">
-        <v-btn class="pl-3" @click="logIn" large>
+      <div v-else class="text-center mt-6">
+        <v-btn class="pl-4" @click="logIn" large>
           <v-icon class="mr-2">sync</v-icon>Оставить отзыв
         </v-btn>
       </div>

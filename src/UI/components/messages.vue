@@ -14,7 +14,7 @@
       <span v-html="snackbar.message.html" id="runtime-message-content"></span>
       <v-btn
         :icon="snackbar.message.mode !== 'vertical'"
-        :flat="snackbar.message.mode === 'vertical'"
+        :text="snackbar.message.mode === 'vertical'"
         @click="closeSnackbar"
       >
         <v-icon v-if="snackbar.message.mode !== 'vertical'">close</v-icon>

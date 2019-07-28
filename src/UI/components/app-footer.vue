@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-5 text-xs-center" id="app-footer">
+  <footer class="mt-12 text-center" id="app-footer">
     <a
       href="https://www.patreon.com/bePatron?u=18212353&utm_source=extension&utm_medium=footer-button&utm_campaign=play-shikimori-online&utm_content=Купить%201%20кофе"
       @click="track('https://www.patreon.com/bePatron?u=18212353')"
@@ -45,7 +45,7 @@
       >myanimelist.net</a>
     </p>
 
-    <v-flex class="mt-5 text-xs-center">
+    <v-flex class="mt-12 text-center">
       <clear-btn></clear-btn>
     </v-flex>
   </footer>

@@ -2,8 +2,7 @@
   <v-layout row wrap>
     <v-flex>
       <v-btn
-        class="ma-0"
-        flat
+        text
         :disabled="!previous"
         @click.prevent="$store.dispatch('player/selectPreviousEpisode')"
         :href="urls.previous"
@@ -16,14 +15,13 @@
       </v-btn>
     </v-flex>
 
-    <v-flex class="text-xs-center main-menu">
+    <v-flex class="text-center main-menu">
       <slot></slot>
     </v-flex>
 
-    <v-flex class="text-xs-right">
+    <v-flex class="text-right">
       <v-btn
-        class="ma-0"
-        flat
+        text
         v-if="next || !$store.state.shikimori.nextSeason"
         :disabled="!next"
         @click.prevent="nextEpisode"
@@ -37,8 +35,7 @@
       </v-btn>
 
       <v-btn
-        class="ma-0"
-        flat
+        text
         v-else
         :href="urls.next"
         target="_self"
@@ -77,22 +74,22 @@ export default {
 
       if (this.previous) {
         previous = new URL(chrome.runtime.getURL(`UI/index.html`));
-        previous.hash = `/player/anime/${this.previous.myAnimelist}/${this.previous.episodeInt}`
+        previous.hash = `/player/anime/${this.previous.myAnimelist}/${this.previous.episodeInt}`;
 
         previous = previous.toString();
       }
 
       if (this.next) {
         next = new URL(chrome.runtime.getURL(`UI/index.html`));
-        next.hash = `/player/anime/${this.next.myAnimelist}/${this.next.episodeInt}`
+        next.hash = `/player/anime/${this.next.myAnimelist}/${this.next.episodeInt}`;
 
         next = next.toString();
       } else if (this.$store.state.shikimori.nextSeason) {
         next = new URL(chrome.runtime.getURL(`UI/index.html`));
-        next.hash = `/player/anime/${this.$store.state.shikimori.nextSeason.id}`
+        next.hash = `/player/anime/${this.$store.state.shikimori.nextSeason.id}`;
 
         if (this.$store.state.shikimori.nextSeason.episodeInt !== undefined) {
-          next.hash += `/${this.$store.state.shikimori.nextSeason.episodeInt}`
+          next.hash += `/${this.$store.state.shikimori.nextSeason.episodeInt}`;
         }
 
         next = next.toString();

@@ -11,14 +11,6 @@ import VueAnalytics from 'vue-analytics'
 
 import Root from './root.vue'
 
-// {
-//   const params = (new URL(location.href)).searchParams
-//   window.config = {
-//     anime: parseInt(params.get('anime')),
-//     episode: parseFloat(params.get('episode')),
-//   }
-// }
-
 Vue.use(Vuetify)
 Vue.use(VueAnalytics, {
   id: 'UA-71609511-7',
@@ -59,5 +51,13 @@ Vue.use(VueAnalytics, {
 new Vue({
   render: h => h(Root),
   store,
-  router
+  router,
+  vuetify: new Vuetify({
+    theme: {
+      dark: true,
+    },
+    icons: {
+      iconfont: 'md',
+    },
+  })
 }).$mount('root')

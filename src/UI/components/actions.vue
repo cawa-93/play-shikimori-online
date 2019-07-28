@@ -2,45 +2,45 @@
 <template>
   <v-list>
     <template v-if="pictureInPictureEnabled">
-      <v-list-tile
+      <v-list-item
         v-ga="$ga.commands.trackAction.bind(this, 'picture-in-picture')"
         @click="pictureInPictureToggle"
       >
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-icon>picture_in_picture</v-icon>
-        </v-list-tile-action>
+        </v-list-item-action>
 
-        <v-list-tile-title>Картинка в картинке</v-list-tile-title>
-      </v-list-tile>
+        <v-list-item-title>Картинка в картинке</v-list-item-title>
+      </v-list-item>
 
       <v-divider class="my-2"></v-divider>
     </template>
 
-    <v-list-tile
+    <v-list-item
       v-if="shikiID"
       :href="shikiLink.url"
       rel="noopener noreferrer"
       v-ga="$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
     >
-      <v-list-tile-action>
+      <v-list-item-action>
         <v-icon>open_in_new</v-icon>
-      </v-list-tile-action>
+      </v-list-item-action>
 
-      <v-list-tile-title>{{ shikiLink.label }}</v-list-tile-title>
-    </v-list-tile>
+      <v-list-item-title>{{ shikiLink.label }}</v-list-item-title>
+    </v-list-item>
 
-    <v-list-tile
+    <v-list-item
       v-if="$store.state.player.currentTranslation"
       :href="reportAboutError.url"
       rel="noopener noreferrer"
       v-ga="$ga.commands.trackAction.bind(this, 'report-about-error')"
     >
-      <v-list-tile-action>
+      <v-list-item-action>
         <v-icon>report</v-icon>
-      </v-list-tile-action>
+      </v-list-item-action>
 
-      <v-list-tile-title>{{ reportAboutError.label }}</v-list-tile-title>
-    </v-list-tile>
+      <v-list-item-title>{{ reportAboutError.label }}</v-list-item-title>
+    </v-list-item>
   </v-list>
 </template>
 

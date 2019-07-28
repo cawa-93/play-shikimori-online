@@ -1,37 +1,31 @@
 <template>
   <section>
-    <v-app id="app" :dark="theme.dark">
-      <v-container class="__layout">
-        <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
-          <v-flex class="flex-grow-unset">
-            <v-layout row>
-              <v-flex xs6 mr-3>
-                <episode-list></episode-list>
-              </v-flex>
-              <v-flex xs6>
-                <translation-list></translation-list>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+    <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
+      <v-flex class="flex-grow-unset">
+        <v-container fluid grid-list-md pa-0>
+          <v-layout wrap>
+            <v-flex xs12 sm6>
+              <episode-list></episode-list>
+            </v-flex>
+            <v-flex xs12 sm6>
+              <translation-list></translation-list>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-flex>
 
-          <v-flex d-flex>
-            <player></player>
-          </v-flex>
+      <v-flex d-flex>
+        <player></player>
+      </v-flex>
 
-          <v-flex class="flex-grow-unset mt-3">
-            <video-controls>
-              <main-menu></main-menu>
-            </video-controls>
-          </v-flex>
-        </v-layout>
+      <v-flex class="flex-grow-unset mt-4">
+        <video-controls>
+          <main-menu></main-menu>
+        </video-controls>
+      </v-flex>
+    </v-layout>
 
-        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
-
-        <app-footer></app-footer>
-      </v-container>
-
-      <messages></messages>
-    </v-app>
+    <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
   </section>
 </template>
 
@@ -68,7 +62,7 @@ export default {
   mixins: [theme],
 
   async mounted() {
-    console.log(this.$route.params)
+    console.log(this.$route.params);
     const { installAt, leaveReview, userAuth, isAlreadyShare } = await sync.get(
       [
         "installAt", // Timestamp когда пользователь установил расширение
@@ -78,12 +72,11 @@ export default {
       ]
     );
 
-
     this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
 
     this.$store.dispatch("player/loadEpisodes", {
       anime: parseInt(this.$route.params.anime),
-      episode: parseFloat(this.$route.params.episode),
+      episode: parseFloat(this.$route.params.episode)
     }); // Загрузка списка серий и запуск видео
     this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
     this.$store.dispatch("shikimori/loadAnime", this.$route.params.anime); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
@@ -132,8 +125,8 @@ export default {
   },
 
   watch: {
-    '$route.params': function(n,o) {
-      console.log({n, o})
+    "$route.params": function(n, o) {
+      console.log({ n, o });
     }
   }
 };
