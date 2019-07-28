@@ -2,10 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import modules from "./modules/index";
 
-import {
-  local,
-  sync,
-} from "../../helpers";
+import { sync } from "../../helpers";
 
 Vue.use(Vuex)
 

@@ -102,9 +102,9 @@ module.exports = [{
 
 
 {
-  input: `${path.src}/player/index.js`,
+  input: `${path.src}/UI/index.js`,
   output: {
-    file: `${path.dist}/player/bundle.js`,
+    file: `${path.dist}/UI/bundle.js`,
     format: `esm`,
     // sourcemap: process.env.NODE_ENV === `development`
   },
@@ -116,7 +116,7 @@ module.exports = [{
     copy({
       targets: {
         [`${path.src}/fonts`]: `${path.dist}/fonts`,
-        [`${path.src}/player/index.html`]: `${path.dist}/player/index.html`,
+        [`${path.src}/UI/index.html`]: `${path.dist}/UI/index.html`,
         [`node_modules/material-design-icons/iconfont`]: `${path.dist}/fonts/iconfont`,
         [`node_modules/vuetify/dist/vuetify.min.css`]: `${path.dist}/vuetify.min.css`,
         [`${path.src}/icons`]: `${path.dist}/icons`,
@@ -126,9 +126,9 @@ module.exports = [{
 },
 
 {
-  input: `${path.src}/player/worker.js`,
+  input: `${path.src}/UI/player/worker.js`,
   output: {
-    file: `${path.dist}/player/worker.js`,
+    file: `${path.dist}/UI/player/worker.js`,
     format: `esm`,
     // sourcemap: process.env.NODE_ENV === `development`
   },
@@ -139,24 +139,24 @@ module.exports = [{
   ],
 },
 
-{
-  input: `${path.src}/history/index.js`,
-  output: {
-    file: `${path.dist}/history/bundle.js`,
-    format: `esm`,
-    // sourcemap: process.env.NODE_ENV === `development`
-  },
-  plugins: [
-    resolve(),
-    commonjs(),
-    replace(replaceEnv),
-    VuePlugin(),
-    copy({
-      targets: {
-        [`${path.src}/history/index.html`]: `${path.dist}/history/index.html`,
-      }
-    })
-  ],
-},
+  // {
+  //   input: `${path.src}/history/index.js`,
+  //   output: {
+  //     file: `${path.dist}/history/bundle.js`,
+  //     format: `esm`,
+  //     // sourcemap: process.env.NODE_ENV === `development`
+  //   },
+  //   plugins: [
+  //     resolve(),
+  //     commonjs(),
+  //     replace(replaceEnv),
+  //     VuePlugin(),
+  //     copy({
+  //       targets: {
+  //         [`${path.src}/history/index.html`]: `${path.dist}/history/index.html`,
+  //       }
+  //     })
+  //   ],
+  // },
 
 ]

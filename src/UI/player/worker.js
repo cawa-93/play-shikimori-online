@@ -1,5 +1,5 @@
 import { storage } from "kv-storage-polyfill";
-import { clearString } from "../helpers/clear-string";
+import { clearString } from "../../helpers/clear-string";
 
 onmessage = async ({ data: { episode } }) => {
   let lastSelectedTranslations = await storage.get("lastSelectedTranslations");

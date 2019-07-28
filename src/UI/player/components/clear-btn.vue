@@ -11,7 +11,7 @@
 
 
 <script>
-import { sync, local } from "../../helpers";
+import { sync, local } from "../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
 export default {

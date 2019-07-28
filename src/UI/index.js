@@ -6,16 +6,18 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify'
 import store from './store/index.js'
-import App from './components/App.vue';
+import router from './router';
 import VueAnalytics from 'vue-analytics'
 
-{
-  const params = (new URL(location.href)).searchParams
-  window.config = {
-    anime: parseInt(params.get('anime')),
-    episode: parseFloat(params.get('episode')),
-  }
-}
+import Root from './root.vue'
+
+// {
+//   const params = (new URL(location.href)).searchParams
+//   window.config = {
+//     anime: parseInt(params.get('anime')),
+//     episode: parseFloat(params.get('episode')),
+//   }
+// }
 
 Vue.use(Vuetify)
 Vue.use(VueAnalytics, {
@@ -54,9 +56,8 @@ Vue.use(VueAnalytics, {
   }
 })
 
-const app = new Vue({
-  render: h => h(App),
+new Vue({
+  render: h => h(Root),
   store,
-});
-
-app.$mount('app');
+  router
+}).$mount('root')

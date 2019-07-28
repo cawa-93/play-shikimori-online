@@ -44,7 +44,7 @@ import {
   sync,
   push as message,
   getReviewUrl
-} from "../../helpers";
+} from "../../../helpers";
 import appFooter from "../../player/components/app-footer.vue";
 import clearBtn from "../../player/components/clear-btn.vue";
 import theme from "../../mixins/theme";

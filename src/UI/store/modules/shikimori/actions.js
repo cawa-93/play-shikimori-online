@@ -1,4 +1,4 @@
-import { shikimoriAPI, updateAuth, anime365API, push as message, sync } from './../../../../helpers';
+import { shikimoriAPI, updateAuth, anime365API, push as message, sync } from '../../../../helpers';
 
 /**
  * Загружает данный об аниме

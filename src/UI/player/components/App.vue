@@ -41,7 +41,7 @@ import {
   sync,
   push as message,
   getReviewUrl
-} from "../../helpers";
+} from "../../../helpers";
 import episodeList from "./episode-list.vue";
 import translationList from "./translation-list.vue";
 import player from "./player.vue";
