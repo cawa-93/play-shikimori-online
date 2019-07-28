@@ -1,10 +1,13 @@
-import { shikimoriAPI, updateAuth, anime365API, push as message, sync } from './../../../../helpers';
+import { shikimoriAPI, updateAuth, anime365API, push as message, sync } from '../../../../helpers';
 
 /**
  * Загружает данный об аниме
- * @param {{commit: Function, rootState: vuex.State, dispatch: Function}} context 
+ * @param {{commit: Function, dispatch: Function}} context 
  */
-export async function loadAnime({ commit, rootState, dispatch }, animeId) {
+export async function loadAnime({ commit, dispatch }, animeId) {
+  if (!animeId) {
+    throw new Error('Anime ID is required. Got ' + animeId)
+  }
   const headers = {}
 
   let auth = await dispatch('getValidCredentials')
@@ -12,9 +15,6 @@ export async function loadAnime({ commit, rootState, dispatch }, animeId) {
     headers.Authorization = `${auth.token_type} ${auth.access_token}`
   }
 
-  if (!animeId) {
-    animeId = rootState.player.currentEpisode ? rootState.player.currentEpisode.myAnimelist : window.config.anime
-  }
 
   /** @type {shikimori.Anime} */
   const anime = await shikimoriAPI(`/animes/${animeId}`, { headers })

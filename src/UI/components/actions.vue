@@ -58,7 +58,7 @@ export default {
         return this.$store.state.player.currentEpisode.myAnimelist;
       }
 
-      return window.config.anime;
+      return this.$route.params.anime;
     },
     shikiLink() {
       return {

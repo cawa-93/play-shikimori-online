@@ -1,3 +1,4 @@
+
 <template>
   <v-app id="app" :dark="theme.dark">
     <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
@@ -6,7 +7,7 @@
         <div v-for="anime of history" :key="anime.id" xs12 sm6 md3 class="grid-item">
           <v-card
             hover
-            :href="'/player/index.html?anime=' + anime.id + 'episode=' + (anime.episodes + 1)"
+            :to="'/player/anime/' + anime.id + '/' + (anime.episodes + 1)"
           >
             <v-img
               :src="'https://shikimori.one' + anime.image"
@@ -45,9 +46,9 @@ import {
   push as message,
   getReviewUrl
 } from "../../helpers";
-import appFooter from "../../player/components/app-footer.vue";
-import clearBtn from "../../player/components/clear-btn.vue";
-import theme from "../../mixins/theme";
+import appFooter from "../components/app-footer.vue";
+import clearBtn from "../components/clear-btn.vue";
+import theme from "../mixins/theme";
 export default {
   components: {
     appFooter,

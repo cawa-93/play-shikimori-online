@@ -1,8 +1,9 @@
 import Vue from "vue";
+import router from "../../../router";
 import { anime365API, myanimelistAPI, findEpisode, filterEpisodes } from "../../../../helpers";
 import { storage } from "kv-storage-polyfill";
 
-const worker = new Worker('/player/worker.js')
+const worker = new Worker('/UI/worker.js')
 
 
 /**
@@ -83,12 +84,12 @@ export async function loadEpisodes({ state, commit, dispatch }, { anime, episode
 export async function selectEpisode({ state, commit, dispatch }, episode) {
   commit('selectEpisode', episode)
 
-  {
-    const currentURL = new URL(location.href)
-    // @ts-ignore
-    currentURL.searchParams.set('episode', episode.episodeInt)
-    history.replaceState(history.state, '', currentURL.toString())
-  }
+  router.replace({
+    name: 'player', params: {
+      anime: state.currentEpisode.myAnimelist,
+      episode: state.currentEpisode.episodeInt
+    }
+  })
 
   await dispatch('loadTranslations', episode)
   let translation = await dispatch('getPriorityTranslation', episode)

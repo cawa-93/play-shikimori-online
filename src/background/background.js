@@ -127,6 +127,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
 
 
 chrome.browserAction.onClicked.addListener(function () { //Fired when User Clicks ICON
-  const url = chrome.runtime.getURL('/history/index.html')
+  const url = chrome.runtime.getURL('/UI/index.html#/history')
   chrome.tabs.create({ url, active: true })
 });
