@@ -1,13 +1,14 @@
 <template>
   <footer class="mt-5 text-xs-center" id="app-footer">
     <a
-      href="https://www.patreon.com/bePatron?u=18212353&utm_source=extension&utm_medium=banner&utm_campaign=patreon-promote"
+      href="https://www.patreon.com/bePatron?u=18212353&utm_source=extension&utm_medium=footer-button&utm_campaign=play-shikimori-online&utm_content=Купить%201%20кофе"
       @click="track('https://www.patreon.com/bePatron?u=18212353')"
       id="become-a-patron"
     >
       <img src="/icons/Patreon_Mark_NoBackground.png" alt="Patreon logo" width="16px" height="16px" />
       <span style="margin-left:8px">Купить 1 кофе</span>
     </a>
+
     <p>
       Разработчик:
       <a
@@ -43,11 +44,17 @@
         @click="track('https://myanimelist.net')"
       >myanimelist.net</a>
     </p>
+
+    <v-flex class="mt-5 text-xs-center">
+      <clear-btn></clear-btn>
+    </v-flex>
   </footer>
 </template>
 
 <script>
+import clearBtn from "./clear-btn.vue";
 export default {
+  components: { clearBtn },
   data() {
     return {
       manifest: chrome.runtime.getManifest()

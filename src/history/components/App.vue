@@ -34,10 +34,6 @@
       </div>
 
       <app-footer></app-footer>
-
-      <v-flex class="mt-5 mt-5 text-xs-center">
-        <clear-btn class>Сбросить все данные</clear-btn>
-      </v-flex>
     </v-container>
   </v-app>
 </template>

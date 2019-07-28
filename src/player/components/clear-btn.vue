@@ -1,7 +1,12 @@
 <template>
-  <v-btn @click="clear" flat small color="error">
-    <slot></slot>
-  </v-btn>
+  <v-tooltip top>
+    <template v-slot:activator="{ on }">
+      <v-btn @click="clear" flat small color="error" v-on="on" icon>
+        <v-icon>delete_forever</v-icon>
+      </v-btn>
+    </template>
+    <span>Сбросить все данные</span>
+  </v-tooltip>
 </template>
 
 

@@ -28,10 +28,6 @@
         <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
 
         <app-footer></app-footer>
-
-        <v-flex class="mt-5 mt-5 text-xs-center">
-          <clear-btn class>Сбросить все данные</clear-btn>
-        </v-flex>
       </v-container>
 
       <messages></messages>
@@ -53,7 +49,6 @@ import videoControls from "./video-controls.vue";
 import mainMenu from "./main-menu.vue";
 import comments from "./comments.vue";
 import appFooter from "./app-footer.vue";
-import clearBtn from "./clear-btn.vue";
 import messages from "./messages.vue";
 
 import theme from "../../mixins/theme";
@@ -67,7 +62,6 @@ export default {
     mainMenu,
     comments,
     appFooter,
-    clearBtn,
     messages
   },
 
