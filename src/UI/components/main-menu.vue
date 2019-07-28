@@ -21,7 +21,7 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon href="/history/index.html" title="История просмотров">
+          <v-btn icon to="/history" title="История просмотров">
             <v-icon>history</v-icon>
           </v-btn>
         </v-list-tile-action>

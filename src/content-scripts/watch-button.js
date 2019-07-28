@@ -49,7 +49,7 @@ async function main() {
 			WatchOnlineButton.textContent = `${watchedWord} ${episodeInt} ${from} ${episodeWord}`
 		}
 
-		const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
+		const playerURL = new URL(chrome.runtime.getURL(`UI/index.html`))
 		playerURL.hash = `/player/anime/${anime.id}`
 		if (episodeInt) {
 			playerURL.hash += `/${episodeInt + 1}`

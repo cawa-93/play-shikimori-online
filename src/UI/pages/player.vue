@@ -68,6 +68,7 @@ export default {
   mixins: [theme],
 
   async mounted() {
+    console.log(this.$route.params)
     const { installAt, leaveReview, userAuth, isAlreadyShare } = await sync.get(
       [
         "installAt", // Timestamp когда пользователь установил расширение
@@ -77,11 +78,15 @@ export default {
       ]
     );
 
+
     this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
 
-    this.$store.dispatch("player/loadEpisodes", window.config); // Загрузка списка серий и запуск видео
+    this.$store.dispatch("player/loadEpisodes", {
+      anime: parseInt(this.$route.params.anime),
+      episode: parseFloat(this.$route.params.episode),
+    }); // Загрузка списка серий и запуск видео
     this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
-    this.$store.dispatch("shikimori/loadAnime"); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+    this.$store.dispatch("shikimori/loadAnime", this.$route.params.anime); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
 
     if (!installAt) {
       return;
@@ -123,6 +128,12 @@ export default {
       });
 
       sync.set({ isAlreadyShare: 1 });
+    }
+  },
+
+  watch: {
+    '$route.params': function(n,o) {
+      console.log({n, o})
     }
   }
 };

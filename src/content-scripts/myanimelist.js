@@ -7,13 +7,13 @@ function createButton(infoSection) {
   const animeId = getAnimeId()
   let episodeInt = getEpisodeInt()
 
-  const playerURL = new URL(chrome.runtime.getURL(`player/index.html`))
-  playerURL.searchParams.set('anime', animeId)
+  const playerURL = new URL(chrome.runtime.getURL(`UI/index.html`))
+  playerURL.hash = '/player/anime/' + animeId
   if (episodeInt) {
-    playerURL.searchParams.set('episode', episodeInt + 1) // Открываем следующую после просмотренной серию
+    playerURL.hash += `/${episodeInt + 1}` // Открываем следующую после просмотренной серию
   }
 
-  link.href = playerURL
+  link.href = playerURL.toString()
 
   infoSection.appendChild(link)
 
