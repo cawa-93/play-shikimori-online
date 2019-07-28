@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { shift as getMessage } from "../../../helpers";
+import { shift as getMessage } from "../../helpers";
 
 export default {
   name: "messages",

@@ -89,7 +89,7 @@
 
 <script>
 import Vue from "vue";
-import { shikimoriAPI, push as message } from "../../../helpers";
+import { shikimoriAPI, push as message } from "../../helpers";
 
 export default {
   name: "comments",

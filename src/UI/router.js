@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Player from './player/components/App.vue'
-import History from './history/components/App.vue'
+import Player from './pages/player.vue'
+import History from './pages/history.vue'
 
 Vue.use(VueRouter)
 

@@ -1,3 +1,4 @@
+
 <template>
   <v-app id="app" :dark="theme.dark">
     <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
@@ -44,10 +45,10 @@ import {
   sync,
   push as message,
   getReviewUrl
-} from "../../../helpers";
-import appFooter from "../../player/components/app-footer.vue";
-import clearBtn from "../../player/components/clear-btn.vue";
-import theme from "../../mixins/theme";
+} from "../../helpers";
+import appFooter from "../components/app-footer.vue";
+import clearBtn from "../components/clear-btn.vue";
+import theme from "../mixins/theme";
 export default {
   components: {
     appFooter,

@@ -54,7 +54,7 @@
 
 
 <script>
-import { shikimoriAPI, anime365API } from "../../../helpers";
+import { shikimoriAPI, anime365API } from "../../helpers";
 
 export default {
   name: "video-controls",

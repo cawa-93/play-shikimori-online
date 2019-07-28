@@ -5,6 +5,7 @@ import copy from 'rollup-plugin-copy'
 import commonjs from 'rollup-plugin-commonjs'
 import VuePlugin from 'rollup-plugin-vue'
 import replace from 'rollup-plugin-replace'
+// import alias from 'rollup-plugin-alias'
 
 const replaceEnv = {
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
@@ -126,9 +127,9 @@ module.exports = [{
 },
 
 {
-  input: `${path.src}/UI/player/worker.js`,
+  input: `${path.src}/UI/worker.js`,
   output: {
-    file: `${path.dist}/UI/player/worker.js`,
+    file: `${path.dist}/UI/worker.js`,
     format: `esm`,
     // sourcemap: process.env.NODE_ENV === `development`
   },

@@ -41,17 +41,17 @@ import {
   sync,
   push as message,
   getReviewUrl
-} from "../../../helpers";
-import episodeList from "./episode-list.vue";
-import translationList from "./translation-list.vue";
-import player from "./player.vue";
-import videoControls from "./video-controls.vue";
-import mainMenu from "./main-menu.vue";
-import comments from "./comments.vue";
-import appFooter from "./app-footer.vue";
-import messages from "./messages.vue";
+} from "../../helpers";
+import episodeList from "../components/episode-list.vue";
+import translationList from "../components/translation-list.vue";
+import player from "../components/player.vue";
+import videoControls from "../components/video-controls.vue";
+import mainMenu from "../components/main-menu.vue";
+import comments from "../components/comments.vue";
+import appFooter from "../components/app-footer.vue";
+import messages from "../components/messages.vue";
 
-import theme from "../../mixins/theme";
+import theme from "../mixins/theme";
 
 export default {
   components: {
