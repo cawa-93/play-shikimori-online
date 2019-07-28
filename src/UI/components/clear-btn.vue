@@ -1,7 +1,7 @@
 <template>
   <v-tooltip top>
-    <template v-slot:activator="{ on }">
-      <v-btn @click="clear" text small color="error" v-on="on" icon>
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn @click="clear" text small color="error" v-on="on" icon v-bind="attrs">
         <v-icon>delete_forever</v-icon>
       </v-btn>
     </template>

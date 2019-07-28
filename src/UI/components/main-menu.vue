@@ -1,7 +1,7 @@
 <template>
   <v-menu :close-on-content-click="true" :nudge-width="200">
-    <template v-slot:activator="{ on }">
-      <v-btn :color="user ? '' : 'error'" v-on="on" text class="pr-2">
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
         <v-icon class="mr-1" v-if="!user">sync_problem</v-icon>
         <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
         <v-icon class="ml-1">arrow_drop_down</v-icon>
@@ -10,24 +10,24 @@
 
     <v-list>
       <!-- Виджет пользователя когда он авторизован -->
-      <v-list-item avatar v-if="user">
+      <v-list-item v-if="user">
         <v-list-item-avatar>
           <img :src="user.image.x80" :alt="user.nickname" />
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>{{user.nickname}}</v-list-item-title>
-          <v-list-item-sub-title>Синхронизация включена</v-list-item-sub-title>
+          <v-list-item-subtitle>Синхронизация включена</v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>
-          <v-btn icon to="/history" title="История просмотров">
+          <v-btn icon small to="/history" title="История просмотров">
             <v-icon>history</v-icon>
           </v-btn>
         </v-list-item-action>
 
         <v-list-item-action>
-          <v-btn icon @click="logout" title="Выключить синхронизацию">
+          <v-btn icon small @click="logout" title="Выключить синхронизацию">
             <v-icon>exit_to_app</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -44,7 +44,7 @@
         </v-list-item-content>
 
         <v-list-item-action @click.stop>
-          <v-btn icon href="/history/index.html" title="История просмотров">
+          <v-btn icon small href="/history/index.html" title="История просмотров">
             <v-icon>history</v-icon>
           </v-btn>
         </v-list-item-action>

@@ -9,7 +9,6 @@
         :label="label"
         v-model="selectedEpisode"
         :loading="episodes.length === 0"
-        :menu-props="{auto:false}"
         no-data-text="Пока нет ни одной серии"
       >
         <template v-slot:item="{item}">
@@ -23,12 +22,8 @@
         </template>
 
         <template v-slot:selection="{item}">
-          <v-list-item-content class="inset">
-            <v-list-item-title>
-              {{item.episodeFull}}
-              <span v-if="item.episodeInt <= watchedEpisodes">— просмотрено</span>
-            </v-list-item-title>
-          </v-list-item-content>
+          <span>{{item.episodeFull}}</span>
+          <span v-if="item.episodeInt <= watchedEpisodes" class="ml-1">— просмотрено</span>
         </template>
 
         <template v-slot:append-item>

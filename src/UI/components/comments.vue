@@ -3,11 +3,14 @@
     <div class="display-1 mt-6 d-flex topic-title">
       <h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
       <v-tooltip right>
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
+            small
+            class="ml-3"
             v-if="topic"
             v-on="on"
+            v-bind="attrs"
             :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
           >
             <v-icon>link</v-icon>
