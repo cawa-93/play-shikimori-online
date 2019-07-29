@@ -493,7 +493,7 @@ export default {
   flex-grow: 0 !important;
 }
 
-.topic-title:not(:hover) .v-btn {
+.topic-title:not(:hover) .v-btn:not(:focus) {
   opacity: 0;
 }
 </style>

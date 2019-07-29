@@ -105,7 +105,8 @@ export default {
   margin-bottom: 2rem;
 }
 
-#become-a-patron:hover {
+#become-a-patron:hover,
+#become-a-patron:focus {
   background-color: rgb(231, 81, 59);
 }
 
