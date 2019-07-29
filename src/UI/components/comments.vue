@@ -22,12 +22,18 @@
 
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
-      <div class="mt-6 mb-2" v-if="topic && comments.items.length">
+      <div
+        class="mt-6 mb-2"
+        v-if="topic && comments.items.length"
+        role="feed"
+        :aria-busy="layout.moreComments.loading ? 'true' : 'false'"
+      >
         <template v-for="comment in comments.items">
           <v-layout
             :key="comment.id"
             class="mb-4 pt-4 comment-container"
             :id="'comment-' + comment.id"
+            tag="article"
           >
             <v-list-item-avatar>
               <img :src="comment.user.avatar" />
@@ -37,18 +43,20 @@
               <v-list-item-title>
                 <strong>
                   <a
+                    role="author"
                     :href="'https://shikimori.one/' + comment.user.nickname"
                   >@{{ comment.user.nickname }}</a>
                 </strong>
-                <a
-                  class="text-lg-right grey--text text--lighten-1 ml-2"
-                  :href="'https://shikimori.one/comments/' + comment.id"
-                >{{comment.created_at_relative}}</a>
+                <time :datetime="comment.created_at" :title="comment.created_at">
+                  <a
+                    class="text-lg-right grey--text text--lighten-1 ml-2"
+                    :href="'https://shikimori.one/comments/' + comment.id"
+                  >{{comment.created_at_relative}}</a>
+                </time>
               </v-list-item-title>
               <div class="w-100 comment-body" v-html="comment.html_body"></div>
             </v-list-item-content>
           </v-layout>
-          <v-divider></v-divider>
         </template>
 
         <v-btn

@@ -1,6 +1,6 @@
 
 <template>
-  <section>
+  <main>
     <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
 
     <div class="d-grid" v-if="history.length">
@@ -30,7 +30,7 @@
         <a href="https://shikimori.one/animes">Шикимори</a> и нажмите "Начать просмотр"
       </p>
     </div>
-  </section>
+  </main>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 <template>
-  <section>
-    <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
+  <main>
+    <v-layout column style="height: calc(100vh - 110px);min-height: 378px;" tag="article">
       <v-flex class="flex-grow-unset mb-4">
         <v-container fluid grid-list-md pa-0>
           <v-layout wrap>
@@ -26,7 +26,7 @@
     </v-layout>
 
     <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
-  </section>
+  </main>
 </template>
 
 <script>
