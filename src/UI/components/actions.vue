@@ -7,7 +7,7 @@
         @click="pictureInPictureToggle"
       >
         <v-list-item-action>
-          <v-icon>picture_in_picture</v-icon>
+          <v-icon>mdi-picture-in-picture-bottom-right</v-icon>
         </v-list-item-action>
 
         <v-list-item-title>Картинка в картинке</v-list-item-title>
@@ -23,7 +23,7 @@
       v-ga="$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
     >
       <v-list-item-action>
-        <v-icon>open_in_new</v-icon>
+        <v-icon>mdi-open-in-new</v-icon>
       </v-list-item-action>
 
       <v-list-item-title>{{ shikiLink.label }}</v-list-item-title>
@@ -36,7 +36,7 @@
       v-ga="$ga.commands.trackAction.bind(this, 'report-about-error')"
     >
       <v-list-item-action>
-        <v-icon>report</v-icon>
+        <v-icon>mdi-alert-octagon</v-icon>
       </v-list-item-action>
 
       <v-list-item-title>{{ reportAboutError.label }}</v-list-item-title>

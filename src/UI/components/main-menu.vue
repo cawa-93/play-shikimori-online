@@ -2,9 +2,9 @@
   <v-menu :close-on-content-click="false" :nudge-width="200">
     <template v-slot:activator="{ on, attrs }">
       <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
-        <v-icon class="mr-1" v-if="!user">sync_problem</v-icon>
+        <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
         <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
-        <v-icon class="ml-1">arrow_drop_down</v-icon>
+        <v-icon class="ml-1">mdi-menu-down</v-icon>
       </v-btn>
     </template>
 
@@ -22,13 +22,13 @@
 
         <v-list-item-action>
           <v-btn icon small to="/history" title="История просмотров">
-            <v-icon>history</v-icon>
+            <v-icon>mdi-history</v-icon>
           </v-btn>
         </v-list-item-action>
 
         <v-list-item-action>
           <v-btn icon small @click="logout" title="Выключить синхронизацию">
-            <v-icon>exit_to_app</v-icon>
+            <v-icon>mdi-sync-off</v-icon>
           </v-btn>
         </v-list-item-action>
       </v-list-item>
@@ -36,7 +36,7 @@
       <!-- Ссылка на авторизацию -->
       <v-list-item avatar v-else @click="logIn">
         <v-list-item-avatar>
-          <v-icon>sync</v-icon>
+          <v-icon>mdi-sync</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -45,7 +45,7 @@
 
         <v-list-item-action @click.stop>
           <v-btn icon small href="/history/index.html" title="История просмотров" tabindex="0">
-            <v-icon>history</v-icon>
+            <v-icon>mdi-history</v-icon>
           </v-btn>
         </v-list-item-action>
       </v-list-item>

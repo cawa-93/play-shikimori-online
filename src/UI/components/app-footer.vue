@@ -28,7 +28,7 @@
       <v-divider></v-divider>
 
       <v-card-text class="white--text">
-        <v-icon small>copyright</v-icon>
+        <v-icon small>mdi-copyright</v-icon>
         <a
           v-for="domain of copyright"
           :key="domain"
@@ -101,12 +101,12 @@ export default {
 
       links: [
         {
-          icon: "home",
+          icon: "mdi-home",
           label: "Открыть клуб на Шикимори",
           url: manifest.homepage_url
         },
         {
-          icon: "code",
+          icon: "mdi-gitlab",
           label: "Исходный код на GitLab",
           url: "https://gitlab.com/kozackunisoft/play-shikimori-online"
         }

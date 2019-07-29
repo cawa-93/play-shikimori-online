@@ -20,7 +20,7 @@
         @click="closeSnackbar"
         aria-label="Закрыть"
       >
-        <v-icon v-if="snackbar.message.mode !== 'vertical'">close</v-icon>
+        <v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
         <span v-else>Закрыть</span>
       </v-btn>
     </v-snackbar>

@@ -2,7 +2,7 @@
   <v-tooltip top>
     <template v-slot:activator="{ on, attrs }">
       <v-btn @click="clear" text v-on="on" icon v-bind="attrs">
-        <v-icon>delete_forever</v-icon>
+        <v-icon>mdi-delete-forever</v-icon>
       </v-btn>
     </template>
     <span>Сбросить все данные</span>

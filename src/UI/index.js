@@ -62,8 +62,5 @@ new Vue({
     theme: {
       dark: true,
     },
-    icons: {
-      iconfont: 'md',
-    },
   })
 }).$mount('root')

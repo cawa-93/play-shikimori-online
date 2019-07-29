@@ -32,7 +32,7 @@
 
           <v-list-item href="https://smotret-anime-365.ru/translations/create">
             <v-list-item-action>
-              <v-icon>add</v-icon>
+              <v-icon>mdi-plus-box</v-icon>
             </v-list-item-action>
 
             <v-list-item-content>
@@ -40,7 +40,7 @@
             </v-list-item-content>
 
             <v-list-item-action>
-              <v-icon>open_in_new</v-icon>
+              <v-icon>mdi-open-in-new</v-icon>
             </v-list-item-action>
           </v-list-item>
         </template>

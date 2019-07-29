@@ -9,7 +9,7 @@
         target="_self"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
       >
-        <v-icon left>skip_previous</v-icon>
+        <v-icon left>mdi-skip-previous</v-icon>
         <span>Предыдущая</span>
         <span class="hide-on-xs ml-1">серия</span>
       </v-btn>
@@ -31,7 +31,7 @@
       >
         Следующая
         <span class="hide-on-xs ml-1">серия</span>
-        <v-icon right>skip_next</v-icon>
+        <v-icon right>mdi-skip-next</v-icon>
       </v-btn>
 
       <v-btn
@@ -43,7 +43,7 @@
         v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
       >
         {{$store.state.shikimori.nextSeason.name}}
-        <v-icon right>skip_next</v-icon>
+        <v-icon right>mdi-skip-next</v-icon>
       </v-btn>
     </v-flex>
   </v-layout>

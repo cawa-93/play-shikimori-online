@@ -18,8 +18,8 @@
         </template>
         <template v-else>
           <v-list-item-action>
-            <v-icon v-if="item.qualityType === 'uncensored'">explicit</v-icon>
-            <v-icon v-else-if="item.qualityType !== 'tv' ">high_quality</v-icon>
+            <v-icon v-if="item.qualityType === 'uncensored'">mdi-explicit</v-icon>
+            <v-icon v-else-if="item.qualityType !== 'tv' ">mdi-quality-high</v-icon>
           </v-list-item-action>
 
           <v-list-item-content>
@@ -31,7 +31,7 @@
       <template v-slot:append-item>
         <v-list-item href="https://smotret-anime-365.ru/translations/create" class="mt-2">
           <v-list-item-action>
-            <v-icon>add</v-icon>
+            <v-icon>mdi-plus-box</v-icon>
           </v-list-item-action>
 
           <v-list-item-content>
@@ -39,7 +39,7 @@
           </v-list-item-content>
 
           <v-list-item-action>
-            <v-icon>open_in_new</v-icon>
+            <v-icon>mdi-open-in-new</v-icon>
           </v-list-item-action>
         </v-list-item>
       </template>

@@ -13,7 +13,7 @@
             v-bind="attrs"
             :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
           >
-            <v-icon>link</v-icon>
+            <v-icon>mdi-link</v-icon>
           </v-btn>
         </template>
         <span>Открыть обсуждение на Шикимори</span>
@@ -90,7 +90,7 @@
 
       <div v-else class="text-center mt-6">
         <v-btn class="pl-4" @click="logIn" large>
-          <v-icon class="mr-2">sync</v-icon>Оставить отзыв
+          <v-icon class="mr-2">mdi-sync</v-icon>Оставить отзыв
         </v-btn>
       </div>
     </template>
