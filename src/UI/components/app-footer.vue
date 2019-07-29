@@ -1,5 +1,44 @@
 <template>
-  <footer class="mt-12 text-center" id="app-footer">
+  <v-footer padless :absolute="false" :fixed="false" class="mt-12">
+    <v-card flat tile class="w-100 text-center red lighten-1" :dark="false">
+      <v-card-text>
+        <v-btn rounded outlined color>
+          <span>Поддержать</span>
+        </v-btn>
+        <v-tooltip top v-for="link of links" :key="link.url">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="mx-4"
+              icon
+              :href="link.url"
+              v-on="on"
+              v-bind="attrs"
+              @click="track(link.url)"
+            >
+              <v-icon size="24px">{{ link.icon }}</v-icon>
+            </v-btn>
+          </template>
+
+          <span>{{link.label}}</span>
+        </v-tooltip>
+
+        <clear-btn></clear-btn>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class="white--text">
+        <v-icon small>copyright</v-icon>
+        <a
+          v-for="domain of copyright"
+          :key="domain"
+          :href="'https://' + domain"
+          class="white--text px-2"
+        >{{domain}}</a>
+      </v-card-text>
+    </v-card>
+  </v-footer>
+  <!-- <footer class="mt-12 text-center" id="app-footer">
     <a
       href="https://www.patreon.com/bePatron?u=18212353&utm_source=extension&utm_medium=footer-button&utm_campaign=play-shikimori-online&utm_content=Купить%201%20кофе"
       @click="track('https://www.patreon.com/bePatron?u=18212353')"
@@ -48,7 +87,7 @@
     <v-flex class="mt-12 text-center">
       <clear-btn></clear-btn>
     </v-flex>
-  </footer>
+  </footer>-->
 </template>
 
 <script>
@@ -56,8 +95,24 @@ import clearBtn from "./clear-btn.vue";
 export default {
   components: { clearBtn },
   data() {
+    const manifest = chrome.runtime.getManifest();
     return {
-      manifest: chrome.runtime.getManifest()
+      manifest,
+
+      links: [
+        {
+          icon: "home",
+          label: "Открыть клуб на Шикимори",
+          url: manifest.homepage_url
+        },
+        {
+          icon: "code",
+          label: "Исходный код на GitLab",
+          url: "https://gitlab.com/kozackunisoft/play-shikimori-online"
+        }
+      ],
+
+      copyright: ["shikimori.one", "smotret-anime-365.ru", "myanimelist.net"]
     };
   },
 

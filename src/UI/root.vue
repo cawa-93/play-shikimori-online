@@ -2,10 +2,10 @@
   <v-app id="root">
     <v-container>
       <router-view></router-view>
-      <app-footer></app-footer>
-
-      <messages></messages>
     </v-container>
+    <app-footer></app-footer>
+
+    <messages></messages>
   </v-app>
 </template>
 
