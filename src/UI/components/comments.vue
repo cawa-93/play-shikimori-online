@@ -76,7 +76,7 @@
           filled
           name="input-7-4"
           label="Напишите ваши впечатления от серии"
-          v-model="newCommentText"
+          v-model.trim="newCommentText"
           required
           :disabled="layout.newComment.loading"
         ></v-textarea>
