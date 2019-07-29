@@ -2,6 +2,7 @@
   <section class="episode-list">
     <div class="mdc-select">
       <v-select
+        hide-details
         item-text="episodeFull"
         item-value="id"
         :items="episodes"

@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
-      <v-flex class="flex-grow-unset">
+      <v-flex class="flex-grow-unset mb-4">
         <v-container fluid grid-list-md pa-0>
           <v-layout wrap>
             <v-flex xs12 sm6>

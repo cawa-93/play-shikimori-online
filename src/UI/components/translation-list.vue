@@ -2,6 +2,7 @@
 <template>
   <section class="translation-list">
     <v-select
+      hide-details
       item-text="authorsSummary"
       item-value="id"
       :items="groupedTranslations"

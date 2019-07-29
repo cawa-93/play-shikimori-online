@@ -1,6 +1,6 @@
 <template>
   <section class="comments-container">
-    <div class="display-1 mt-6 d-flex topic-title">
+    <div class="display-1 mt-6 mb-4 d-flex topic-title">
       <h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
       <v-tooltip right>
         <template v-slot:activator="{ on, attrs }">
@@ -19,12 +19,12 @@
         <span>Открыть обсуждение на Шикимори</span>
       </v-tooltip>
     </div>
+
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
       <div class="mt-6 mb-2" v-if="topic && comments.items.length">
         <template v-for="comment in comments.items">
           <v-layout
-            row
             :key="comment.id"
             class="mb-4 pt-4 comment-container"
             :id="'comment-' + comment.id"
