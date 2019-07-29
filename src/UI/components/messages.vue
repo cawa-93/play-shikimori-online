@@ -10,12 +10,15 @@
       :top="snackbar.message.y === 'top'"
       :vertical="snackbar.message.mode === 'vertical'"
       :color="snackbar.message.color"
+      role="alert"
+      close-text="Закрыть сообщение"
     >
       <span v-html="snackbar.message.html" id="runtime-message-content"></span>
       <v-btn
         :icon="snackbar.message.mode !== 'vertical'"
         :text="snackbar.message.mode === 'vertical'"
         @click="closeSnackbar"
+        aria-label="Закрыть"
       >
         <v-icon v-if="snackbar.message.mode !== 'vertical'">close</v-icon>
         <span v-else>Закрыть</span>
