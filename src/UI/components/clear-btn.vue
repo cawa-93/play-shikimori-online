@@ -1,7 +1,7 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn @click="clear" text v-on="on" icon v-bind="attrs">
+      <v-btn @click="clear" text v-on="on" icon v-bind="attrs" class="mx-4">
         <v-icon>mdi-delete-forever</v-icon>
       </v-btn>
     </template>

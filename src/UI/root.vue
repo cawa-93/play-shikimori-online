@@ -1,6 +1,6 @@
 <template>
   <v-app id="root">
-    <v-container>
+    <v-container class="flex">
       <router-view></router-view>
     </v-container>
     <app-footer></app-footer>
