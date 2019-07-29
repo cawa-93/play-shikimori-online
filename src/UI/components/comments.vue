@@ -31,7 +31,7 @@
         <template v-for="comment in comments.items">
           <v-layout
             :key="comment.id"
-            class="mb-4 pt-4 comment-container"
+            class="comment-container"
             :id="'comment-' + comment.id"
             tag="article"
           >
@@ -398,52 +398,103 @@ export default {
 .comments-container {
   font-size: 1rem;
 }
-.comment-body {
+
+.comment-container .v-avatar {
+  align-self: flex-start;
+  margin-top: 15px;
+}
+.comment-container .comment-body {
   line-height: 1.65;
   word-break: break-word;
 }
 
-.comment-body img {
+.comment-container .v-list-item__content {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.theme--dark .comment-container .v-list-item__content {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.comment-container .comment-body img {
   max-width: 100%;
 }
-.smiley {
+.comment-container .smiley {
   vertical-align: middle;
   height: 32px;
 }
 
-.theme--dark .smiley {
+.theme--dark .comment-container .smiley {
   filter: invert(0.8);
 }
 
-.b-replies {
+.comment-container .b-replies {
   text-align: right;
 }
 
-.b-replies:before {
+.comment-container .b-replies:before {
   content: attr(data-text-ru);
 }
 
-.bubbled img {
+.comment-container .bubbled img {
   border-radius: 9999px;
   margin-right: 4px;
   vertical-align: middle;
 }
 
-.b-image .marker {
-  display: none;
+.comment-container .b-image {
+  display: inline-block;
+  position: relative;
+}
+
+.comment-container .b-image img {
+  display: block;
+}
+
+.comment-container .marker {
+  background: #e0e0e0;
+  color: rgba(0, 0, 0, 0.87);
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  border-radius: 16px;
+  font-size: 14px;
+  height: 32px;
+
+  align-items: center;
+  display: inline-flex;
+  line-height: 20px;
+  outline: none;
+  padding: 0 12px;
+  text-decoration: none;
+  transition-duration: 0.28s;
+  transition-property: box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+.comment-container :hover > .marker,
+.comment-container :focus > .marker {
+  opacity: 1;
+}
+
+.theme--dark .comment-container .marker {
+  color: #ffffff;
+  background: #555;
 }
 
 .comment-container.shake {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-.b-spoiler {
+.comment-container .b-spoiler {
   display: inline;
 }
 
-.b-spoiler label,
-.b-spoiler .content .before,
-.b-spoiler .content .after {
+.comment-container .b-spoiler label,
+.comment-container .b-spoiler .content .before,
+.comment-container .b-spoiler .content .after {
   /* color: #176093; */
   cursor: pointer;
   border-bottom: 1px dashed;
@@ -452,29 +503,33 @@ export default {
   caret-color: #1976d2 !important;
 }
 
-.b-spoiler .content {
+.comment-container .b-spoiler .content {
   display: inline;
 }
-.b-spoiler .content .before::before {
+.comment-container .b-spoiler .content .before::before {
   content: "[spoiler] ";
 }
 
-.b-spoiler .content .after::after {
+.comment-container .b-spoiler .content .after::after {
   content: " [/spoiler]";
 }
 
-.b-spoiler:not(.open) .content {
+.comment-container .b-spoiler:not(.open) .content {
   display: none;
 }
 
-.b-spoiler.open label {
+.comment-container .b-spoiler.open label {
   display: none;
 }
 
-.b-spoiler .content .inner,
-.b-spoiler .content .inner-prgrph {
+.comment-container .b-spoiler .content .inner,
+.comment-container .b-spoiler .content .inner-prgrph {
   border-bottom: 1px dashed;
   display: inline;
+}
+
+.comment-container .ban [class*="b-user"] {
+  display: inline-block;
 }
 
 @keyframes shake {
