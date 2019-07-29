@@ -4,10 +4,12 @@
 // }
 
 import Vue from 'vue';
-import Vuetify from 'vuetify'
 import store from './store/index.js'
 import router from './router';
 import VueAnalytics from 'vue-analytics'
+import Vuetify from 'vuetify'
+import ru from 'vuetify/es5/locale/ru'
+
 
 import Root from './root.vue'
 
@@ -53,6 +55,10 @@ new Vue({
   store,
   router,
   vuetify: new Vuetify({
+    lang: {
+      locale: { ru },
+      current: 'ru'
+    },
     theme: {
       dark: true,
     },
