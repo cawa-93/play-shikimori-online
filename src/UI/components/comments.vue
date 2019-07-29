@@ -403,6 +403,10 @@ export default {
   height: 32px;
 }
 
+.theme--dark .smiley {
+  filter: invert(0.8);
+}
+
 .b-replies {
   text-align: right;
 }

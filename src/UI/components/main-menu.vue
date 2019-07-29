@@ -1,5 +1,5 @@
 <template>
-  <v-menu :close-on-content-click="true" :nudge-width="200">
+  <v-menu :close-on-content-click="false" :nudge-width="200">
     <template v-slot:activator="{ on, attrs }">
       <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
         <v-icon class="mr-1" v-if="!user">sync_problem</v-icon>
@@ -44,7 +44,7 @@
         </v-list-item-content>
 
         <v-list-item-action @click.stop>
-          <v-btn icon small href="/history/index.html" title="История просмотров">
+          <v-btn icon small href="/history/index.html" title="История просмотров" tabindex="0">
             <v-icon>history</v-icon>
           </v-btn>
         </v-list-item-action>
