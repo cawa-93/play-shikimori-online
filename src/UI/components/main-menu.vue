@@ -3,7 +3,9 @@
     <template v-slot:activator="{ on, attrs }">
       <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
         <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
-        <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
+        <span
+          class="long-and-truncated"
+        >{{$vuetify.breakpoint.xsOnly ? 'Меню' : user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
         <v-icon class="ml-1">mdi-menu-down</v-icon>
       </v-btn>
     </template>

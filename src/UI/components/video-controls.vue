@@ -1,6 +1,6 @@
 <template>
-  <v-layout wrap>
-    <v-flex>
+  <v-layout>
+    <v-flex class="trunc">
       <v-btn
         text
         :disabled="!previous"
@@ -8,18 +8,18 @@
         :href="urls.previous"
         target="_self"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
+        class="flex-parent"
       >
         <v-icon left>mdi-skip-previous</v-icon>
-        <span>Предыдущая</span>
-        <span class="hide-on-xs ml-1">серия</span>
+        <span class="long-and-truncated">Предыдущая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
       </v-btn>
     </v-flex>
 
-    <v-flex class="text-center main-menu">
+    <v-flex class="text-center main-menu trunc">
       <slot></slot>
     </v-flex>
 
-    <v-flex class="text-right">
+    <v-flex class="text-right trunc">
       <v-btn
         text
         v-if="next || !$store.state.shikimori.nextSeason"
@@ -28,9 +28,9 @@
         :href="urls.next"
         target="_self"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
+        class="flex-parent"
       >
-        Следующая
-        <span class="hide-on-xs ml-1">серия</span>
+        <span class="long-and-truncated">Следующая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
         <v-icon right>mdi-skip-next</v-icon>
       </v-btn>
 
@@ -108,8 +108,22 @@ export default {
 };
 </script>
 
-<style scoped>
-@media (max-width: 670px) {
+<style>
+.flex.trunc,
+.flex.trunc .v-btn__content {
+  min-width: 0 !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.long-and-truncated {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* @media (max-width: 670px) {
   .main-menu {
     order: 3;
     flex-basis: 100%;
@@ -120,5 +134,5 @@ export default {
   .hide-on-xs {
     display: none;
   }
-}
+} */
 </style>
