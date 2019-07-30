@@ -75,6 +75,7 @@ deploy-chrome:
   except:
     changes:
       - "*.md"
+  when: manual
   artifacts:
     paths:
     - chrome.zip
@@ -94,6 +95,7 @@ deploy-firefox:
   except:
     changes:
       - "*.md"
+  when: manual
   artifacts:
     paths:
     - firefox.zip
