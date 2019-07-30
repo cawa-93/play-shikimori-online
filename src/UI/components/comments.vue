@@ -392,9 +392,6 @@ export default {
 
 
 <style>
-.w-100 {
-  width: 100%;
-}
 .comments-container {
   font-size: 1rem;
 }

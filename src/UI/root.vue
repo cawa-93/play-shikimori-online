@@ -19,3 +19,12 @@ export default {
   components: { appFooter, messages }
 };
 </script>
+
+<style>
+.w-100 {
+  width: 100%;
+}
+.v-btn {
+  letter-spacing: normal;
+}
+</style>
