@@ -1,6 +1,6 @@
 <template>
   <section class="episode-list">
-    <div class="mdc-select">
+    <template class="mdc-select">
       <v-select
         hide-details
         item-text="episodeFull"
@@ -23,8 +23,10 @@
         </template>
 
         <template v-slot:selection="{item}">
-          <span>{{item.episodeFull}}</span>
-          <span v-if="item.episodeInt <= watchedEpisodes" class="ml-1">— просмотрено</span>
+          <div class="v-select__selection v-select__selection--comma">
+            <span>{{item.episodeFull}}</span>
+            <span v-if="item.episodeInt <= watchedEpisodes" class="ml-1">— просмотрено</span>
+          </div>
         </template>
 
         <template v-slot:append-item>
@@ -45,7 +47,7 @@
           </v-list-item>
         </template>
       </v-select>
-    </div>
+    </template>
   </section>
 </template>
 
