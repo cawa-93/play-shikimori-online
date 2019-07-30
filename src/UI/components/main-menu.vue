@@ -1,5 +1,5 @@
 <template>
-  <v-menu :close-on-content-click="false" :nudge-width="200">
+  <v-menu :close-on-content-click="true" :nudge-width="200">
     <template v-slot:activator="{ on, attrs }">
       <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
         <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
@@ -10,7 +10,7 @@
 
     <v-list>
       <!-- Виджет пользователя когда он авторизован -->
-      <v-list-item v-if="user">
+      <v-list-item v-if="user" key="user-logged-in">
         <v-list-item-avatar>
           <img :src="user.image.x80" :alt="user.nickname" />
         </v-list-item-avatar>
@@ -20,8 +20,8 @@
           <v-list-item-subtitle>Синхронизация включена</v-list-item-subtitle>
         </v-list-item-content>
 
-        <v-list-item-action>
-          <v-btn icon small to="/history" title="История просмотров">
+        <v-list-item-action key="open-history">
+          <v-btn icon small :to="{name: 'history'}" title="История просмотров">
             <v-icon>mdi-history</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -34,7 +34,9 @@
       </v-list-item>
 
       <!-- Ссылка на авторизацию -->
-      <v-list-item avatar v-else @click="logIn">
+      <!-- Обязательну нужно указать key отличный от предыдущего пункта -->
+      <!-- Иначе клик по вложенным кнопкам будет запускать авторизацию -->
+      <v-list-item v-else @click="logIn" key="user-logged-out">
         <v-list-item-avatar>
           <v-icon>mdi-sync</v-icon>
         </v-list-item-avatar>
@@ -43,8 +45,8 @@
           <v-list-item-title>Включить синхронизацию</v-list-item-title>
         </v-list-item-content>
 
-        <v-list-item-action @click.stop>
-          <v-btn icon small href="/history/index.html" title="История просмотров" tabindex="0">
+        <v-list-item-action @click.stop key="open-history">
+          <v-btn icon small :to="{name: 'history'}" title="История просмотров">
             <v-icon>mdi-history</v-icon>
           </v-btn>
         </v-list-item-action>
