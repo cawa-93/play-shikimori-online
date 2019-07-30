@@ -1,5 +1,5 @@
 <template>
-  <v-menu :close-on-content-click="true" :nudge-width="200">
+  <v-menu :close-on-content-click="true" :nudge-width="200" transition="slide-y-transition">
     <template v-slot:activator="{ on, attrs }">
       <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
         <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
@@ -21,15 +21,25 @@
         </v-list-item-content>
 
         <v-list-item-action key="open-history">
-          <v-btn icon small :to="{name: 'history'}" title="История просмотров">
-            <v-icon>mdi-history</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn icon small :to="{name: 'history'}" v-on="on" v-bind="attrs">
+                <v-icon>mdi-history</v-icon>
+              </v-btn>
+            </template>
+            <span>История просмотров</span>
+          </v-tooltip>
         </v-list-item-action>
 
         <v-list-item-action>
-          <v-btn icon small @click="logout" title="Выключить синхронизацию">
-            <v-icon>mdi-sync-off</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn icon small @click="logout" v-on="on" v-bind="attrs">
+                <v-icon>mdi-sync-off</v-icon>
+              </v-btn>
+            </template>
+            <span>Выключить синхронизацию</span>
+          </v-tooltip>
         </v-list-item-action>
       </v-list-item>
 
