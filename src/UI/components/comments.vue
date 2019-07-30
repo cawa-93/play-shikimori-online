@@ -78,13 +78,13 @@
         </div>
       </div>
 
-      <p v-else class="pl-0 blockquote">Ещё никто не оставил отзыв о серии</p>
+      <p v-else class="pl-0 blockquote">Ты можешь написать комментарий первым, если поторопишься 😁</p>
 
       <v-form v-if="user" @submit.prevent="createComment" class="mt-7">
         <v-textarea
           filled
           name="input-7-4"
-          label="Напишите ваши впечатления от серии"
+          label="Опиши свои впечатления от серии"
           v-model.trim="newCommentText"
           required
           :disabled="layout.newComment.loading"
