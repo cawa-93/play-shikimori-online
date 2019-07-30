@@ -31,5 +31,19 @@
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+```bash
+# Setup environment
+NODE_ENV=production
+BROWSER=chrome # or firefox
+
+# Shikimori oauth
+SHIKIMORI_REDIRECT_URI=
+SHIKIMORI_CLIENT_ID=
+SHIKIMORI_CLIENT_SECRET=
+
+# Run build
+npm run build
+```
+
 ## License
 [GPL-3.0](https://github.com/cawa-93/play-shikimori-online/blob/master/LICENSE)
