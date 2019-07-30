@@ -35,8 +35,7 @@ const manimest = {
 
 
   web_accessible_resources: [
-    "player/*",
-    "history/*",
+    "UI/*",
     "content-scripts/anime365-player-events.js"
   ],
 
