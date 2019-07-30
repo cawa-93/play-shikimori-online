@@ -3,7 +3,7 @@
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/users/eopmgkejoplocjnpljjhgbeadjoomcbd?label=%D0%9F%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9&style=flat)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/v/eopmgkejoplocjnpljjhgbeadjoomcbd?label=%D0%92%D0%B5%D1%80%D1%81%D0%B8%D1%8F&style=flat)
 
-| ![Внешний вид кнопки "Смотреть онлайн"](https://raw.githubusercontent.com/cawa-93/play-shikimori-online/master/promo/watch-button.png) | ![Внешний вид плеера](https://raw.githubusercontent.com/cawa-93/play-shikimori-online/master/promo/player.png) | ![Внешний вид плеера](https://raw.githubusercontent.com/cawa-93/play-shikimori-online/master/promo/comments.png)  |
+| ![Внешний вид кнопки "Смотреть онлайн"](promo/watch-button.png) | ![Внешний вид плеера](promo/player.png) | ![Внешний вид плеера](promo/comments.png)  |
 | ------------- |:-------------:| -----:|
 
 Это браузерное расширение, которое позволяет вам смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори.
