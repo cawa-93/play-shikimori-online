@@ -41,6 +41,9 @@ build-chrome:
   artifacts:
     paths:
     - dist/chrome
+  except:
+    changes:
+      - "*.md"
 
 
 build-firefox:
@@ -54,6 +57,9 @@ build-firefox:
   artifacts:
     paths:
     - dist/firefox
+  except:
+    changes:
+      - "*.md"
 
 deploy-chrome:
   stage: deploy
@@ -66,6 +72,9 @@ deploy-chrome:
   only:
     - tags
     - master
+  except:
+    changes:
+      - "*.md"
   artifacts:
     paths:
     - chrome.zip
@@ -82,6 +91,9 @@ deploy-firefox:
   only:
     - tags
     - master
+  except:
+    changes:
+      - "*.md"
   artifacts:
     paths:
     - firefox.zip
