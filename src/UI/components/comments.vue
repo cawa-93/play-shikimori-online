@@ -59,19 +59,28 @@
           </v-layout>
         </template>
 
-        <v-btn
-          v-if="comments.items.length < topic.comments_count"
-          @click="loadComments"
-          :loading="layout.moreComments.loading"
-          text
-          block
-          class="mt-4"
-        >Загрузить ещё</v-btn>
+        <div class="text-center mt-7">
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn
+                v-on="on"
+                v-bind="attrs"
+                v-if="comments.items.length < topic.comments_count"
+                @click="loadComments"
+                :loading="layout.moreComments.loading"
+                icon
+              >
+                <v-icon large>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <span>Загрузить ещё</span>
+          </v-tooltip>
+        </div>
       </div>
 
       <p v-else class="pl-0 blockquote">Ещё никто не оставил отзыв о серии</p>
 
-      <v-form v-if="user" @submit.prevent="createComment" class="mt-4">
+      <v-form v-if="user" @submit.prevent="createComment" class="mt-7">
         <v-textarea
           filled
           name="input-7-4"
