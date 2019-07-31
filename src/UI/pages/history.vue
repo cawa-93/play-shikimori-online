@@ -42,14 +42,11 @@ import {
 } from "../../helpers";
 import appFooter from "../components/app-footer.vue";
 import clearBtn from "../components/clear-btn.vue";
-import theme from "../mixins/theme";
 export default {
   components: {
     appFooter,
     clearBtn
   },
-
-  mixins: [theme],
 
   data() {
     return {

@@ -50,7 +50,21 @@ Vue.use(VueAnalytics, {
   }
 })
 
-new Vue({
+
+/**
+ * Настройки темы
+ */
+
+const mq = window.matchMedia('(prefers-color-scheme: light)')
+
+mq.addEventListener('change', (e) => {
+  app.$vuetify.theme.dark = !e.matches
+  document.querySelector('html').style.background = e.matches ? '#fafafa' : '#303030';
+})
+
+document.querySelector('html').style.background = mq.matches ? '#fafafa' : '#303030';
+
+const app = new Vue({
   render: h => h(Root),
   store,
   router,
@@ -60,7 +74,11 @@ new Vue({
       current: 'ru'
     },
     theme: {
-      dark: true,
+      // Используется именно конструкция !light чтобы по умолчанию была темная тема
+      // light === false когда в системе темная тема
+      // light === false когда браузер не поддерживает настройки темы
+      dark: !mq.matches,
     },
   })
 }).$mount('root')
+

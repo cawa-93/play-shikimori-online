@@ -35,13 +35,13 @@
 
       <v-divider></v-divider>
 
-      <v-card-text class="white--text">
+      <v-card-text>
         <v-icon small>mdi-copyright</v-icon>
         <a
           v-for="domain of copyright"
           :key="domain"
           :href="'https://' + domain"
-          class="white--text px-2"
+          class="px-2 color-inherit d-inline-block"
           @click="track('https://' + domain)"
         >{{domain}}</a>
       </v-card-text>

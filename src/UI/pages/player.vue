@@ -45,8 +45,6 @@ import comments from "../components/comments.vue";
 import appFooter from "../components/app-footer.vue";
 import messages from "../components/messages.vue";
 
-import theme from "../mixins/theme";
-
 export default {
   components: {
     episodeList,
@@ -58,8 +56,6 @@ export default {
     appFooter,
     messages
   },
-
-  mixins: [theme],
 
   async mounted() {
     console.log(this.$route.params);

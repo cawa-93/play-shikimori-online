@@ -27,4 +27,7 @@ export default {
 .v-btn {
   letter-spacing: normal;
 }
+.color-inherit {
+  color: inherit !important;
+}
 </style>
