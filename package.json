@@ -10,7 +10,7 @@
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.0",
     "vue-router": "^3.0.7",
-    "vuetify": "^2.0.3",
+    "vuetify": "^2.0.4",
     "vuex": "^3.1.1"
   },
   "devDependencies": {
@@ -18,7 +18,7 @@
     "chrome-webstore-upload": "^0.2.2",
     "dotenv": "^8.0.0",
     "firefox-extension-deploy": "^1.1.1",
-    "rollup": "^1.17.0",
+    "rollup": "^1.18.0",
     "rollup-plugin-commonjs": "^10.0.1",
     "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-resolve": "^5.2.0",
