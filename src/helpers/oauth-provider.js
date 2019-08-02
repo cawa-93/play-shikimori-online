@@ -54,47 +54,50 @@ export function getNewCode() {
     url.searchParams.set('client_id', process.env.SHIKIMORI_CLIENT_ID)
     url.searchParams.set('redirect_uri', process.env.SHIKIMORI_REDIRECT_URI)
     url.searchParams.set('response_type', 'code')
-    chrome.tabs.create({ active: true, url: url.toString() }, createdTab => {
+    chrome.tabs.getSelected(selectedTab =>
+      chrome.tabs.create({ active: true, url: url.toString() }, createdTab => {
 
-      const _onRemoved = tabId => {
-        if (tabId === createdTab.id) {
-          reject({ error: 'tab-removed' })
+        const _onRemoved = tabId => {
+          if (tabId === createdTab.id) {
+            reject({ error: 'tab-removed' })
+            _clear()
+          }
+        }
+
+        const _onUpdated = (tabId, changeInfo) => {
+          if (tabId !== createdTab.id || !changeInfo.url) {
+            return
+          }
+
+          const tabUrl = new URL(changeInfo.url)
+          if (tabUrl.hostname !== 'shikimori.one' || tabUrl.pathname !== '/tests/oauth' || tabUrl.searchParams.get('app') !== 'play-shikimori-online') {
+            return
+          }
+
+          const error = tabUrl.searchParams.get('error')
+          const error_description = tabUrl.searchParams.get('error_description')
+
+          if (error || error_description) {
+            reject({ error, error_description })
+          } else {
+            const code = tabUrl.searchParams.get('code')
+            resolve(code)
+          }
+
           _clear()
-        }
-      }
+          chrome.tabs.update(selectedTab.id, { active: true }, () => chrome.tabs.remove(createdTab.id))
 
-      const _onUpdated = (tabId, changeInfo) => {
-        if (tabId !== createdTab.id || !changeInfo.url) {
-          return
         }
 
-        const tabUrl = new URL(changeInfo.url)
-        if (tabUrl.hostname !== 'shikimori.one' || tabUrl.pathname !== '/tests/oauth' || tabUrl.searchParams.get('app') !== 'play-shikimori-online') {
-          return
+        const _clear = () => {
+          chrome.tabs.onRemoved.removeListener(_onRemoved)
+          chrome.tabs.onUpdated.removeListener(_onUpdated)
         }
 
-        const error = tabUrl.searchParams.get('error')
-        const error_description = tabUrl.searchParams.get('error_description')
+        chrome.tabs.onRemoved.addListener(_onRemoved)
+        chrome.tabs.onUpdated.addListener(_onUpdated)
+      }))
 
-        if (error || error_description) {
-          reject({ error, error_description })
-        } else {
-          const code = tabUrl.searchParams.get('code')
-          resolve(code)
-        }
-
-        _clear()
-        chrome.tabs.remove(createdTab.id)
-      }
-
-      const _clear = () => {
-        chrome.tabs.onRemoved.removeListener(_onRemoved)
-        chrome.tabs.onUpdated.removeListener(_onUpdated)
-      }
-
-      chrome.tabs.onRemoved.addListener(_onRemoved)
-      chrome.tabs.onUpdated.addListener(_onUpdated)
-    })
   })
 }
 
