@@ -69,6 +69,8 @@ export default {
   },
 
   created() {
+    this.setTitle();
+
     _listener = ({ data: event }) => {
       if (event === "watched") {
         this.$store.dispatch("shikimori/markAsWatched");
@@ -83,15 +85,9 @@ export default {
         this.$store.dispatch("player/selectNextEpisode");
       }
 
+      // TODO: Сохранять прогресс просмотра серии в облачное хранилище для синхронизации между устройствами
       // else if (event.name === "timeupdate") {
-      //   if (this.$store.getters["player/nextEpisode"]) {
-      //     const endingTime = event.duration > 600 ? 120 : event.duration * 0.1;
-      //     const hidden = event.duration - event.currentTime >= endingTime;
-      //     this.$refs.player.contentWindow.postMessage(
-      //       { button: "next-episode", hidden },
-      //       "*"
-      //     );
-      //   }
+
       // }
       else if (event.name === "play" || event.name === "pause") {
         document.head.querySelector(

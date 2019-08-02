@@ -57,6 +57,10 @@ export default {
 
   computed: {},
 
+  beforeCreate() {
+    document.title = "История просмотров";
+  },
+
   async mounted() {
     const { watching_history } = await sync.get({ watching_history: [] });
 
