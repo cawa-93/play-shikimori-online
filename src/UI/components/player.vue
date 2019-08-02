@@ -93,6 +93,8 @@ export default {
         document.head.querySelector(
           'link[rel="icon"]'
         ).href = `/icons/${event.name}.png`;
+      } else if (event.name === "error") {
+        this.$ga.exception(event.error, true);
       }
     };
     window.addEventListener("message", _listener);
