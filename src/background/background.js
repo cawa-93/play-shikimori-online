@@ -37,94 +37,33 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 })
 
 
-
 /**
  * Исполнение сетевых запросов
  */
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.contentScriptQuery == 'fetchUrl') {
-
-
-    backgroundFetch(request).then(resp => sendResponse(resp))
-
-
-    return true;  // Will respond asynchronously.
+    makeRequest(request).then(resp => sendResponse(resp))
+    return true; // Will respond asynchronously.
   }
 });
 
-function backgroundFetch(request) {
-  return new Promise(resolve => {
-    if (inMemoryCache.has(request.url)) {
-      const { response, date } = inMemoryCache.get(request.url)
-      const MINUTE = 60000
-      if (Date.now() - date <= MINUTE * 5) {
-        resolve({ response })
-      } else {
-        inMemoryCache.delete(request.url)
-      }
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  function (details) {
+    const requestHeaders = details.requestHeaders
+    if (details.initiator !== `chrome-extension://${chrome.runtime.id}`) {
+      return { requestHeaders }
     }
 
-    const info = new URL(request.url)
-
-    chrome.permissions.contains({
-      origins: [`${info.protocol}//${info.hostname}/*`]
-    }, async function (granted) {
-      if (!granted) {
-        resolve({ error: { error: 'not-granted', message: `User not allow access to ${request.url}`, runtime: chrome.runtime.lastError, request } })
+    for (let header of requestHeaders) {
+      if (header.name === 'User-Agent') {
+        const manifest = chrome.runtime.getManifest()
+        header.value = `${manifest.name}; Browser extension; ${manifest.homepage_url}`
+        break;
       }
-
-      await retry(async bail => {
-        const resp = await fetch(request.url, request.options)
-        if (!resp.ok) {
-
-          if (resp.status >= 400 && resp.status < 500) {
-            let response = await resp.text()
-
-            if (response) {
-              try {
-                response = JSON.parse(response)
-              } catch (e) { }
-            }
-            resolve({
-              error: {
-                status: resp.status,
-                message: resp.statusText,
-                request,
-                response,
-              }
-            })
-          } else {
-            throw resp.status
-          }
-        } else {
-          const response = await resp.json()
-
-          if (!request.options || !request.options.method || request.options.method === 'GET') {
-            inMemoryCache.set(request.url, { response, date: Date.now() })
-          }
-          resolve({ response })
-        }
-      })
-    });
-  })
-}
-
-
-chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-  const requestHeaders = details.requestHeaders
-  if (details.initiator !== `chrome-extension://${chrome.runtime.id}`) {
-    return { requestHeaders }
-  }
-
-  for (let header of requestHeaders) {
-    if (header.name === 'User-Agent') {
-      const manifest = chrome.runtime.getManifest()
-      header.value = `${manifest.name}; Browser extension; ${manifest.homepage_url}`
-      break;
     }
-  }
-  return { requestHeaders };
-},
+    return { requestHeaders };
+  },
   {
     urls: [
       "https://shikimori.org/api/*",
@@ -134,7 +73,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
       "https://smotret-anime-365.ru/api/*"
     ]
   },
-  ["requestHeaders", 'blocking']);
+  ["requestHeaders", 'blocking']
+);
 
 
 chrome.browserAction.onClicked.addListener(function () { //Fired when User Clicks ICON
@@ -146,14 +86,20 @@ chrome.browserAction.onClicked.addListener(function () { //Fired when User Click
 async function loadBroadcast() {
   try {
     const DAY = 86400000
-    let [{ runtimeMessagesLastCheck }, comments] = await Promise.all([
+    let [{ runtimeMessagesLastCheck }, { response: comments, error }] = await Promise.all([
       local.get({
         runtimeMessagesLastCheck: Date.now() - DAY * 5
       }),
 
-      shikimoriCallAPI(
-        `/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=1`
-      )
+      makeRequest({
+        url: `https://shikimori.one/api/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=1`,
+        options: {
+          headers: {
+            ["Accept"]: "application/json",
+            ["Content-Type"]: "application/json",
+          }
+        },
+      })
     ])
 
     if (!runtimeMessagesLastCheck) {
@@ -165,6 +111,11 @@ async function loadBroadcast() {
       runtimeMessagesLastCheck: Date.now()
     })
 
+    if (error) {
+      throw error // Обработчик этой ошибки находится в блоке catch ниже
+    }
+
+    // Отфильтровывает все комментарии в которых нет кодов [broadcast] и [div=runtime-message-broadcast hidden]
     comments = comments
       .filter(comment =>
         comments
@@ -193,33 +144,99 @@ async function loadBroadcast() {
   }
 }
 
-function shikimoriCallAPI(path, options = {}) {
-  return new Promise((resolve, reject) => {
-
-    if (!options.headers) {
-      options.headers = {}
-    }
-
-    options.headers["Accept"] = "application/json"
-    options.headers["Content-Type"] = "application/json"
-
-    options.credentials = 'omit'
-
-    backgroundFetch({
-      contentScriptQuery: 'fetchUrl',
-      url: `https://shikimori.one/api${path}`,
-      options,
-    }).then(({ response, error }) => {
-      if (error) {
-        return reject(error)
-      }
-
-      resolve(response)
-    })
-  })
-}
-
 loadBroadcast()
 setInterval(() => {
   loadBroadcast()
 }, 1000 * 60 * 5);
+
+
+async function makeRequest({ url, options }) {
+
+  if (options && options.method && options.method === 'GET' && options.maxAge) {
+    /**
+     * TODO: Здесь необходимо проверять находится ли запрос в кэше
+     */
+  }
+
+  const isGranted = await isPermissionsGranted(url)
+  if (!isGranted) {
+    return {
+      error: {
+        error: 'not-granted',
+        message: `User not allow access to ${url}`,
+        runtime: chrome.runtime.lastError,
+        request: { url, options }
+      }
+    }
+  }
+
+  const { response, error } = await fetchAndRetry({ url, options })
+  if (error) {
+    return { error }
+  }
+
+  /**
+   * TODO: Здень необходимо кешировать полученный ответ
+   */
+
+  return { response }
+
+}
+
+/**
+ * Проверяет разрешил ли пользователь доступ к указанному URL
+ * @param {string} url URL для проверки
+ */
+function isPermissionsGranted(url) {
+  return new Promise(resolve => {
+    const info = new URL(url)
+    chrome.permissions.contains(
+      {
+        origins: [`${info.protocol}//${info.hostname}/*`],
+      },
+      resolve
+    )
+  })
+}
+
+/**
+ * Выполняет указанный запрос и в случае ошибки повторяет попытку
+ * @param {*} request 
+ */
+function fetchAndRetry(request) {
+  return new Promise(resolve => {
+    retry(async () => {
+      const resp = await fetch(request.url, request.options)
+      if (!resp.ok) {
+
+        if (resp.status >= 400 && resp.status < 500) {
+          let response = await resp.text()
+
+          if (response) {
+            try {
+              response = JSON.parse(response)
+            } catch (e) { }
+          }
+          resolve({
+            error: {
+              status: resp.status,
+              message: resp.statusText,
+              request,
+              response,
+            }
+          })
+        } else {
+          throw resp.status
+        }
+      } else {
+        const response = await resp.json()
+
+        if (!request.options || !request.options.method || request.options.method === 'GET') {
+          inMemoryCache.set(request.url, { response, date: Date.now() })
+        }
+        resolve({ response })
+      }
+    })
+  })
+
+}
