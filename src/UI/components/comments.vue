@@ -36,7 +36,7 @@
             tag="article"
           >
             <v-list-item-avatar>
-              <img :src="comment.user.avatar" />
+              <v-img :src="comment.user.avatar" />
             </v-list-item-avatar>
 
             <v-list-item-content>
@@ -170,6 +170,7 @@ export default {
     proccessComment(comment) {
       comment.html_body = comment.html_body
         .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
+        .replace(/<img/gimu, '<img loading="lazy" ')
         .replace(/b-quote/gi, "blockquote");
 
       comment.created_at_relative = this.getCreatedAtRelative(
