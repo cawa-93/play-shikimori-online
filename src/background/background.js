@@ -138,7 +138,6 @@ async function loadBroadcast() {
       }
     }
 
-    console.log({ comments })
   } catch (error) {
     console.error('Can\'t check broadcast message', { error })
   }
@@ -239,4 +238,32 @@ function fetchAndRetry(request) {
     })
   })
 
+}
+
+
+
+chrome.storage.onChanged.addListener(({ runtimeMessages }) => {
+  if (runtimeMessages) {
+    const count = (runtimeMessages.newValue || []).length
+    // await не нужен
+    setBadgeMessageCount(count)
+  }
+});
+
+local.get({ runtimeMessages: [] }).then(({ runtimeMessages }) => {
+  const count = (runtimeMessages || []).length
+  // await не нужен
+  setBadgeMessageCount(count)
+})
+
+function setBadgeMessageCount(count) {
+  return new Promise(resolve => {
+    if (count) {
+      // @ts-ignore
+      chrome.browserAction.setBadgeText({ text: `${count}` }, () => resolve())
+    } else {
+      // @ts-ignore
+      chrome.browserAction.setBadgeText({ text: `` }, () => resolve())
+    }
+  })
 }
