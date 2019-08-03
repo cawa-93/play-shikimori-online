@@ -1,5 +1,7 @@
 image: node:latest
 
+
+
 cache:
   key: node_modules
   paths:
@@ -12,6 +14,8 @@ stages:
   - setup
   - build
   - deploy
+
+
 
 install_dependencies:
   stage: setup
@@ -46,6 +50,7 @@ build-chrome:
       - "*.md"
 
 
+
 build-firefox:
   stage: build
   variables:
@@ -61,6 +66,8 @@ build-firefox:
     changes:
       - "*.md"
 
+
+
 deploy-chrome:
   stage: deploy
   variables:
@@ -70,8 +77,8 @@ deploy-chrome:
   script:
     - node deploy/chrome.js
   only:
-    - tags
-    - master
+    refs:
+      - master
   except:
     changes:
       - "*.md"
@@ -79,6 +86,7 @@ deploy-chrome:
   artifacts:
     paths:
     - chrome.zip
+
 
 
 deploy-firefox:
@@ -90,8 +98,8 @@ deploy-firefox:
   script:
     - node deploy/firefox.js
   only:
-    - tags
-    - master
+    refs:
+      - master
   except:
     changes:
       - "*.md"
