@@ -1,0 +1,115 @@
+
+<template>
+  <main>
+    <v-progress-linear :indeterminate="true" v-if="loading" class="ma-0"></v-progress-linear>
+
+    <div class="d-grid" v-if="history.length">
+      <div v-for="anime of history" :key="anime.id" xs12 sm6 md3 class="grid-item">
+        <v-card hover :to="'/player/anime/' + anime.id + '/' + (anime.episodes + 1)">
+          <v-img
+            :src="'https://shikimori.one' + anime.image"
+            :aspect-ratio="225/314"
+            gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
+          >
+            <v-container fill-height fluid class="fill-height">
+              <v-layout fill-height>
+                <v-flex xs12 align-end d-flex>
+                  <span class="white--text body-1">{{anime.name}}</span>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-img>
+        </v-card>
+      </div>
+    </div>
+
+    <div v-else class="text-center py-12">
+      <p class="headline">Здесь будет отображаться ваша история просмотров</p>
+      <p class="body-2">
+        Откройте любое аниме на
+        <a href="https://shikimori.one/animes" target="_selt">Шикимори</a> или
+        <a href="https://myanimelist.net/anime/season" target="_selt">MyAnimeList</a> и нажмите «Начать просмотр»
+      </p>
+    </div>
+  </main>
+</template>
+
+<script>
+import {
+  myanimelistAPI,
+  sync,
+  push as message,
+  getReviewUrl
+} from "../../helpers";
+import appFooter from "../components/app-footer.vue";
+import clearBtn from "../components/clear-btn.vue";
+export default {
+  components: {
+    appFooter,
+    clearBtn
+  },
+
+  data() {
+    return {
+      history: [],
+      loading: true
+    };
+  },
+
+  computed: {},
+
+  beforeCreate() {
+    document.title = "История просмотров";
+    document.head.querySelector('link[rel="icon"]').href = `/icons/play.png`;
+  },
+
+  async mounted() {
+    const { watching_history } = await sync.get({ watching_history: [] });
+
+    this.loading = false;
+    this.history = watching_history || [];
+
+    chrome.storage.onChanged.addListener(changes => {
+      if (!changes.watching_history) {
+        return;
+      }
+
+      this.history = changes.watching_history.newValue || [];
+    });
+
+    this.$ga.page(`/history`); // Отправляем данные в аналитику
+  }
+};
+</script>
+
+<style scoped>
+.d-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 20px;
+}
+
+@media (min-width: 428px) {
+  .d-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 663px) {
+  .d-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 1264px) {
+  .d-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 1904px) {
+  .d-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
+}
+</style>

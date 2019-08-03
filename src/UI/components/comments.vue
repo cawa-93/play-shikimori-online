@@ -1,71 +1,91 @@
 <template>
   <section class="comments-container">
-    <div class="display-1 mt-4 d-flex topic-title">
+    <div class="display-1 mt-6 mb-4 d-flex topic-title">
       <h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
       <v-tooltip right>
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
+            small
+            class="ml-3"
             v-if="topic"
             v-on="on"
+            v-bind="attrs"
             :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
           >
-            <v-icon>link</v-icon>
+            <v-icon>mdi-link</v-icon>
           </v-btn>
         </template>
         <span>Открыть обсуждение на Шикимори</span>
       </v-tooltip>
     </div>
+
     <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
     <template v-else>
-      <div class="mt-4 mb-2" v-if="topic && comments.items.length">
+      <div
+        class="mt-6 mb-2"
+        v-if="topic && comments.items.length"
+        role="feed"
+        :aria-busy="layout.moreComments.loading ? 'true' : 'false'"
+      >
         <template v-for="comment in comments.items">
           <v-layout
-            row
             :key="comment.id"
-            class="mb-3 pt-3 comment-container"
+            class="comment-container"
             :id="'comment-' + comment.id"
+            tag="article"
           >
-            <v-list-tile-avatar>
-              <img :src="comment.user.avatar" />
-            </v-list-tile-avatar>
+            <v-list-item-avatar>
+              <v-img :src="comment.user.avatar" />
+            </v-list-item-avatar>
 
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-content>
+              <v-list-item-title>
                 <strong>
                   <a
+                    role="author"
                     :href="'https://shikimori.one/' + comment.user.nickname"
                   >@{{ comment.user.nickname }}</a>
                 </strong>
-                <a
-                  class="text-lg-right grey--text text--lighten-1 ml-2"
-                  :href="'https://shikimori.one/comments/' + comment.id"
-                >{{comment.created_at_relative}}</a>
-              </v-list-tile-title>
+                <time :datetime="comment.created_at" :title="comment.created_at">
+                  <a
+                    class="text-lg-right grey--text text--lighten-1 ml-2"
+                    :href="'https://shikimori.one/comments/' + comment.id"
+                  >{{comment.created_at_relative}}</a>
+                </time>
+              </v-list-item-title>
               <div class="w-100 comment-body" v-html="comment.html_body"></div>
-            </v-list-tile-content>
+            </v-list-item-content>
           </v-layout>
-          <v-divider></v-divider>
         </template>
 
-        <v-btn
-          v-if="comments.items.length < topic.comments_count"
-          @click="loadComments"
-          :loading="layout.moreComments.loading"
-          flat
-          block
-          class="mt-3"
-        >Загрузить ещё</v-btn>
+        <div class="text-center mt-7">
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn
+                v-on="on"
+                v-bind="attrs"
+                v-if="comments.items.length < topic.comments_count"
+                @click="loadComments"
+                :loading="layout.moreComments.loading"
+                icon
+              >
+                <v-icon large>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <span>Загрузить ещё</span>
+          </v-tooltip>
+        </div>
       </div>
 
-      <p v-else class="pl-0 blockquote">Ещё никто не оставил отзыв о серии</p>
+      <p v-else class="pl-0 blockquote">Ты можешь написать комментарий первым, если поторопишься 😁</p>
 
-      <v-form v-if="user" @submit.prevent="createComment" class="mt-3">
+      <v-form v-if="user" @submit.prevent="createComment" class="mt-7">
         <v-textarea
-          box
+          filled
           name="input-7-4"
-          label="Напишите ваши впечатления от серии"
-          v-model="newCommentText"
+          label="Опиши свои впечатления от серии"
+          v-model.trim="newCommentText"
           required
           :disabled="layout.newComment.loading"
         ></v-textarea>
@@ -77,9 +97,9 @@
         >Отправить</v-btn>
       </v-form>
 
-      <div v-else class="text-xs-center mt-4">
-        <v-btn class="pl-3" @click="logIn" large>
-          <v-icon class="mr-2">sync</v-icon>Оставить отзыв
+      <div v-else class="text-center mt-6">
+        <v-btn class="pl-4" @click="logIn" large>
+          <v-icon class="mr-2">mdi-sync</v-icon>Оставить отзыв
         </v-btn>
       </div>
     </template>
@@ -150,6 +170,7 @@ export default {
     proccessComment(comment) {
       comment.html_body = comment.html_body
         .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
+        .replace(/<img/gimu, '<img loading="lazy" ')
         .replace(/b-quote/gi, "blockquote");
 
       comment.created_at_relative = this.getCreatedAtRelative(
@@ -345,7 +366,15 @@ export default {
         event.preventDefault();
         const commentId = event.target.href.match(/comments\/(\d+)/)[1];
 
-        location.hash = `comment-${commentId}`;
+        /** @type {HTMLElement} */
+        const element = document.querySelector(`#comment-${commentId}`);
+        if (element) {
+          element.classList.add("shake");
+          this.$vuetify.goTo(element, { duration: 300 });
+          setTimeout(() => {
+            element.classList.remove("shake");
+          }, 1000);
+        }
         return;
       }
 
@@ -373,54 +402,106 @@ export default {
 
 
 <style>
-.w-100 {
-  width: 100%;
-}
 .comments-container {
   font-size: 1rem;
 }
-.comment-body {
+
+.comment-container .v-avatar {
+  align-self: flex-start;
+  margin-top: 15px;
+}
+.comment-container .comment-body {
   line-height: 1.65;
   word-break: break-word;
 }
 
-.comment-body img {
+.comment-container .v-list-item__content {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.theme--dark .comment-container .v-list-item__content {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.comment-container .comment-body img {
   max-width: 100%;
 }
-.smiley {
+.comment-container .smiley {
   vertical-align: middle;
   height: 32px;
 }
 
-.b-replies {
+.theme--dark .comment-container .smiley {
+  filter: invert(0.8);
+}
+
+.comment-container .b-replies {
   text-align: right;
 }
 
-.b-replies:before {
+.comment-container .b-replies:before {
   content: attr(data-text-ru);
 }
 
-.bubbled img {
+.comment-container .bubbled img {
   border-radius: 9999px;
   margin-right: 4px;
   vertical-align: middle;
 }
 
-.b-image .marker {
-  display: none;
+.comment-container .b-image {
+  display: inline-block;
+  position: relative;
 }
 
-.comment-container:target {
+.comment-container .b-image img {
+  display: block;
+}
+
+.comment-container .marker {
+  background: #e0e0e0;
+  color: rgba(0, 0, 0, 0.87);
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  border-radius: 16px;
+  font-size: 14px;
+  height: 32px;
+
+  align-items: center;
+  display: inline-flex;
+  line-height: 20px;
+  outline: none;
+  padding: 0 12px;
+  text-decoration: none;
+  transition-duration: 0.28s;
+  transition-property: box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+.comment-container :hover > .marker,
+.comment-container :focus > .marker {
+  opacity: 1;
+}
+
+.theme--dark .comment-container .marker {
+  color: #ffffff;
+  background: #555;
+}
+
+.comment-container.shake {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-.b-spoiler {
+.comment-container .b-spoiler {
   display: inline;
 }
 
-.b-spoiler label,
-.b-spoiler .content .before,
-.b-spoiler .content .after {
+.comment-container .b-spoiler label,
+.comment-container .b-spoiler .content .before,
+.comment-container .b-spoiler .content .after {
   /* color: #176093; */
   cursor: pointer;
   border-bottom: 1px dashed;
@@ -429,29 +510,33 @@ export default {
   caret-color: #1976d2 !important;
 }
 
-.b-spoiler .content {
+.comment-container .b-spoiler .content {
   display: inline;
 }
-.b-spoiler .content .before::before {
+.comment-container .b-spoiler .content .before::before {
   content: "[spoiler] ";
 }
 
-.b-spoiler .content .after::after {
+.comment-container .b-spoiler .content .after::after {
   content: " [/spoiler]";
 }
 
-.b-spoiler:not(.open) .content {
+.comment-container .b-spoiler:not(.open) .content {
   display: none;
 }
 
-.b-spoiler.open label {
+.comment-container .b-spoiler.open label {
   display: none;
 }
 
-.b-spoiler .content .inner,
-.b-spoiler .content .inner-prgrph {
+.comment-container .b-spoiler .content .inner,
+.comment-container .b-spoiler .content .inner-prgrph {
   border-bottom: 1px dashed;
   display: inline;
+}
+
+.comment-container .ban [class*="b-user"] {
+  display: inline-block;
 }
 
 @keyframes shake {
@@ -482,7 +567,7 @@ export default {
   flex-grow: 0 !important;
 }
 
-.topic-title:not(:hover) .v-btn {
+.topic-title:not(:hover) .v-btn:not(:focus) {
   opacity: 0;
 }
 </style>

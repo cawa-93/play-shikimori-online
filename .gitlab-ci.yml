@@ -1,0 +1,101 @@
+image: node:latest
+
+cache:
+  key: node_modules
+  paths:
+    - node_modules
+  policy: pull
+
+
+
+stages:
+  - setup
+  - build
+  - deploy
+
+install_dependencies:
+  stage: setup
+  variables:
+    GIT_STRATEGY: fetch
+  script:
+    - npm install
+  cache:
+    key: node_modules
+    paths:
+      - node_modules/
+  only:
+    changes:
+      - package.json
+      - package-lock.json
+
+
+
+build-chrome:
+  stage: build
+  variables:
+    GIT_STRATEGY: fetch
+    NODE_ENV: "production"
+    BROWSER: "chrome"
+  script:
+    - npm run build
+  artifacts:
+    paths:
+    - dist/chrome
+  except:
+    changes:
+      - "*.md"
+
+
+build-firefox:
+  stage: build
+  variables:
+    GIT_STRATEGY: fetch
+    NODE_ENV: "production"
+    BROWSER: "firefox"
+  script:
+    - npm run build
+  artifacts:
+    paths:
+    - dist/firefox
+  except:
+    changes:
+      - "*.md"
+
+deploy-chrome:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: fetch
+    NODE_ENV: "production"
+    BROWSER: "chrome"
+  script:
+    - node deploy/chrome.js
+  only:
+    - tags
+    - master
+  except:
+    changes:
+      - "*.md"
+  when: manual
+  artifacts:
+    paths:
+    - chrome.zip
+
+
+deploy-firefox:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: fetch
+    NODE_ENV: "production"
+    BROWSER: "firefox"
+  script:
+    - node deploy/firefox.js
+  only:
+    - tags
+    - master
+  except:
+    changes:
+      - "*.md"
+  when: manual
+  artifacts:
+    paths:
+    - firefox.zip

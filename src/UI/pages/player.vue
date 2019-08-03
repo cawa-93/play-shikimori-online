@@ -1,42 +1,32 @@
 <template>
-  <section>
-    <v-app id="app" :dark="theme.dark">
-      <v-container class="__layout">
-        <v-layout column style="height: calc(100vh - 110px);min-height: 378px;">
-          <v-flex class="flex-grow-unset">
-            <v-layout row>
-              <v-flex xs6 mr-3>
-                <episode-list></episode-list>
-              </v-flex>
-              <v-flex xs6>
-                <translation-list></translation-list>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+  <main>
+    <v-layout column style="height: calc(100vh - 110px);min-height: 378px;" tag="article">
+      <v-flex class="flex-grow-unset mb-4">
+        <v-container fluid grid-list-md pa-0>
+          <v-layout wrap>
+            <v-flex xs12 sm6>
+              <episode-list></episode-list>
+            </v-flex>
+            <v-flex xs12 sm6>
+              <translation-list></translation-list>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-flex>
 
-          <v-flex d-flex>
-            <player></player>
-          </v-flex>
+      <v-flex d-flex>
+        <player></player>
+      </v-flex>
 
-          <v-flex class="flex-grow-unset mt-3">
-            <video-controls>
-              <main-menu></main-menu>
-            </video-controls>
-          </v-flex>
-        </v-layout>
+      <v-flex class="flex-grow-unset mt-4">
+        <video-controls>
+          <main-menu></main-menu>
+        </video-controls>
+      </v-flex>
+    </v-layout>
 
-        <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
-
-        <app-footer></app-footer>
-
-        <v-flex class="mt-5 mt-5 text-xs-center">
-          <clear-btn class>Сбросить все данные</clear-btn>
-        </v-flex>
-      </v-container>
-
-      <messages></messages>
-    </v-app>
-  </section>
+    <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
+  </main>
 </template>
 
 <script>
@@ -46,17 +36,14 @@ import {
   push as message,
   getReviewUrl
 } from "../../helpers";
-import episodeList from "./episode-list.vue";
-import translationList from "./translation-list.vue";
-import player from "./player.vue";
-import videoControls from "./video-controls.vue";
-import mainMenu from "./main-menu.vue";
-import comments from "./comments.vue";
-import appFooter from "./app-footer.vue";
-import clearBtn from "./clear-btn.vue";
-import messages from "./messages.vue";
-
-import theme from "../../mixins/theme";
+import episodeList from "../components/episode-list.vue";
+import translationList from "../components/translation-list.vue";
+import player from "../components/player.vue";
+import videoControls from "../components/video-controls.vue";
+import mainMenu from "../components/main-menu.vue";
+import comments from "../components/comments.vue";
+import appFooter from "../components/app-footer.vue";
+import messages from "../components/messages.vue";
 
 export default {
   components: {
@@ -67,13 +54,11 @@ export default {
     mainMenu,
     comments,
     appFooter,
-    clearBtn,
     messages
   },
 
-  mixins: [theme],
-
   async mounted() {
+    console.log(this.$route.params);
     const { installAt, leaveReview, userAuth, isAlreadyShare } = await sync.get(
       [
         "installAt", // Timestamp когда пользователь установил расширение
@@ -85,9 +70,12 @@ export default {
 
     this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
 
-    this.$store.dispatch("player/loadEpisodes", window.config); // Загрузка списка серий и запуск видео
+    this.$store.dispatch("player/loadEpisodes", {
+      anime: parseInt(this.$route.params.anime),
+      episode: parseFloat(this.$route.params.episode)
+    }); // Загрузка списка серий и запуск видео
     this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
-    this.$store.dispatch("shikimori/loadAnime"); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+    this.$store.dispatch("shikimori/loadAnime", this.$route.params.anime); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
 
     if (!installAt) {
       return;
@@ -114,7 +102,7 @@ export default {
       const url = new URL("https://vk.com/share.php");
       url.searchParams.append(
         "url",
-        "https://github.com/cawa-93/play-shikimori-online/blob/master/README.md#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0"
+        "https://gitlab.com/kozackunisoft/play-shikimori-online/blob/master/README.md#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0"
       );
       url.searchParams.append("title", "Play Шикимори Online");
       url.searchParams.append(
@@ -129,6 +117,12 @@ export default {
       });
 
       sync.set({ isAlreadyShare: 1 });
+    }
+  },
+
+  watch: {
+    "$route.params": function(n, o) {
+      console.log({ n, o });
     }
   }
 };
