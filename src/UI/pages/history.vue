@@ -60,6 +60,7 @@ export default {
 
   beforeCreate() {
     document.title = "История просмотров";
+    document.head.querySelector('link[rel="icon"]').href = `/icons/play.png`;
   },
 
   async mounted() {
