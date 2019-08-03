@@ -4,20 +4,14 @@
 // }
 
 import Vue from 'vue';
-import Vuetify from 'vuetify'
 import store from './store/index.js'
 import router from './router';
 import VueAnalytics from 'vue-analytics'
+import Vuetify from 'vuetify'
+import ru from 'vuetify/es5/locale/ru'
+
 
 import Root from './root.vue'
-
-// {
-//   const params = (new URL(location.href)).searchParams
-//   window.config = {
-//     anime: parseInt(params.get('anime')),
-//     episode: parseFloat(params.get('episode')),
-//   }
-// }
 
 Vue.use(Vuetify)
 Vue.use(VueAnalytics, {
@@ -32,7 +26,7 @@ Vue.use(VueAnalytics, {
     { field: 'dimension1', value: chrome.runtime.getManifest().version },
   ],
   debug: {
-    enabled: false, //process.env.NODE_ENV === 'development',
+    enabled: process.env.NODE_ENV === 'development',
     sendHitTask: process.env.NODE_ENV === 'production',
 
   },
@@ -56,8 +50,35 @@ Vue.use(VueAnalytics, {
   }
 })
 
-new Vue({
+
+/**
+ * Настройки темы
+ */
+
+const mq = window.matchMedia('(prefers-color-scheme: light)')
+
+mq.addEventListener('change', (e) => {
+  app.$vuetify.theme.dark = !e.matches
+  document.querySelector('html').style.background = e.matches ? '#fafafa' : '#303030';
+})
+
+document.querySelector('html').style.background = mq.matches ? '#fafafa' : '#303030';
+
+const app = new Vue({
   render: h => h(Root),
   store,
-  router
+  router,
+  vuetify: new Vuetify({
+    lang: {
+      locale: { ru },
+      current: 'ru'
+    },
+    theme: {
+      // Используется именно конструкция !light чтобы по умолчанию была темная тема
+      // light === false когда в системе темная тема
+      // light === false когда браузер не поддерживает настройки темы
+      dark: !mq.matches,
+    },
+  })
 }).$mount('root')
+

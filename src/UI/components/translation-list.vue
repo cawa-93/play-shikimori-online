@@ -2,10 +2,11 @@
 <template>
   <section class="translation-list">
     <v-select
+      hide-details
       item-text="authorsSummary"
       item-value="id"
       :items="groupedTranslations"
-      box
+      filled
       :label="label"
       v-model="currentTranslation"
       :loading="translations.length === 0"
@@ -16,31 +17,31 @@
           <v-subheader>{{item.label}}</v-subheader>
         </template>
         <template v-else>
-          <v-list-tile-action>
-            <v-icon v-if="item.qualityType === 'uncensored'">explicit</v-icon>
-            <v-icon v-else-if="item.qualityType !== 'tv' ">high_quality</v-icon>
-          </v-list-tile-action>
+          <v-list-item-action>
+            <v-icon v-if="item.qualityType === 'uncensored'">mdi-explicit</v-icon>
+            <v-icon v-else-if="item.qualityType !== 'tv' ">mdi-quality-high</v-icon>
+          </v-list-item-action>
 
-          <v-list-tile-content>
-            <v-list-tile-title>{{item.authorsSummary}}</v-list-tile-title>
-          </v-list-tile-content>
+          <v-list-item-content>
+            <v-list-item-title>{{item.authorsSummary}}</v-list-item-title>
+          </v-list-item-content>
         </template>
       </template>
 
       <template v-slot:append-item>
-        <v-list-tile href="https://smotret-anime-365.ru/translations/create" class="mt-2">
-          <v-list-tile-action>
-            <v-icon>add</v-icon>
-          </v-list-tile-action>
+        <v-list-item href="https://smotret-anime-365.ru/translations/create" class="mt-2">
+          <v-list-item-action>
+            <v-icon>mdi-plus-box</v-icon>
+          </v-list-item-action>
 
-          <v-list-tile-content>
-            <v-list-tile-title>Добавить перевод</v-list-tile-title>
-          </v-list-tile-content>
+          <v-list-item-content>
+            <v-list-item-title>Добавить перевод</v-list-item-title>
+          </v-list-item-content>
 
-          <v-list-tile-action>
-            <v-icon>open_in_new</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
+          <v-list-item-action>
+            <v-icon>mdi-open-in-new</v-icon>
+          </v-list-item-action>
+        </v-list-item>
       </template>
     </v-select>
   </section>

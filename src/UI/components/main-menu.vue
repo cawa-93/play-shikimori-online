@@ -1,54 +1,68 @@
 <template>
-  <v-menu :close-on-content-click="true" :nudge-width="200" lazy>
-    <template v-slot:activator="{ on }">
-      <v-btn :color="user ? '' : 'error'" v-on="on" flat class="ma-0 pr-2">
-        <v-icon class="mr-1" v-if="!user">sync_problem</v-icon>
-        <span>{{user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
-        <v-icon class="ml-1">arrow_drop_down</v-icon>
+  <v-menu :close-on-content-click="true" :nudge-width="200" transition="slide-y-transition">
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn :color="user ? '' : 'error'" v-on="on" v-bind="attrs" text class="pr-2">
+        <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
+        <span
+          class="long-and-truncated"
+        >{{$vuetify.breakpoint.xsOnly ? 'Меню' : user ? 'Открыть меню' : "Синхронизация отключена"}}</span>
+        <v-icon class="ml-1">mdi-menu-down</v-icon>
       </v-btn>
     </template>
 
     <v-list>
       <!-- Виджет пользователя когда он авторизован -->
-      <v-list-tile avatar v-if="user">
-        <v-list-tile-avatar>
+      <v-list-item v-if="user" key="user-logged-in">
+        <v-list-item-avatar>
           <img :src="user.image.x80" :alt="user.nickname" />
-        </v-list-tile-avatar>
+        </v-list-item-avatar>
 
-        <v-list-tile-content>
-          <v-list-tile-title>{{user.nickname}}</v-list-tile-title>
-          <v-list-tile-sub-title>Синхронизация включена</v-list-tile-sub-title>
-        </v-list-tile-content>
+        <v-list-item-content>
+          <v-list-item-title>{{user.nickname}}</v-list-item-title>
+          <v-list-item-subtitle>Синхронизация включена</v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
-          <v-btn icon to="/history" title="История просмотров">
-            <v-icon>history</v-icon>
-          </v-btn>
-        </v-list-tile-action>
+        <v-list-item-action key="open-history">
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn icon small :to="{name: 'history'}" v-on="on" v-bind="attrs">
+                <v-icon>mdi-history</v-icon>
+              </v-btn>
+            </template>
+            <span>История просмотров</span>
+          </v-tooltip>
+        </v-list-item-action>
 
-        <v-list-tile-action>
-          <v-btn icon @click="logout" title="Выключить синхронизацию">
-            <v-icon>exit_to_app</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        <v-list-item-action>
+          <v-tooltip top>
+            <template v-slot:activator="{on, attrs}">
+              <v-btn icon small @click="logout" v-on="on" v-bind="attrs">
+                <v-icon>mdi-sync-off</v-icon>
+              </v-btn>
+            </template>
+            <span>Выключить синхронизацию</span>
+          </v-tooltip>
+        </v-list-item-action>
+      </v-list-item>
 
       <!-- Ссылка на авторизацию -->
-      <v-list-tile avatar v-else @click="logIn">
-        <v-list-tile-avatar>
-          <v-icon>sync</v-icon>
-        </v-list-tile-avatar>
+      <!-- Обязательну нужно указать key отличный от предыдущего пункта -->
+      <!-- Иначе клик по вложенным кнопкам будет запускать авторизацию -->
+      <v-list-item v-else @click="logIn" key="user-logged-out">
+        <v-list-item-avatar>
+          <v-icon>mdi-sync</v-icon>
+        </v-list-item-avatar>
 
-        <v-list-tile-content>
-          <v-list-tile-title>Включить синхронизацию</v-list-tile-title>
-        </v-list-tile-content>
+        <v-list-item-content>
+          <v-list-item-title>Включить синхронизацию</v-list-item-title>
+        </v-list-item-content>
 
-        <v-list-tile-action @click.stop>
-          <v-btn icon href="/history/index.html" title="История просмотров">
-            <v-icon>history</v-icon>
+        <v-list-item-action @click.stop key="open-history">
+          <v-btn icon small :to="{name: 'history'}" title="История просмотров">
+            <v-icon>mdi-history</v-icon>
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
 
     <v-divider></v-divider>

@@ -118,8 +118,9 @@ module.exports = [{
       targets: {
         [`${path.src}/fonts`]: `${path.dist}/fonts`,
         [`${path.src}/UI/index.html`]: `${path.dist}/UI/index.html`,
-        [`node_modules/material-design-icons/iconfont`]: `${path.dist}/fonts/iconfont`,
-        [`node_modules/vuetify/dist/vuetify.min.css`]: `${path.dist}/vuetify.min.css`,
+        'node_modules/@mdi/font/fonts': `${path.dist}/fonts/iconfont/fonts`,
+        'node_modules/@mdi/font/css/materialdesignicons.min.css': `${path.dist}/fonts/iconfont/css/materialdesignicons.min.css`,
+        'node_modules/vuetify/dist/vuetify.min.css': `${path.dist}/vuetify.min.css`,
         [`${path.src}/icons`]: `${path.dist}/icons`,
       }
     })
