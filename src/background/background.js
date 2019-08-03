@@ -1,9 +1,6 @@
 import retry from 'async-retry'
 import { versionCompare, local, sync, push as message } from '../helpers'
 
-const inMemoryCache = new Map()
-
-
 /**
  * Отслеживание установок и обновлений
  */
@@ -127,19 +124,19 @@ async function loadBroadcast() {
 
     for (let comment of comments) {
       try {
-        const runtimeMessage = JSON.parse(comment.body.replace(/\n+/gim, '<br>').match(/\[div=runtime-message-broadcast hidden\](.+?)\[\/div\]/is)[1])
+        const runtimeMessage = JSON.parse(comment.body.replace(/\n+/gim, '<br>').match(/\[div=runtime-message-broadcast hidden\](.+?)\[\/div\]/im)[1])
         message({
           id: comment.id,
           color: runtimeMessage.color || 'info',
           html: `${runtimeMessage.text}<br><b><a class="white--text" href="https://shikimori.one/comments/${comment.id}">${runtimeMessage.linkText}</a></b>`
         })
       } catch (error) {
-        console.error('Can\'t show broadcast message', { error })
+        console.error(`Can't show broadcast message`, { error })
       }
     }
 
   } catch (error) {
-    console.error('Can\'t check broadcast message', { error })
+    console.error(`Can't check broadcast message`, { error })
   }
 }
 
@@ -151,11 +148,11 @@ setInterval(() => {
 
 async function makeRequest({ url, options }) {
 
-  if (options && options.method && options.method === 'GET' && options.maxAge) {
-    /**
-     * TODO: Здесь необходимо проверять находится ли запрос в кэше
-     */
-  }
+  /**
+   * TODO: Здесь необходимо проверять находится ли запрос в кэше
+   */
+  // if (options && options.method && options.method === 'GET' && options.maxAge) {
+  // }
 
   const isGranted = await isPermissionsGranted(url)
   if (!isGranted) {
@@ -229,10 +226,6 @@ function fetchAndRetry(request) {
         }
       } else {
         const response = await resp.json()
-
-        if (!request.options || !request.options.method || request.options.method === 'GET') {
-          inMemoryCache.set(request.url, { response, date: Date.now() })
-        }
         resolve({ response })
       }
     })
