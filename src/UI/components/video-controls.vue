@@ -36,10 +36,8 @@
 
       <v-btn
         text
-        v-else
-        :href="urls.next"
-        target="_self"
-        @click="$store.dispatch('shikimori/markAsWatched')"
+        v-else-if="$store.state.shikimori.nextSeason"
+        @click.prevent="nextSeason"
         v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
       >
         {{$store.state.shikimori.nextSeason.name}}
@@ -84,16 +82,18 @@ export default {
         next.hash = `/player/anime/${this.next.myAnimelist}/${this.next.episodeInt}`;
 
         next = next.toString();
-      } else if (this.$store.state.shikimori.nextSeason) {
-        next = new URL(chrome.runtime.getURL(`UI/index.html`));
-        next.hash = `/player/anime/${this.$store.state.shikimori.nextSeason.id}`;
-
-        if (this.$store.state.shikimori.nextSeason.episodeInt !== undefined) {
-          next.hash += `/${this.$store.state.shikimori.nextSeason.episodeInt}`;
-        }
-
-        next = next.toString();
       }
+
+      // else if (this.$store.state.shikimori.nextSeason) {
+      //   next = new URL(chrome.runtime.getURL(`UI/index.html`));
+      //   next.hash = `/player/anime/${this.$store.state.shikimori.nextSeason.id}`;
+
+      //   if (this.$store.state.shikimori.nextSeason.episodeInt !== undefined) {
+      //     next.hash += `/${this.$store.state.shikimori.nextSeason.episodeInt}`;
+      //   }
+
+      //   next = next.toString();
+      // }
 
       return { next, previous };
     }
@@ -103,6 +103,22 @@ export default {
     async nextEpisode() {
       this.$store.dispatch("shikimori/markAsWatched");
       this.$store.dispatch("player/selectNextEpisode");
+    },
+
+    async nextSeason() {
+      this.$store.dispatch("shikimori/markAsWatched");
+
+      this.$store.commit("player/clear");
+
+      this.$store.dispatch("player/loadEpisodes", {
+        anime: parseInt(this.$store.state.shikimori.nextSeason.id),
+        episode: parseFloat(this.$store.state.shikimori.nextSeason.episodeInt)
+      }); // Загрузка списка серий и запуск видео
+
+      this.$store.dispatch(
+        "shikimori/loadAnime",
+        this.$store.state.shikimori.nextSeason.id
+      ); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
     }
   }
 };

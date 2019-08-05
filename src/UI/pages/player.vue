@@ -118,12 +118,6 @@ export default {
 
       sync.set({ isAlreadyShare: 1 });
     }
-  },
-
-  watch: {
-    "$route.params": function(n, o) {
-      console.log({ n, o });
-    }
   }
 };
 </script>

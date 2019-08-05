@@ -52,10 +52,9 @@ export default {
 
   watch: {
     translation(newTranslation, oldTranslation) {
-      if (
-        (newTranslation && !oldTranslation) ||
-        newTranslation.title !== oldTranslation.title
-      ) {
+      const n = newTranslation || {};
+      const o = oldTranslation || {};
+      if ((n.title && n.title !== o.title) || !o.title) {
         this.setTitle();
       }
     }
@@ -63,8 +62,10 @@ export default {
 
   methods: {
     setTitle() {
-      if (!this.$store.state.player.currentTranslation) return;
-      document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`;
+      if (!this.$store.state.player.currentTranslation)
+        document.title = `Загрузка ...`;
+      else
+        document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`;
     }
   },
 

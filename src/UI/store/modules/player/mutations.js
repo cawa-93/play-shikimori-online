@@ -1,6 +1,11 @@
 import Vue from "vue";
 import { clearString } from "../../../../helpers";
 
+export function clear(state) {
+  state.episodes = []
+  state.currentEpisode = null
+  state.currentTranslation = null
+}
 
 /**
  * Сохраняет аниме
