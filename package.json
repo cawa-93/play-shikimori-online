@@ -33,7 +33,9 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js && node ./build/generate_manifest.js",
-    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch"
+    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch",
+    "test": "echo \"No test specified\" && exit 0",
+    "lint": "echo \"No lint specified\" && exit 0"
   },
   "repository": "gitlab:kozackunisoft/play-shikimori-online",
   "keywords": [],

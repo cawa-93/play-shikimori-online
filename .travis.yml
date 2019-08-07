@@ -18,8 +18,8 @@ jobs:
     - stage: test
       name: "Test"
       script: 
-        - echo "Try lint"
-        - echo "Try test"
+        - npm run lint
+        - npm test
 
     - stage: deploy
       name: "Deploy"
