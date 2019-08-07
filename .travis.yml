@@ -5,7 +5,7 @@ sudo: false
 
 language: node_js
 
-node_js: 
+node_js:
   - "10"
 
 stages:
@@ -17,7 +17,7 @@ jobs:
   include:
     - stage: test
       name: "Test"
-      script: 
+      script:
         - npm run lint
         - npm test
 
