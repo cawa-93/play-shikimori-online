@@ -1,0 +1,53 @@
+# Конфик сделан по примеру 
+# https://github.com/vuetifyjs/vuetify/blob/aed4309f6e845b64d97a7b43f4275a36526bab04/.travis.yml
+
+sudo: false
+
+language: node_js
+
+node_js: 
+  - "10"
+
+stages:
+  - test
+  - name: deploy
+    if: (tag IS present) AND (type = push) AND (repo = cawa-93/play-shikimori-online)
+
+jobs:
+  include:
+    - stage: test
+      name: "Test"
+      script: 
+        - npm run lint
+        - npm test
+
+    - stage: deploy
+      name: "Deploy"
+      script:
+        - NODE_ENV=production BROWSER=chrome npm run build
+        - NODE_ENV=production BROWSER=firefox npm run build
+      deploy:
+        - provider: script
+          script: node deploy/chrome.js
+          skip_cleanup: true
+          on:
+            repo: cawa-93/play-shikimori-online
+            tags: true
+
+        - provider: script
+          script: node deploy/firefox.js
+          skip_cleanup: true
+          on:
+            repo: cawa-93/play-shikimori-online
+            tags: true
+
+        - provider: releases
+          file:
+            - chrome.zip
+            - firefox.zip
+          api_key: $GITHUB_OAUTH_TOKEN
+          draft: true
+          skip_cleanup: true
+          on:
+            repo: cawa-93/play-shikimori-online
+            tags: true

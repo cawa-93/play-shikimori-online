@@ -3,6 +3,10 @@
   "version": "1.0.1",
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "main": "index.js",
+  "engines": {
+    "node": "10.15",
+    "npm": "6.9"
+  },
   "dependencies": {
     "@mdi/font": "^3.8.95",
     "async-retry": "^1.2.3",
@@ -29,7 +33,9 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js && node ./build/generate_manifest.js",
-    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch"
+    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch",
+    "test": "echo \"No test specified\" && exit 0",
+    "lint": "echo \"No lint specified\" && exit 0"
   },
   "repository": "gitlab:kozackunisoft/play-shikimori-online",
   "keywords": [],
