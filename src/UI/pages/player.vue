@@ -84,7 +84,7 @@
 				this.$store.dispatch('player/loadEpisodes', {anime, episode}) // Загрузка списка серий и запуск видео
 			}
 
-			if (!this.$store.state.shikimori.anime) {
+			if (!this.$store.state.shikimori.user) {
 				this.$store.dispatch('shikimori/loadUser') // Загрузка информации про пользователя если тот авторизован
 			}
 
