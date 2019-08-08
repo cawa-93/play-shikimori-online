@@ -74,16 +74,25 @@
 				this.history = changes.watching_history.newValue || []
 			})
 
-			// Заранее загружаем первое в списке аниме так как вероятнее всего именно его откроет пользователь
-			if (this.history[0] && !this.$store.state.player.episodes.length) {
-				console.log(this.history[0])
+			this.$ga.page(`/history`) // Отправляем данные в аналитику
+
+			if (!this.history[0]) {
+				return
+			}
+
+			// Заранее загружаем серии первого в списке аниме так как вероятнее всего именно его откроет пользователь
+			if (!this.$store.state.player.episodes.length) {
 				this.$store.dispatch('player/loadEpisodes', {
 					anime: this.history[0].id,
 					episode: this.history[0].episodes + 1, // Загружаем следующую серию
 				})
 			}
+			
 
-			this.$ga.page(`/history`) // Отправляем данные в аналитику
+			// Загружаем информацию и оценку первого в списке аниме так как вероятнее всего именно его откроет пользователь
+			if (!this.$store.state.shikimori.anime) {
+				this.$store.dispatch('shikimori/loadAnime', this.history[0].id) // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+			}
 		},
 	}
 </script>
