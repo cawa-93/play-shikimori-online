@@ -1,27 +1,27 @@
 .next-episode {
-  display: block;
-	border: none;
-	border-radius: 2px;
-	padding: 10px 15px;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.73) !important;
-	text-decoration: none !important;
-	/* margin: 20px 0 0 20px; */
-	box-sizing: border-box;
-	position: fixed;
-	z-index: 3;
-	bottom: 70px;
-	background: rgba(0, 0, 0, 0.71);
-	cursor: pointer;
-  right: 40px;
-  opacity: 0.3;
+    display: block;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 15px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.73) !important;
+    text-decoration: none !important;
+    /* margin: 20px 0 0 20px; */
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 3;
+    bottom: 70px;
+    background: rgba(0, 0, 0, 0.71);
+    cursor: pointer;
+    right: 40px;
+    opacity: 0.3;
 }
 
 .next-episode:hover, .next-episode:focus {
-  opacity: 1;
+    opacity: 1;
 }
 
 
 .next-episode[hidden] {
-	display: none;
+    display: none;
 }

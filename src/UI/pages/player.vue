@@ -1,149 +1,159 @@
 <template>
-  <main>
-    <v-layout column style="height: calc(100vh - 110px);min-height: 378px;" tag="article">
-      <v-flex class="flex-grow-unset mb-4">
-        <v-container fluid grid-list-md pa-0>
-          <v-layout wrap>
-            <v-flex xs12 sm6>
-              <episode-list></episode-list>
-            </v-flex>
-            <v-flex xs12 sm6>
-              <translation-list></translation-list>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-flex>
+	<main>
+		<v-layout column style="height: calc(100vh - 110px);min-height: 378px;" tag="article">
+			<v-flex class="flex-grow-unset mb-4">
+				<v-container fluid grid-list-md pa-0>
+					<v-layout wrap>
+						<v-flex sm6 xs12>
+							<episode-list></episode-list>
+						</v-flex>
+						<v-flex sm6 xs12>
+							<translation-list></translation-list>
+						</v-flex>
+					</v-layout>
+				</v-container>
+			</v-flex>
 
-      <v-flex d-flex>
-        <player></player>
-      </v-flex>
+			<v-flex d-flex>
+				<player></player>
+			</v-flex>
 
-      <v-flex class="flex-grow-unset mt-4">
-        <video-controls>
-          <main-menu></main-menu>
-        </video-controls>
-      </v-flex>
-    </v-layout>
+			<v-flex class="flex-grow-unset mt-4">
+				<video-controls>
+					<main-menu></main-menu>
+				</video-controls>
+			</v-flex>
+		</v-layout>
 
-    <comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
-  </main>
+		<comments v-if="$store.state.shikimori.anime && $store.state.player.currentEpisode"></comments>
+	</main>
 </template>
 
 <script>
-import {
-  myanimelistAPI,
-  sync,
-  push as message,
-  getReviewUrl
-} from "../../helpers";
-import episodeList from "../components/episode-list.vue";
-import translationList from "../components/translation-list.vue";
-import player from "../components/player.vue";
-import videoControls from "../components/video-controls.vue";
-import mainMenu from "../components/main-menu.vue";
-import comments from "../components/comments.vue";
-import appFooter from "../components/app-footer.vue";
-import messages from "../components/messages.vue";
+	import {getReviewUrl, push as message, sync} from '../../helpers'
+	import appFooter                             from '../components/app-footer.vue'
+	import comments                              from '../components/comments.vue'
+	import episodeList                           from '../components/episode-list.vue'
+	import mainMenu                              from '../components/main-menu.vue'
+	import messages                              from '../components/messages.vue'
+	import player                                from '../components/player.vue'
+	import translationList                       from '../components/translation-list.vue'
+	import videoControls                         from '../components/video-controls.vue'
 
-export default {
-  components: {
-    episodeList,
-    translationList,
-    player,
-    videoControls,
-    mainMenu,
-    comments,
-    appFooter,
-    messages
-  },
 
-  async mounted() {
-    console.log(this.$route.params);
-    const { installAt, leaveReview, userAuth, isAlreadyShare } = await sync.get(
-      [
-        "installAt", // Timestamp когда пользователь установил расширение
-        "leaveReview", // Оставлял ли пользователь отзыв
-        "userAuth", // Данные для авторизации пользователя
-        "isAlreadyShare" // Получал ли пользователь предложение поделиться в ВК
-      ]
-    );
+	export default {
+		components: {
+			episodeList,
+			translationList,
+			player,
+			videoControls,
+			mainMenu,
+			comments,
+			appFooter,
+			messages,
+		},
 
-    this.$store.commit("shikimori/loadCredentialsFromServer", userAuth);
+		async mounted() {
+			const anime = parseInt(this.$route.params.anime)
+			const episode = parseFloat(this.$route.params.episode)
 
-    this.$store.dispatch("player/loadEpisodes", {
-      anime: parseInt(this.$route.params.anime),
-      episode: parseFloat(this.$route.params.episode)
-    }); // Загрузка списка серий и запуск видео
-    this.$store.dispatch("shikimori/loadUser"); // Загрузка информации про пользователя если тот авторизован
-    this.$store.dispatch("shikimori/loadAnime", this.$route.params.anime); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+			// Нужно ли перезагружать серии
+			// true — если открытое аниме не соответствует загруженному
+			const needReloadEpisodes = !this.$store.state.player.episodes
+			                           || !this.$store.state.player.episodes.length
+			                           || this.$store.state.player.episodes[0].myAnimelist !== anime
 
-    if (!installAt) {
-      return;
-    }
+			// Удаляем все серии если
+			if (needReloadEpisodes) {
+				this.$store.commit('player/clear')
+			}
 
-    const WEEK = 604800000;
+			const {installAt, leaveReview, userAuth, isAlreadyShare} = await sync.get(
+				[
+					'installAt',      // Timestamp когда пользователь установил расширение
+					'leaveReview',    // Оставлял ли пользователь отзыв
+					'userAuth',       // Данные для авторизации пользователя
+					'isAlreadyShare', // Получал ли пользователь предложение поделиться в ВК
+				],
+			)
 
-    // Если пользователь установил расширение неделю назад
-    // и ещё не получал предложения оставить отзыв — создать сообщение с предложением
-    if (installAt + WEEK < Date.now() && !leaveReview) {
-      const url = getReviewUrl();
+			this.$store.commit('shikimori/loadCredentialsFromServer', userAuth)
 
-      message({
-        color: "info",
-        html: `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`
-      });
 
-      sync.set({ leaveReview: 1 });
-    }
+			if (needReloadEpisodes) {
+				this.$store.dispatch('player/loadEpisodes', {anime, episode}) // Загрузка списка серий и запуск видео
+			}
 
-    // Если пользователь установил расширение 3 недели назад
-    // и ещё не получал предложения поделиться в ВК — создать сообщение с предложением
-    if (installAt + WEEK * 3 < Date.now() && !isAlreadyShare) {
-      const url = new URL("https://vk.com/share.php");
-      url.searchParams.append(
-        "url",
-        "https://gitlab.com/kozackunisoft/play-shikimori-online/blob/master/README.md#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0"
-      );
-      url.searchParams.append("title", "Play Шикимори Online");
-      url.searchParams.append(
-        "comment",
-        "Лучший способ смотреть аниме прямо на сайте shikimori.one"
-      );
+			if (!this.$store.state.shikimori.user) {
+				this.$store.dispatch('shikimori/loadUser') // Загрузка информации про пользователя если тот авторизован
+			}
 
-      message({
-        color: "info",
-        html: `Чем больше пользователей в расширении, тем чаще выходят обновления с приятными бонусами<br><b><a href="${url.toString()}" class="white--text">Расскажи о нас друзьям и жди новых возможностей в ближайшее время!</a> 😎</b>`,
-        mode: this.$vuetify.breakpoint.smAndDown ? "vertical" : "multi-line"
-      });
+			if (!this.$store.state.shikimori.anime || this.$store.state.shikimori.anime.id !== anime) {
+				this.$store.dispatch('shikimori/loadAnime', anime) // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+			}
 
-      sync.set({ isAlreadyShare: 1 });
-    }
-  },
+			if (!installAt) {
+				return
+			}
 
-  watch: {
-    "$route.params": function(n, o) {
-      console.log({ n, o });
-    }
-  }
-};
+			const WEEK = 604800000
+
+			// Если пользователь установил расширение неделю назад
+			// и ещё не получал предложения оставить отзыв — создать сообщение с предложением
+			if (installAt + WEEK < Date.now() && !leaveReview) {
+				const url = getReviewUrl()
+
+				message({
+					color: 'info',
+					html:  `За каждый отзыв жена покупает мне вкусную печеньку.<br><b><a href="${url}" class="white--text">Спасите, очень нужна печенька к чаю!</a></b>`,
+				})
+
+				sync.set({leaveReview: 1})
+			}
+
+			// Если пользователь установил расширение 3 недели назад
+			// и ещё не получал предложения поделиться в ВК — создать сообщение с предложением
+			if (installAt + WEEK * 3 < Date.now() && !isAlreadyShare) {
+				const url = new URL('https://vk.com/share.php')
+				url.searchParams.append(
+					'url',
+					'https://github.com/cawa-93/play-shikimori-online/blob/master/README.md#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0',
+				)
+				url.searchParams.append('title', 'Play Шикимори Online')
+				url.searchParams.append(
+					'comment',
+					'Лучший способ смотреть аниме прямо на сайте shikimori.one',
+				)
+
+				message({
+					color: 'info',
+					html:  `Чем больше пользователей в расширении, тем чаще выходят обновления с приятными бонусами<br><b><a href="${url.toString()}" class="white--text">Расскажи о нас друзьям и жди новых возможностей в ближайшее время!</a> 😎</b>`,
+					mode:  this.$vuetify.breakpoint.smAndDown ? 'vertical' : 'multi-line',
+				})
+
+				sync.set({isAlreadyShare: 1})
+			}
+		},
+	}
 </script>
 
 <style>
-.v-select__selections {
-  overflow: hidden;
-}
+	.v-select__selections {
+		overflow: hidden;
+	}
 
-.v-select__selection.v-select__selection--comma {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  display: block;
-}
+	.v-select__selection.v-select__selection--comma {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		display: block;
+	}
 
-.flex-grow-unset {
-  flex-grow: unset;
-}
-.player-container {
-  height: 100%;
-}
+	.flex-grow-unset {
+		flex-grow: unset;
+	}
+
+	.player-container {
+		height: 100%;
+	}
 </style>

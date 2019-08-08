@@ -2,13 +2,13 @@
  * Compares two software version numbers (e.g. "1.7.1" or "1.2b").
  *
  * This function was born in http://stackoverflow.com/a/6832721.
- * 
+ *
  * @see https://github.com/Rombecchi/version-compare
  *
  * @param {string} v1 The first version to be compared.
  * @param {string} v2 The second version to be compared.
  * @param {object} [options] Optional flags that affect comparison behavior:
- * lexicographical: (true/[false]) compares each part of the version strings lexicographically instead of naturally; 
+ * lexicographical: (true/[false]) compares each part of the version strings lexicographically instead of naturally;
  *                  this allows suffixes such as "b" or "dev" but will cause "1.10" to be considered smaller than "1.2".
  * zeroExtend: ([true]/false) changes the result if one version string has less parts than the other. In
  *             this case the shorter string will be padded with "zero" parts instead of being considered smaller.
@@ -21,56 +21,71 @@
  */
 
 export function versionCompare(v1, v2, options) {
-  var lexicographical = (options && options.lexicographical) || false,
-    zeroExtend = (options && options.zeroExtend) || true,
-    v1parts = (v1 || "0").split('.'),
-    v2parts = (v2 || "0").split('.');
+	var lexicographical = (
+		                      options && options.lexicographical
+	                      ) || false,
+	    zeroExtend      = (
+		                      options && options.zeroExtend
+	                      ) || true,
+	    v1parts         = (
+		    v1 || '0'
+	    ).split('.'),
+	    v2parts         = (
+		    v2 || '0'
+	    ).split('.')
 
-  function isValidPart(x) {
-    return (lexicographical ? /^\d+[A-Za-zαß]*$/ : /^\d+[A-Za-zαß]?$/).test(x);
-  }
 
-  if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
-    return NaN;
-  }
+	function isValidPart(x) {
+		return (
+			lexicographical ? /^\d+[A-Za-zαß]*$/ : /^\d+[A-Za-zαß]?$/
+		).test(x)
+	}
 
-  if (zeroExtend) {
-    while (v1parts.length < v2parts.length) v1parts.push("0");
-    while (v2parts.length < v1parts.length) v2parts.push("0");
-  }
 
-  if (!lexicographical) {
-    v1parts = v1parts.map(function (x) {
-      var match = (/[A-Za-zαß]/).exec(x);
-      return Number(match ? x.replace(match[0], "." + x.charCodeAt(match.index)) : x);
-    });
-    v2parts = v2parts.map(function (x) {
-      var match = (/[A-Za-zαß]/).exec(x);
-      return Number(match ? x.replace(match[0], "." + x.charCodeAt(match.index)) : x);
-    });
-  }
+	if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+		return NaN
+	}
 
-  for (var i = 0; i < v1parts.length; ++i) {
-    if (v2parts.length == i) {
-      return 1;
-    }
+	if (zeroExtend) {
+		while (v1parts.length < v2parts.length) v1parts.push('0')
+		while (v2parts.length < v1parts.length) v2parts.push('0')
+	}
 
-    if (v1parts[i] == v2parts[i]) {
-      continue;
-    }
-    else if (v1parts[i] > v2parts[i]) {
-      return 1;
-    }
-    else {
-      return -1;
-    }
-  }
+	if (!lexicographical) {
+		v1parts = v1parts.map(function (x) {
+			var match = (
+				/[A-Za-zαß]/
+			).exec(x)
+			return Number(match ? x.replace(match[0], '.' + x.charCodeAt(match.index)) : x)
+		})
+		v2parts = v2parts.map(function (x) {
+			var match = (
+				/[A-Za-zαß]/
+			).exec(x)
+			return Number(match ? x.replace(match[0], '.' + x.charCodeAt(match.index)) : x)
+		})
+	}
 
-  if (v1parts.length != v2parts.length) {
-    return -1;
-  }
+	for (var i = 0; i < v1parts.length; ++i) {
+		if (v2parts.length == i) {
+			return 1
+		}
 
-  return 0;
+		if (v1parts[i] == v2parts[i]) {
+
+		} else if (v1parts[i] > v2parts[i]) {
+			return 1
+		} else {
+			return -1
+		}
+	}
+
+	if (v1parts.length != v2parts.length) {
+		return -1
+	}
+
+	return 0
 }
+
 
 export default versionCompare

@@ -1,8 +1,8 @@
-import { anime365API, filterEpisodes, pluralize } from '../helpers'
+import {anime365API, filterEpisodes, pluralize} from '../helpers'
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)
-const observerConfig = { attributes: true, subtree: true, childList: true }
+const observerConfig = {attributes: true, subtree: true, childList: true}
 mainObserver.observe(document, observerConfig)
 main()
 
@@ -66,9 +66,10 @@ async function main() {
 
 }
 
+
 /**
- * 
- * @param {HTMLElement} infoSection 
+ *
+ * @param {HTMLElement} infoSection
  * @returns {HTMLAnchorElement}
  */
 function createButton(infoSection) {
@@ -94,7 +95,6 @@ function createButton(infoSection) {
 }
 
 
-
 function getAnime() {
 	try {
 		const data = JSON.parse(document.querySelector('.b-user_rate[data-target_type="Anime"]').dataset.entry)
@@ -107,9 +107,10 @@ function getAnime() {
 
 async function getEpisodes(myAnimeListId) {
 	/** @type {anime365.api.SeriesCollection} */
-	const { data: [series] } = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
+	const {data: [series]} = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
 	return filterEpisodes(series)
 }
+
 
 function getEpisodeInt() {
 	const episodeElement = document.querySelector('.b-user_rate[data-target_type="Anime"] .current-episodes')

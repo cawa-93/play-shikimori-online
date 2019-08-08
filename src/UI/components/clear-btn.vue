@@ -1,59 +1,60 @@
 <template>
-  <v-tooltip top>
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn @click="clear" text v-on="on" icon v-bind="attrs" class="mx-4">
-        <v-icon>mdi-delete-forever</v-icon>
-      </v-btn>
-    </template>
-    <span>Сбросить все данные</span>
-  </v-tooltip>
+	<v-tooltip top>
+		<template v-slot:activator="{ on, attrs }">
+			<v-btn @click="clear" class="mx-4" icon text v-bind="attrs" v-on="on">
+				<v-icon>mdi-delete-forever</v-icon>
+			</v-btn>
+		</template>
+		<span>Сбросить все данные</span>
+	</v-tooltip>
 </template>
 
 
 <script>
-import { sync, local } from "../../helpers";
-import { storage } from "kv-storage-polyfill";
+	import {storage}     from 'kv-storage-polyfill'
+	import {local, sync} from '../../helpers'
 
-export default {
-  name: "clear-btn",
 
-  methods: {
-    /**
-     * @see https://stackoverflow.com/a/179514/4543826
-     */
-    deleteAllCookies() {
-      const cookies = document.cookie.split(";");
+	export default {
+		name: 'clear-btn',
 
-      for (let cookie of cookies) {
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      }
-    },
+		methods: {
+			/**
+			 * @see https://stackoverflow.com/a/179514/4543826
+			 */
+			deleteAllCookies() {
+				const cookies = document.cookie.split(';')
 
-    async clear() {
-      if (
-        !confirm(
-          `Все данные программы и история просмотров будут удалены а эта страница будет закрыта.\n\nВы уверены, что хотите продолжить?`
-        )
-      ) {
-        return;
-      }
+				for (let cookie of cookies) {
+					const eqPos = cookie.indexOf('=')
+					const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+					document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+				}
+			},
 
-      this.$ga.event("actions", "clear-all-data");
+			async clear() {
+				if (
+					!confirm(
+						`Все данные программы и история просмотров будут удалены а эта страница будет закрыта.\n\nВы уверены, что хотите продолжить?`,
+					)
+				) {
+					return
+				}
 
-      const promise = Promise.all([
-        sync.clear(),
-        local.clear(),
-        storage.clear()
-      ]);
-      localStorage.clear();
-      sessionStorage.clear();
-      this.deleteAllCookies();
+				this.$ga.event('actions', 'clear-all-data')
 
-      await promise;
-      chrome.runtime.reload();
-    }
-  }
-};
+				const promise = Promise.all([
+					sync.clear(),
+					local.clear(),
+					storage.clear(),
+				])
+				localStorage.clear()
+				sessionStorage.clear()
+				this.deleteAllCookies()
+
+				await promise
+				chrome.runtime.reload()
+			},
+		},
+	}
 </script>

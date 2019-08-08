@@ -1,5 +1,6 @@
-import { storage } from "kv-storage-polyfill";
-import { throttle } from "../helpers/throttle";
+import {storage}  from 'kv-storage-polyfill'
+import {throttle} from '../helpers/throttle'
+
 
 try {
 	const config = new URLSearchParams(location.hash.slice(1))
@@ -14,6 +15,7 @@ try {
 	const episodeId = config.get('play-shikimori[episodeId]')
 	const nextEpisode = config.get('play-shikimori[nextEpisode]') === '1'
 	const isAutoPlay = config.get('play-shikimori[isAutoPlay]') === '1'
+
 
 	/**
 	 * Главная функция
@@ -44,21 +46,22 @@ try {
 			const currentTime = player.currentTime()
 			const duration = player.duration()
 
-			saveCurrentTimeThrottled({ seriesId, episodeId, currentTime })
+			saveCurrentTimeThrottled({seriesId, episodeId, currentTime})
 			if (nextEpisode && nextEpisodeButton) {
-				toggleNextEpisodeButtonThrottled({ currentTime, duration, nextEpisodeButton })
+				toggleNextEpisodeButtonThrottled({currentTime, duration, nextEpisodeButton})
 			}
 		})
 
 		/**
 		 * Подписываем обработчик на события переключения режима Картинка в картинке
 		 */
-		window.addEventListener("message", ({ data: event }) => {
+		window.addEventListener('message', ({data: event}) => {
 			if (event && event.name === 'pictureInPictureToggle') {
 				pictureInPictureToggle()
 			}
-		});
+		})
 	}
+
 
 	player.on('play', main)
 
@@ -86,7 +89,7 @@ try {
 	 */
 	function createNextEpisodeButton() {
 		const nextEpisodeButton = document.createElement('button')
-		nextEpisodeButton.innerText = "Следующая серия"
+		nextEpisodeButton.innerText = 'Следующая серия'
 		nextEpisodeButton.classList.add('next-episode')
 		nextEpisodeButton.hidden = true
 		document.querySelector('#main-video').appendChild(nextEpisodeButton)
@@ -102,21 +105,23 @@ try {
 		return nextEpisodeButton
 	}
 
+
 	/**
 	 * Следим за временем и показываем/скрываем кнопку следующей серии
 	 */
-	function toggleNextEpisodeButton({ nextEpisodeButton, duration, currentTime }) {
+	function toggleNextEpisodeButton({nextEpisodeButton, duration, currentTime}) {
 		if (!nextEpisodeButton || !duration || !currentTime) {
 			return
 		}
 
-		const endingTime = duration > 600 ? 120 : duration * 0.1;
+		const endingTime = duration > 600 ? 120 : duration * 0.1
 		if (player.isFullscreen() && duration - currentTime <= endingTime) {
 			nextEpisodeButton.style.display = 'block'
 		} else {
 			nextEpisodeButton.style.display = 'none'
 		}
 	}
+
 
 	/**
 	 * Загружаем сохранённое время и устанавливаем значение в плеере
@@ -135,7 +140,7 @@ try {
 	/**
 	 * Сохранение текущей временной метки
 	 */
-	async function saveCurrentTime({ seriesId, episodeId, currentTime }) {
+	async function saveCurrentTime({seriesId, episodeId, currentTime}) {
 
 		if (!seriesId || !episodeId || !currentTime) {
 			return
@@ -143,16 +148,18 @@ try {
 
 		let savedTime = {
 			episodeId,
-			time: currentTime
+			time: currentTime,
 		}
 		storage.set(`play-${seriesId}-time`, savedTime)
 	}
+
 
 	function initSaveFullScreenState() {
 		player.on('fullscreenchange', () => {
 			storage.set(`play-fullscreen-state`, player.isFullscreen())
 		})
 	}
+
 
 	/**
 	 * Функция автоматически запускает воспроизведение, если нет рекламной вставки
@@ -166,9 +173,11 @@ try {
 		player.play()
 	}
 
+
 	if (isAutoPlay) {
 		autoPlay()
 	}
+
 
 	function pictureInPictureToggle() {
 		if (!player || !player.tag) {
@@ -179,20 +188,19 @@ try {
 			player.tag.requestPictureInPicture()
 				.catch(error => {
 					// Video failed to enter Picture-in-Picture mode.
-					console.error('Video failed to enter Picture-in-Picture mode.', { error })
-				});
+					console.error('Video failed to enter Picture-in-Picture mode.', {error})
+				})
 		} else {
 			document.exitPictureInPicture()
 				.catch(error => {
 					// Video failed to leave Picture-in-Picture mode.
-					console.error('Video failed to leave Picture-in-Picture mode.', { error })
-				});
+					console.error('Video failed to leave Picture-in-Picture mode.', {error})
+				})
 		}
 	}
-}
-catch (error) {
+} catch (error) {
 	window.parent.postMessage({
 		name: 'error',
-		error: `${error.message}\n\n${error.stack}`
+		error: `${error.message}\n\n${error.stack}`,
 	}, '*')
 }

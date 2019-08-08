@@ -1,6 +1,6 @@
 export default {
-  anime: null,
-  nextSeason: null,
-  user: null,
-  credentials: null
+	anime: null,
+	nextSeason: null,
+	user: null,
+	credentials: null,
 }
