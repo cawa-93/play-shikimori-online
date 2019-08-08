@@ -85,12 +85,14 @@ export async function loadEpisodes({state, commit, dispatch}, {anime, episode: s
 export async function selectEpisode({state, commit, dispatch}, episode) {
 	commit('selectEpisode', episode)
 
-	router.replace({
-		name: 'player', params: {
-			anime: state.currentEpisode.myAnimelist,
-			episode: state.currentEpisode.episodeInt,
-		},
-	})
+	if (router.history.current.name === 'player') {
+		router.replace({
+			name: 'player', params: {
+				anime: state.currentEpisode.myAnimelist,
+				episode: state.currentEpisode.episodeInt,
+			},
+		})
+	}
 
 	await dispatch('loadTranslations', episode)
 	let translation = await dispatch('getPriorityTranslation', episode)

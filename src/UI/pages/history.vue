@@ -74,6 +74,15 @@
 				this.history = changes.watching_history.newValue || []
 			})
 
+			// Заранее загружаем первое в списке аниме так как вероятнее всего именно его откроет пользователь
+			if (this.history[0] && !this.$store.state.player.episodes.length) {
+				console.log(this.history[0])
+				this.$store.dispatch('player/loadEpisodes', {
+					anime: this.history[0].id,
+					episode: this.history[0].episodes + 1, // Загружаем следующую серию
+				})
+			}
+
 			this.$ga.page(`/history`) // Отправляем данные в аналитику
 		},
 	}
