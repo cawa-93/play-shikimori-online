@@ -23,10 +23,10 @@
 		<v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
 		<template v-else>
 			<div
-					:aria-busy="layout.moreComments.loading ? 'true' : 'false'"
-					class="mt-6 mb-2"
-					role="feed"
-					v-if="topic && comments.items.length"
+				:aria-busy="layout.moreComments.loading ? 'true' : 'false'"
+				class="mt-6 mb-2"
+				role="feed"
+				v-if="topic && comments.items.length"
 			>
 				<template v-for="comment in comments.items">
 					<v-layout
@@ -60,21 +60,32 @@
 				</template>
 
 				<div class="text-center mt-7">
-					<v-tooltip top>
-						<template v-slot:activator="{on, attrs}">
-							<v-btn
-									:loading="layout.moreComments.loading"
-									@click="loadComments"
-									icon
-									v-bind="attrs"
-									v-if="comments.items.length < topic.comments_count"
-									v-on="on"
-							>
-								<v-icon large>mdi-chevron-down</v-icon>
-							</v-btn>
+					<v-tooltip left transition="slide-x-reverse-transition" nudge-left="56">
+						<template v-slot:activator="{on: left}">
+							<v-tooltip right transition="slide-x-transition">
+								<template v-slot:activator="{on: right, attrs}">
+									<v-btn
+										v-if="comments.items.length < topic.comments_count"
+										:loading="layout.moreComments.loading"
+										@click.exact="loadComments"
+										@click.shift.exact="loadAllComments"
+										icon
+										v-bind="attrs"
+										v-on="{
+											mouseenter: () => {left.mouseenter(); right.mouseenter()},
+											mouseleave: () => {left.mouseleave(); right.mouseleave()},
+										}"
+									>
+										<v-icon large>mdi-chevron-down</v-icon>
+									</v-btn>
+								</template>
+								<span>+ Shift — Загрузить все</span>
+							</v-tooltip>
 						</template>
-						<span>Загрузить ещё</span>
+						<span>Загрузить больше</span>
+
 					</v-tooltip>
+
 				</div>
 			</div>
 
@@ -208,6 +219,7 @@
 			},
 
 			async loadComments() {
+				console.log('loadComments')
 				if (!this.topic) {
 					return
 				}
@@ -357,6 +369,14 @@
 					})
 
 					this.layout.newComment.loading = false
+				}
+			},
+
+			async loadAllComments() {
+				console.log('loadAllComments')
+				if (this.comments.items.length < this.topic.comments_count) {
+					await this.loadComments()
+					return this.loadAllComments()
 				}
 			},
 		},
