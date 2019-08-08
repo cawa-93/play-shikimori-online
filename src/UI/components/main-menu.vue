@@ -1,5 +1,5 @@
 <template>
-	<v-menu :close-on-content-click="true" :nudge-width="200" transition="slide-y-transition">
+	<v-menu :close-on-content-click="true" :nudge-width="200" nudge-top="83">
 		<template v-slot:activator="{ on, attrs }">
 			<v-btn :color="user ? '' : 'error'" class="pr-2" text v-bind="attrs" v-on="on">
 				<v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
@@ -63,24 +63,65 @@
 					</v-btn>
 				</v-list-item-action>
 			</v-list-item>
+
+
+			<v-divider class="mb-2"></v-divider>
+
+			<v-list-item
+				:href="shikiLink.url"
+				rel="noopener noreferrer"
+				v-ga="$ga.commands.trackAction.bind(this, 'open-on-shikimori')"
+				v-if="shikiID"
+			>
+				<v-list-item-action>
+					<v-icon>mdi-open-in-new</v-icon>
+				</v-list-item-action>
+
+				<v-list-item-title>{{ shikiLink.label }}</v-list-item-title>
+			</v-list-item>
+
+			<v-list-item
+				:href="reportAboutError.url"
+				rel="noopener noreferrer"
+				v-ga="$ga.commands.trackAction.bind(this, 'report-about-error')"
+				v-if="$store.state.player.currentTranslation"
+			>
+				<v-list-item-action>
+					<v-icon>mdi-alert-octagon</v-icon>
+				</v-list-item-action>
+
+				<v-list-item-title>{{ reportAboutError.label }}</v-list-item-title>
+			</v-list-item>
 		</v-list>
 
-		<v-divider></v-divider>
-
-		<actions></actions>
 	</v-menu>
 </template>
 
 <script>
-	import actions from './actions.vue'
-
-
 	export default {
 		name: 'main-menu',
 
-		components: {actions},
-
 		computed: {
+			shikiID() {
+				if (this.$store.state.player.currentEpisode) {
+					return this.$store.state.player.currentEpisode.myAnimelist
+				}
+
+				return this.$route.params.anime
+			},
+			shikiLink() {
+				return {
+					label: 'Открыть на Шикимори',
+					url: `https://shikimori.one/animes/${this.shikiID}`,
+				}
+			},
+
+			reportAboutError() {
+				return {
+					label: 'Сообщить о проблеме с видео',
+					url: `https://smotret-anime-365.ru/translations/report/${this.$store.state.player.currentTranslation.id}`,
+				}
+			},
 			user() {
 				return this.$store.state.shikimori.user
 			},
