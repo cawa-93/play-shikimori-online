@@ -1,4 +1,11 @@
+import * as Sentry                              from '@sentry/browser'
 import {anime365API, filterEpisodes, pluralize} from '../helpers'
+
+
+Sentry.init({
+	dsn: process.env.SENTRY_DSN,
+	release: `${chrome.runtime.getManifest().name}@${chrome.runtime.getManifest().version}`,
+})
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main)

@@ -20,6 +20,7 @@
 			</v-tooltip>
 		</div>
 
+
 		<v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
 		<template v-else>
 			<div
@@ -245,7 +246,7 @@
 					return
 				}
 
-				this.layout.newComment.loading = true
+				thist.layout.newComment.loading = true
 
 				let auth = await this.$store.dispatch('shikimori/getValidCredentials')
 				if (!auth) {

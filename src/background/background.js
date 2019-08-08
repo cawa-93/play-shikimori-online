@@ -1,11 +1,20 @@
+import * as Sentry                                    from '@sentry/browser'
 import retry                                          from 'async-retry'
 import {local, push as message, sync, versionCompare} from '../helpers'
 
+
+Sentry.init({
+	dsn: process.env.SENTRY_DSN,
+	release: `${chrome.runtime.getManifest().name}@${chrome.runtime.getManifest().version}`,
+	environment: process.env.NODE_ENV || 'dev',
+})
 
 /**
  * Отслеживание установок и обновлений
  */
 chrome.runtime.onInstalled.addListener(async ({reason, previousVersion}) => {
+
+	console.log(rr.rr.tt.y = 1234)
 	// reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
 
 	// Сохраняем время установки расширения или время обновления начиная с версии 0.4.11

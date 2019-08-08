@@ -12,12 +12,14 @@ dotenv.config()
 const replaceEnv = {
 	'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 	'process.env.VUE_ENV': JSON.stringify('browser'),
+	'process.env.BROWSER': JSON.stringify(process.env.BROWSER ? process.env.BROWSER : 'chrome'),
+	'process.env.SENTRY_DSN': JSON.stringify(process.env.SENTRY_DSN),
 
 	'process.env.SHIKIMORI_CLIENT_ID': JSON.stringify(process.env.SHIKIMORI_CLIENT_ID),
 	'process.env.SHIKIMORI_CLIENT_SECRET': JSON.stringify(process.env.SHIKIMORI_CLIENT_SECRET),
 	'process.env.SHIKIMORI_REDIRECT_URI': JSON.stringify(process.env.SHIKIMORI_REDIRECT_URI),
 	'process.env.SHIKIMORI_SYSTEM_TOKEN': JSON.stringify(process.env.SHIKIMORI_SYSTEM_TOKEN),
-	'process.env.BROWSER': JSON.stringify(process.env.BROWSER ? process.env.BROWSER : 'chrome'),
+
 }
 
 const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
@@ -33,7 +35,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/background/background.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: true,
 		},
 		plugins: [
 			resolve(),
@@ -110,7 +112,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/UI/bundle.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			// sourcemap: process.env.NODE_ENV !== `production`,
 		},
 		plugins: [
 			resolve(),
