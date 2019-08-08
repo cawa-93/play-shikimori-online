@@ -54,24 +54,43 @@
 		},
 
 		async mounted() {
-			console.log(this.$route.params)
+			const anime = parseInt(this.$route.params.anime)
+			const episode = parseFloat(this.$route.params.episode)
+
+			// Нужно ли перезагружать серии
+			// true — если открытое аниме не соответствует загруженному
+			const needReloadEpisodes = !this.$store.state.player.episodes
+			                           || !this.$store.state.player.episodes.length
+			                           || this.$store.state.player.episodes[0].myAnimelist !== anime
+
+			// Удаляем все серии если
+			if (needReloadEpisodes) {
+				this.$store.commit('player/clear')
+			}
+
 			const {installAt, leaveReview, userAuth, isAlreadyShare} = await sync.get(
 				[
-					'installAt', // Timestamp когда пользователь установил расширение
-					'leaveReview', // Оставлял ли пользователь отзыв
-					'userAuth', // Данные для авторизации пользователя
+					'installAt',      // Timestamp когда пользователь установил расширение
+					'leaveReview',    // Оставлял ли пользователь отзыв
+					'userAuth',       // Данные для авторизации пользователя
 					'isAlreadyShare', // Получал ли пользователь предложение поделиться в ВК
 				],
 			)
 
 			this.$store.commit('shikimori/loadCredentialsFromServer', userAuth)
 
-			this.$store.dispatch('player/loadEpisodes', {
-				anime:   parseInt(this.$route.params.anime),
-				episode: parseFloat(this.$route.params.episode),
-			}) // Загрузка списка серий и запуск видео
-			this.$store.dispatch('shikimori/loadUser') // Загрузка информации про пользователя если тот авторизован
-			this.$store.dispatch('shikimori/loadAnime', this.$route.params.anime) // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+
+			if (needReloadEpisodes) {
+				this.$store.dispatch('player/loadEpisodes', {anime, episode}) // Загрузка списка серий и запуск видео
+			}
+
+			if (!this.$store.state.shikimori.anime) {
+				this.$store.dispatch('shikimori/loadUser') // Загрузка информации про пользователя если тот авторизован
+			}
+
+			if (!this.$store.state.shikimori.anime || this.$store.state.shikimori.anime.id !== anime) {
+				this.$store.dispatch('shikimori/loadAnime', anime) // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+			}
 
 			if (!installAt) {
 				return
