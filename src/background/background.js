@@ -209,7 +209,7 @@ function fetchAndRetry(request) {
 			const resp = await fetch(request.url, request.options)
 			if (!resp.ok) {
 
-				if (resp.status >= 400 && resp.status < 500) {
+				if (resp.status !== 429 && resp.status >= 400 && resp.status < 500) {
 					let response = await resp.text()
 
 					if (response) {
