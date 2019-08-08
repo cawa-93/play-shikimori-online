@@ -1,7 +1,10 @@
 <template>
 	<section class="comments-container">
 		<div class="display-1 mt-6 mb-4 d-flex topic-title">
-			<h2 class="display-1">Обсуждение {{currentEpisode.episodeInt}} серии</h2>
+			<h2 class="display-1"
+			    @click="$vuetify.goTo($refs['comments-feed'], {duration: 300})">
+				Обсуждение {{currentEpisode.episodeInt}} серии
+			</h2>
 			<v-tooltip right>
 				<template v-slot:activator="{ on, attrs }">
 					<v-btn
@@ -27,6 +30,7 @@
 				class="mt-6 mb-2"
 				role="feed"
 				v-if="topic && comments.items.length"
+				ref="comments-feed"
 			>
 				<template v-for="comment in comments.items">
 					<v-layout
