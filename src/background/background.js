@@ -1,6 +1,13 @@
+import * as Sentry                                    from '@sentry/browser'
 import retry                                          from 'async-retry'
 import {local, push as message, sync, versionCompare} from '../helpers'
 
+
+Sentry.init({
+	dsn: process.env.SENTRY_DSN,
+	release: `${chrome.runtime.getManifest().name}@${chrome.runtime.getManifest().version}`,
+	environment: process.env.NODE_ENV || 'dev',
+})
 
 /**
  * Отслеживание установок и обновлений
