@@ -1,6 +1,6 @@
 {
   "name": "play-shikimori-online",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "main": "index.js",
   "engines": {
@@ -8,15 +8,15 @@
     "npm": "6.9"
   },
   "dependencies": {
-    "@mdi/font": "^3.8.95",
+    "@mdi/font": "^3.9.97",
     "@sentry/browser": "^5.6.0",
     "@sentry/integrations": "^5.6.0",
     "async-retry": "^1.2.3",
     "kv-storage-polyfill": "^1.1.0",
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.0",
-    "vue-router": "^3.0.7",
-    "vuetify": "^2.0.4",
+    "vue-router": "^3.1.2",
+    "vuetify": "^2.0.5",
     "vuex": "^3.1.1"
   },
   "devDependencies": {
@@ -25,8 +25,8 @@
     "chrome-webstore-upload": "^0.2.2",
     "dotenv": "^8.0.0",
     "firefox-extension-deploy": "^1.1.1",
-    "rollup": "^1.18.0",
-    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup": "^1.19.4",
+    "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
@@ -40,7 +40,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "lint": "echo \"No lint specified\" && exit 0"
   },
-  "repository": "gitlab:kozackunisoft/play-shikimori-online",
+  "repository": "github:cawa-93/play-shikimori-online",
   "keywords": [],
   "author": "Alex Kozack",
   "license": "GPL-3.0"

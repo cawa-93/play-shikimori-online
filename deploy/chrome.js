@@ -1,11 +1,7 @@
 const zipFolder = require('zip-folder')
 const fs = require('fs')
 
-const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
-
-if (browser !== 'chrome') {
-	process.exit(1)
-}
+const browser = 'chrome'
 
 let folder = `dist/${browser}`
 let zipName = `${browser}.zip`

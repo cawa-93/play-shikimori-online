@@ -67,9 +67,9 @@
 						url:   manifest.homepage_url,
 					},
 					{
-						icon:  'mdi-gitlab',
-						label: 'Исходный код на GitLab',
-						url:   'https://gitlab.com/kozackunisoft/play-shikimori-online',
+						icon: 'mdi-github-circle',
+						label: 'Исходный код на GitHub',
+						url: 'https://github.com/cawa-93/play-shikimori-online',
 					},
 				],
 

@@ -3,11 +3,7 @@ var deploy = require('firefox-extension-deploy')
 const zipFolder = require('zip-folder')
 
 
-const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
-
-// if (browser !== 'firefox') {
-//   process.exit(1)
-// }
+const browser = 'firefox'
 
 let folder = `dist/${browser}`
 let zipName = `${browser}.zip`
