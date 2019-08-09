@@ -10,7 +10,7 @@ dotenv.config()
 // import alias from 'rollup-plugin-alias'
 
 const replaceEnv = {
-	'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+	'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'dev'),
 	'process.env.VUE_ENV': JSON.stringify('browser'),
 	'process.env.BROWSER': JSON.stringify(process.env.BROWSER ? process.env.BROWSER : 'chrome'),
 	'process.env.SENTRY_DSN': JSON.stringify(process.env.SENTRY_DSN),
@@ -35,7 +35,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/background/background.js`,
 			format: `esm`,
-			sourcemap: true,
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -49,7 +49,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/content-scripts/anime365-player-events.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -67,7 +67,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/content-scripts/myanimelist.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -85,7 +85,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/content-scripts/inject-content-scripts.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -98,7 +98,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/content-scripts/watch-button.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -112,7 +112,11 @@ module.exports = [
 		output: {
 			file: `${path.dist}/UI/bundle.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV !== `production`,
+			/**
+			 * Error: Multiple conflicting contents for sourcemap source
+			 * @see https://github.com/vuejs/rollup-plugin-vue/issues/238
+			 */
+			// sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -137,7 +141,7 @@ module.exports = [
 		output: {
 			file: `${path.dist}/UI/worker.js`,
 			format: `esm`,
-			// sourcemap: process.env.NODE_ENV === `development`
+			sourcemap: process.env.NODE_ENV === 'production' ? true : 'inline',
 		},
 		plugins: [
 			resolve(),
@@ -145,25 +149,4 @@ module.exports = [
 			replace(replaceEnv),
 		],
 	},
-
-	// {
-	//   input: `${path.src}/history/index.js`,
-	//   output: {
-	//     file: `${path.dist}/history/bundle.js`,
-	//     format: `esm`,
-	//     // sourcemap: process.env.NODE_ENV === `development`
-	//   },
-	//   plugins: [
-	//     resolve(),
-	//     commonjs(),
-	//     replace(replaceEnv),
-	//     VuePlugin(),
-	//     copy({
-	//       targets: {
-	//         [`${path.src}/history/index.html`]: `${path.dist}/history/index.html`,
-	//       }
-	//     })
-	//   ],
-	// },
-
 ]
