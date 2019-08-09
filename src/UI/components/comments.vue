@@ -222,7 +222,6 @@
 			},
 
 			async loadComments() {
-				console.log('loadComments')
 				if (!this.topic) {
 					return
 				}
@@ -370,7 +369,6 @@
 			},
 
 			async loadAllComments() {
-				console.log('loadAllComments')
 				if (this.comments.items.length < this.topic.comments_count) {
 					await this.loadComments()
 					return this.loadAllComments()
