@@ -13,8 +13,6 @@ Sentry.init({
  * Отслеживание установок и обновлений
  */
 chrome.runtime.onInstalled.addListener(async ({reason, previousVersion}) => {
-
-	console.log(rr.rr.tt.y = 1234)
 	// reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
 
 	// Сохраняем время установки расширения или время обновления начиная с версии 0.4.11

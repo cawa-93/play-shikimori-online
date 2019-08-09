@@ -262,7 +262,7 @@
 					return
 				}
 
-				thist.layout.newComment.loading = true
+				this.layout.newComment.loading = true
 
 				let auth = await this.$store.dispatch('shikimori/getValidCredentials')
 				if (!auth) {
