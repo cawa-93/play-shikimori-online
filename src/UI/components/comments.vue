@@ -191,9 +191,7 @@
 					.replace(/<img/gimu, '<img loading="lazy" ')
 					.replace(/b-quote/gi, 'blockquote')
 
-				comment.created_at_relative = this.getCreatedAtRelative(
-					comment.created_at,
-				)
+				comment.created_at_relative = this.getCreatedAtRelative(comment.created_at)
 
 				return comment
 			},
@@ -249,8 +247,7 @@
 					this.comments.items.push(...comments.map(c => this.proccessComment(c)))
 					this.comments.page += 1
 				} catch (error) {
-					const exception = error.message || error
-					this.$ga.exception(exception)
+					window.Sentry.captureException(error)
 					console.error(error)
 				}
 
@@ -361,16 +358,11 @@
 
 					this.$ga.event('comments-actions', 'post-comment')
 				} catch (error) {
-					this.$ga.exception(
-						`New Comment Error: ${error.message || error}`,
-						true,
-					)
-
+					window.Sentry.captureException(error)
 					console.error('Не удалось создать комментарий', {error})
 					message({
 						color: 'error',
-						html:
-						       'Не удалось создать комментарий.\nОткройте консоль для информации об ошибке',
+						html: 'Не удалось создать комментарий.\nОткройте консоль для информации об ошибке',
 					})
 
 					this.layout.newComment.loading = false

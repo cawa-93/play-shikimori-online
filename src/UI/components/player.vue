@@ -95,7 +95,7 @@
 						'link[rel="icon"]',
 					).href = `/icons/${event.name}.png`
 				} else if (event.name === 'error') {
-					this.$ga.exception(event.error, true)
+					window.Sentry.captureException(event.error)
 				}
 			}
 			window.addEventListener('message', _listener)
