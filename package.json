@@ -9,8 +9,6 @@
     "npm": "6.9"
   },
   "dependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
     "@mdi/font": "^3.9.97",
     "@sentry/browser": "^5.6.0",
     "@sentry/integrations": "^5.6.0",
@@ -23,6 +21,7 @@
     "vuex": "^3.1.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.5.5",
     "@sentry/cli": "^1.47.1",
     "@types/video.js": "^7.2.11",
     "chrome-webstore-upload": "^0.2.2",
