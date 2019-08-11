@@ -1,4 +1,4 @@
-# Конфик сделан по примеру 
+# Конфиг сделан по примеру
 # https://github.com/vuetifyjs/vuetify/blob/aed4309f6e845b64d97a7b43f4275a36526bab04/.travis.yml
 
 sudo: false
