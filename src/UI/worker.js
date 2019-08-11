@@ -1,6 +1,5 @@
 import {storage}                                                      from 'kv-storage-polyfill'
 import {getMostPriorityTranslation, getPriorityTranslationForEpisode} from '../helpers/get-translation-priority.js'
-// import {clearString} from '../helpers/clear-string'
 
 
 onmessage = async ({data: {episode}}) => {

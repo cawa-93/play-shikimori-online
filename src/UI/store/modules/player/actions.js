@@ -1,4 +1,3 @@
-import {storage}                                                  from 'kv-storage-polyfill'
 import Vue                                                        from 'vue'
 import {anime365API, filterEpisodes, findEpisode, myanimelistAPI} from '../../../../helpers'
 import router                                                     from '../../../router'
@@ -145,24 +144,6 @@ export async function loadTranslations({commit}, episode) {
  */
 export async function selectTranslation({commit}, {translation}) {
 	commit('selectTranslation', translation)
-
-
-	Vue.nextTick(async () => {
-		/**
-		 * @type {Map<number, anime365.Translation>}
-		 */
-		let lastSelectedTranslations = await storage.get('lastSelectedTranslations')
-
-		// Если ранее хранилище переводов не создавалось — инициализировать его
-		if (!lastSelectedTranslations) {
-			lastSelectedTranslations = new Map()
-		}
-
-		lastSelectedTranslations.set(translation.seriesId, translation)
-
-		await storage.set('lastSelectedTranslations', lastSelectedTranslations)
-	})
-
 }
 
 

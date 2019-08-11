@@ -125,7 +125,7 @@ export function getPriorityTranslationForEpisode(history, episode) {
 		const priorityTranslations = filterTranslationsByAuthor(episode.translations, previousUserTranslation.authorsSummary)
 
 		// Если для текущей серии найден перевод того же автора что сохранен в истории — возвращаем
-		if (priorityTranslations) {
+		if (priorityTranslations.length) {
 			return priorityTranslations
 		}
 	}
