@@ -48,6 +48,9 @@
 
 
 <script>
+	import {storage} from 'kv-storage-polyfill'
+
+
 	export default {
 		name: 'translation-list',
 
@@ -128,7 +131,22 @@
 					if (translation) {
 						this.$store.dispatch('player/selectTranslation', {
 							translation,
-							trusted: true,
+						})
+
+						this.$nextTick(async () => {
+							/**
+							 * @type {Map<number, anime365.Translation>}
+							 */
+							let history = await storage.get('lastSelectedTranslations')
+
+							// Если ранее хранилище переводов не создавалось — инициализировать его
+							if (!history) {
+								history = new Map()
+							}
+
+							history.set(translation.seriesId, translation)
+
+							await storage.set('lastSelectedTranslations', history)
 						})
 					}
 				},
