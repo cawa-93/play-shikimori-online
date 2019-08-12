@@ -5,9 +5,11 @@ const browser = process.env.BROWSER ? process.env.BROWSER : 'chrome'
 const manimest = {
 	manifest_version: 2,
 
-	name: 'Play Шикимори Online',
+	name: '__MSG_extName__',
 	description: package.description,
 	version: package.version,
+
+	default_locale: 'ru',
 
 	homepage_url: 'https://shikimori.one/clubs/2372',
 	author: package.author,
@@ -103,9 +105,6 @@ if (browser === 'firefox') {
 	manimest.incognito = 'spanning'
 
 }
-
-
-// ...package
 
 
 fs.writeFileSync(`dist/${browser}/manifest.json`, JSON.stringify(manimest), {flag: 'w+'})

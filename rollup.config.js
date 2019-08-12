@@ -41,6 +41,11 @@ module.exports = [
 			resolve(),
 			replace(replaceEnv),
 			commonjs(),
+			copy({
+				targets: {
+					[`${path.src}/_locales`]: `${path.dist}/_locales`,
+				},
+			}),
 		],
 	},
 
