@@ -57,7 +57,7 @@ export function getNewCode() {
 		url.searchParams.set('client_id', process.env.SHIKIMORI_CLIENT_ID)
 		url.searchParams.set('redirect_uri', process.env.SHIKIMORI_REDIRECT_URI)
 		url.searchParams.set('response_type', 'code')
-		chrome.tabs.getSelected(selectedTab =>
+		chrome.tabs.query({active: true}, ([selectedTab]) =>
 			chrome.tabs.create({active: true, url: url.toString()}, createdTab => {
 
 				const _onRemoved = tabId => {

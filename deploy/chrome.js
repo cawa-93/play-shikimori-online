@@ -1,4 +1,4 @@
-const zipFolder = require('zip-folder')
+const zipFolder = require('./zipFolder.js')
 const fs = require('fs')
 
 const browser = 'chrome'
@@ -6,33 +6,33 @@ const browser = 'chrome'
 let folder = `dist/${browser}`
 let zipName = `${browser}.zip`
 
-// credentials and IDs from gitlab-ci.yml file (your appropriate config file)
-let REFRESH_TOKEN = process.env.WEBSTORE_REFRESH_TOKEN
-let EXTENSION_ID = process.env.WEBSTORE_EXTENSION_ID
-let CLIENT_SECRET = process.env.WEBSTORE_CLIENT_SECRET
-let CLIENT_ID = process.env.WEBSTORE_CLIENT_ID
 
-const webStore = require('chrome-webstore-upload')({
-	extensionId: EXTENSION_ID,
-	clientId: CLIENT_ID,
-	clientSecret: CLIENT_SECRET,
-	refreshToken: REFRESH_TOKEN,
-})
-
-
-// zipping the output folder
-zipFolder(folder, zipName, function (err) {
-	if (err) {
-		console.log('oh no!', err)
-		process.exit(1)
-	} else {
+zipFolder(folder, zipName)
+	.then(() => {
 		console.log(`Successfully Zipped ${folder} and saved as ${zipName}`)
 		uploadZip() // on successful zipping, call upload
-	}
-})
+	})
+	.catch(err => {
+		console.log('Can not create zip:', err)
+		process.exit(1)
+	})
 
 
 function uploadZip() {
+	// credentials and IDs from gitlab-ci.yml file (your appropriate config file)
+	let REFRESH_TOKEN = process.env.WEBSTORE_REFRESH_TOKEN
+	let EXTENSION_ID = process.env.WEBSTORE_EXTENSION_ID
+	let CLIENT_SECRET = process.env.WEBSTORE_CLIENT_SECRET
+	let CLIENT_ID = process.env.WEBSTORE_CLIENT_ID
+
+	const webStore = require('chrome-webstore-upload')({
+		extensionId: EXTENSION_ID,
+		clientId: CLIENT_ID,
+		clientSecret: CLIENT_SECRET,
+		refreshToken: REFRESH_TOKEN,
+	})
+
+
 	// creating file stream to upload
 	const extensionSource = fs.createReadStream(`./${zipName}`)
 

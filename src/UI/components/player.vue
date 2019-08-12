@@ -1,15 +1,15 @@
 <template>
 	<v-card class="player-container d-flex w-100 h-100">
 		<iframe
-				:src="src"
-				allowfullscreen
-				frameborder="0"
-				height="100%"
-				id="player"
-				ref="player"
-				v-ga.load="'trackView'"
-				v-if="$store.state.player.currentTranslation"
-				width="100%"
+			:src="src"
+			allowfullscreen
+			frameborder="0"
+			height="100%"
+			id="player"
+			ref="player"
+			v-ga.load="'trackView'"
+			v-if="$store.state.player.currentTranslation"
+			width="100%"
 		></iframe>
 	</v-card>
 </template>
@@ -54,7 +54,9 @@
 			translation(newTranslation, oldTranslation) {
 				const n = newTranslation || {}
 				const o = oldTranslation || {}
-				if ((n.title && n.title !== o.title) || !o.title) {
+				if ((
+					    n.title && n.title !== o.title
+				    ) || !o.title) {
 					this.setTitle()
 				}
 			},
@@ -62,10 +64,11 @@
 
 		methods: {
 			setTitle() {
-				if (!this.$store.state.player.currentTranslation)
+				if (!this.$store.state.player.currentTranslation) {
 					document.title = `Загрузка ...`
-				else
+				} else {
 					document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`
+				}
 			},
 		},
 
@@ -95,7 +98,7 @@
 						'link[rel="icon"]',
 					).href = `/icons/${event.name}.png`
 				} else if (event.name === 'error') {
-					this.$ga.exception(event.error, true)
+					window.Sentry.captureException(event.error)
 				}
 			}
 			window.addEventListener('message', _listener)

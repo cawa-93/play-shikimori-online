@@ -1,10 +1,10 @@
 <template>
-	<v-menu :close-on-content-click="true" :nudge-width="200" nudge-top="83">
+	<v-menu :close-on-content-click="true" :nudge-width="240" nudge-top="83" nudge-left="80">
 		<template v-slot:activator="{ on, attrs }">
 			<v-btn :color="user ? '' : 'error'" class="pr-2" text v-bind="attrs" v-on="on">
 				<v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
 				<span
-						class="long-and-truncated"
+					class="long-and-truncated"
 				>{{$vuetify.breakpoint.xsOnly ? 'Меню' : user ? 'Открыть меню' : 'Синхронизация отключена'}}</span>
 				<v-icon class="ml-1">mdi-menu-down</v-icon>
 			</v-btn>
@@ -21,6 +21,17 @@
 					<v-list-item-title>{{user.nickname}}</v-list-item-title>
 					<v-list-item-subtitle>Синхронизация включена</v-list-item-subtitle>
 				</v-list-item-content>
+
+				<v-list-item-action>
+					<v-tooltip top>
+						<template v-slot:activator="{on, attrs}">
+							<v-btn @click="toggleTheme" icon small v-bind="attrs" v-on="on">
+								<v-icon>mdi-brightness-6</v-icon>
+							</v-btn>
+						</template>
+						<span>Включить {{$vuetify.theme.dark ? 'светлую' : 'темную'}} тему</span>
+					</v-tooltip>
+				</v-list-item-action>
 
 				<v-list-item-action key="open-history">
 					<v-tooltip top>
@@ -57,6 +68,17 @@
 					<v-list-item-title>Включить синхронизацию</v-list-item-title>
 				</v-list-item-content>
 
+				<v-list-item-action @click.stop>
+					<v-tooltip top>
+						<template v-slot:activator="{on, attrs}">
+							<v-btn @click="toggleTheme" icon small v-bind="attrs" v-on="on">
+								<v-icon>mdi-brightness-6</v-icon>
+							</v-btn>
+						</template>
+						<span>Включить {{$vuetify.theme.dark ? 'светлую' : 'темную'}} тему</span>
+					</v-tooltip>
+				</v-list-item-action>
+
 				<v-list-item-action @click.stop key="open-history">
 					<v-btn :to="{name: 'history'}" icon small title="История просмотров">
 						<v-icon>mdi-history</v-icon>
@@ -66,6 +88,9 @@
 
 
 			<v-divider class="mb-2"></v-divider>
+
+
+			<!--			<v-divider class="mb-2"></v-divider>-->
 
 			<v-list-item
 				:href="shikiLink.url"
@@ -100,6 +125,11 @@
 <script>
 	export default {
 		name: 'main-menu',
+		data() {
+			return {
+				theme: localStorage.getItem('theme') || 'dark',
+			}
+		},
 
 		computed: {
 			shikiID() {
@@ -134,6 +164,12 @@
 
 			logout() {
 				return this.$store.commit('shikimori/logout')
+			},
+
+			toggleTheme() {
+				this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+				localStorage.setItem('theme', this.$vuetify.theme.dark ? 'dark' : 'light')
+				document.querySelector('html').style.background = this.$vuetify.theme.dark ? '#303030' : '#fafafa'
 			},
 		},
 	}

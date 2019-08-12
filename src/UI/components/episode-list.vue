@@ -2,18 +2,18 @@
 	<section class="episode-list">
 		<template class="mdc-select">
 			<v-select
-					:items="episodes"
-					:label="label"
-					:loading="episodes.length === 0"
-					filled
-					hide-details
-					item-text="episodeFull"
-					item-value="id"
-					no-data-text="Пока нет ни одной серии"
-					v-model="selectedEpisode"
+				:items="episodes"
+				:label="label"
+				:loading="episodes.length === 0"
+				filled
+				hide-details
+				item-text="episodeFull"
+				item-value="id"
+				no-data-text="Пока нет ни одной серии"
+				v-model="selectedEpisode"
 			>
 				<template v-slot:item="{item}">
-					<v-list-item-action @click.prevent.stop="markAsWatched(item)">
+					<v-list-item-action @click.prevent.stop="markAsWatched(item)" v-if="$store.state.shikimori.user">
 						<v-checkbox :input-value="item.episodeInt <= watchedEpisodes" @click.prevent></v-checkbox>
 					</v-list-item-action>
 
@@ -63,8 +63,8 @@
 			selectedEpisode: {
 				get() {
 					return this.$store.state.player.currentEpisode
-						? this.$store.state.player.currentEpisode.id
-						: null
+					       ? this.$store.state.player.currentEpisode.id
+					       : null
 				},
 
 				set(id) {
@@ -77,18 +77,20 @@
 
 			watchedEpisodes() {
 				return this.$store.state.shikimori.anime &&
-				this.$store.state.shikimori.anime.user_rate
-					? this.$store.state.shikimori.anime.user_rate.episodes
-					: 0
+				       this.$store.state.shikimori.anime.user_rate
+				       ? this.$store.state.shikimori.anime.user_rate.episodes
+				       : 0
 			},
 
 			label() {
 				return this.$store.state.shikimori.anime &&
-				(this.$store.state.shikimori.anime.russian ||
-					this.$store.state.shikimori.anime.name)
-					? this.$store.state.shikimori.anime.russian ||
-					this.$store.state.shikimori.anime.name
-					: 'Серия'
+				       (
+					       this.$store.state.shikimori.anime.russian ||
+					       this.$store.state.shikimori.anime.name
+				       )
+				       ? this.$store.state.shikimori.anime.russian ||
+				         this.$store.state.shikimori.anime.name
+				       : 'Серия'
 			},
 		},
 

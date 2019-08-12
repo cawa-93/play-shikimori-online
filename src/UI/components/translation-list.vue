@@ -1,15 +1,15 @@
 <template>
 	<section class="translation-list">
 		<v-select
-				:items="groupedTranslations"
-				:label="label"
-				:loading="translations.length === 0"
-				filled
-				hide-details
-				item-text="authorsSummary"
-				item-value="id"
-				no-data-text="Пока нет ни одного перевода"
-				v-model="currentTranslation"
+			:items="groupedTranslations"
+			:label="label"
+			:loading="translations.length === 0"
+			filled
+			hide-details
+			item-text="authorsSummary"
+			item-value="id"
+			no-data-text="Пока нет ни одного перевода"
+			v-model="currentTranslation"
 		>
 			<template v-slot:item="{item}">
 				<template v-if="item.label">
@@ -48,6 +48,9 @@
 
 
 <script>
+	import {storage} from 'kv-storage-polyfill'
+
+
 	export default {
 		name: 'translation-list',
 
@@ -55,7 +58,7 @@
 			return {
 				filters: {
 					type: {
-						value:   'voiceRu',
+						value: 'voiceRu',
 						options: [],
 					},
 				},
@@ -65,9 +68,9 @@
 		computed: {
 			translations() {
 				return this.$store.state.player.currentEpisode &&
-				this.$store.state.player.currentEpisode.translations
-					? this.$store.state.player.currentEpisode.translations
-					: []
+				       this.$store.state.player.currentEpisode.translations
+				       ? this.$store.state.player.currentEpisode.translations
+				       : []
 			},
 
 			groupedTranslations() {
@@ -105,7 +108,7 @@
 						items.push(...translations)
 
 						items.push({
-							divider:  true,
+							divider: true,
 							disabled: true,
 						})
 					}
@@ -117,8 +120,8 @@
 			currentTranslation: {
 				get() {
 					return this.$store.state.player.currentTranslation
-						? this.$store.state.player.currentTranslation.id
-						: null
+					       ? this.$store.state.player.currentTranslation.id
+					       : null
 				},
 				async set(id) {
 					const translation = this.translations.find(
@@ -128,7 +131,22 @@
 					if (translation) {
 						this.$store.dispatch('player/selectTranslation', {
 							translation,
-							trusted: true,
+						})
+
+						this.$nextTick(async () => {
+							/**
+							 * @type {Map<number, anime365.Translation>}
+							 */
+							let history = await storage.get('lastSelectedTranslations')
+
+							// Если ранее хранилище переводов не создавалось — инициализировать его
+							if (!history) {
+								history = new Map()
+							}
+
+							history.set(translation.seriesId, translation)
+
+							await storage.set('lastSelectedTranslations', history)
 						})
 					}
 				},

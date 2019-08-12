@@ -1,4 +1,4 @@
-# Конфик сделан по примеру 
+# Конфиг сделан по примеру
 # https://github.com/vuetifyjs/vuetify/blob/aed4309f6e845b64d97a7b43f4275a36526bab04/.travis.yml
 
 sudo: false
@@ -6,7 +6,7 @@ sudo: false
 language: node_js
 
 node_js:
-  - "10"
+  - "12"
 
 stages:
   - test
@@ -41,6 +41,13 @@ jobs:
             repo: cawa-93/play-shikimori-online
             tags: true
 
+        - provider: script
+          script: deploy/sentry.sh
+          skip_cleanup: true
+          on:
+            repo: cawa-93/play-shikimori-online
+            tags: true
+
         - provider: releases
           file:
             - chrome.zip
@@ -51,3 +58,5 @@ jobs:
           on:
             repo: cawa-93/play-shikimori-online
             tags: true
+
+

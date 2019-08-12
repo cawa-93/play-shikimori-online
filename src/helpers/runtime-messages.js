@@ -2,6 +2,16 @@ import {local} from './chrome-storage'
 
 
 export async function push(message) {
+	if (!message.html) {
+		return
+	}
+
+	const defaults = {
+		important: false,
+		color: 'info',
+	}
+
+	message = Object.assign({}, defaults, message)
 	let {runtimeMessages} = await local.get({runtimeMessages: []})
 
 	// Если у сообщения указан уникальный ID,

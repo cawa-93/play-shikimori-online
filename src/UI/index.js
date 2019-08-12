@@ -3,34 +3,44 @@
 //   devtools.connect(/* host, port */)
 // }
 
-import Vue          from 'vue'
-import VueAnalytics from 'vue-analytics'
-import Vuetify      from 'vuetify'
-import ru           from 'vuetify/es5/locale/ru'
-
+import * as Sentry       from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
+import Vue               from 'vue'
+import VueAnalytics      from 'vue-analytics'
+import Vuetify           from 'vuetify'
+import ru                from 'vuetify/es5/locale/ru'
 
 import Root   from './root.vue'
 import router from './router'
 import store  from './store/index.js'
 
 
+window.Sentry = Sentry
+Sentry.init({
+	dsn: process.env.SENTRY_DSN,
+	release: `${chrome.runtime.getManifest().name}@${chrome.runtime.getManifest().version}`,
+	environment: process.env.NODE_ENV || 'dev',
+	integrations: [new Integrations.Vue({Vue, attachProps: true})],
+})
+
+
 Vue.use(Vuetify)
 Vue.use(VueAnalytics, {
-	id:           'UA-71609511-7',
+	id: 'UA-71609511-7',
 	autoTracking: {
 		pageviewOnLoad: false,
-		exception:      process.env.NODE_ENV === 'production',
-		exceptionLogs:  process.env.NODE_ENV === 'development',
+		exception: process.env.NODE_ENV === 'production',
+		exceptionLogs: process.env.NODE_ENV === 'development',
 	},
-	set:          [
+	set: [
 		{
 			field: 'checkProtocolTask', value: function () {
 			},
 		},
 		{field: 'dimension1', value: chrome.runtime.getManifest().version},
 	],
-	debug:        {
-		enabled:     process.env.NODE_ENV === 'development',
+	debug: {
+		enabled: false, // process.env.NODE_ENV === 'development',
 		sendHitTask: process.env.NODE_ENV === 'production',
 
 	},
@@ -41,7 +51,7 @@ Vue.use(VueAnalytics, {
 			const currentTranslation = this.$store.state.player.currentTranslation
 			this.$ga.set('dimension2', currentTranslation.typeKind)
 			this.$ga.page({
-				page:  `/player/series/${currentTranslation.seriesId}`,
+				page: `/player/series/${currentTranslation.seriesId}`,
 				title: currentTranslation.title,
 			})
 		},
@@ -58,31 +68,24 @@ Vue.use(VueAnalytics, {
 /**
  * Настройки темы
  */
-
-const mq = window.matchMedia('(prefers-color-scheme: light)')
-
-mq.addEventListener('change', (e) => {
-	app.$vuetify.theme.dark = !e.matches
-	document.querySelector('html').style.background = e.matches ? '#fafafa' : '#303030'
-})
-
-document.querySelector('html').style.background = mq.matches ? '#fafafa' : '#303030'
+const savedTheme = localStorage.getItem('theme') || 'dark'
 
 const app = new Vue({
-	render:  h => h(Root),
+	render: h => h(Root),
 	store,
 	router,
 	vuetify: new Vuetify({
-		lang:  {
-			locale:  {ru},
+		lang: {
+			locale: {ru},
 			current: 'ru',
 		},
 		theme: {
 			// Используется именно конструкция !light чтобы по умолчанию была темная тема
 			// light === false когда в системе темная тема
 			// light === false когда браузер не поддерживает настройки темы
-			dark: !mq.matches,
+			dark: savedTheme === 'dark',
 		},
 	}),
 }).$mount('root')
 
+document.querySelector('html').style.background = app.$vuetify.theme.dark ? '#303030' : '#fafafa'
