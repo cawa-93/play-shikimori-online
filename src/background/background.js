@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(async ({reason}) => {
 			installAt: Date.now(),
 		})
 
-		// Загружать соотбения из рассылки начиная с времени установки
+		// Загружать сообщения из рассылки начиная с времени установки
 		local.set({
 			runtimeMessagesLastCheck: Date.now(),
 		})
@@ -29,8 +29,8 @@ chrome.runtime.onInstalled.addListener(async ({reason}) => {
 
 	// Создаем сообщение об обновлении
 	if (reason === 'update') {
-		const manifest = chrome.runtime.getManifest()
-		loadRuntimeMessages(0, `update-${manifest.version.replace(/\./g, '-')}`, 1)
+		const version = chrome.runtime.getManifest().version.replace(/\./g, '-')
+		loadRuntimeMessages(0, `update-${version}`, 1)
 	}
 
 })
@@ -131,12 +131,23 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 						.replace(/\n+/gim, '<br>')
 						.match(new RegExp(`\\[div=runtime-message-${broadcastType} hidden\\](.+?)\\[\\/div\\]`, 'im'))[1],
 				)
-				const link = runtimeMessage.link || `https://shikimori.one/comments/${comment.id}`
-				message({
-					id: comment.id,
-					color: runtimeMessage.color || 'info',
-					html: `${runtimeMessage.text}<br><b><a class="white--text" href="${link}">${runtimeMessage.linkText}</a></b>`,
-				})
+
+				runtimeMessage.id = comment.id
+
+				if (!runtimeMessage.link) {
+					runtimeMessage.link = `https://shikimori.one/comments/${comment.id}`
+				}
+
+				if (!runtimeMessage.html) {
+					const rows = []
+
+					if (runtimeMessage.text) rows.push(runtimeMessage.text)
+					if (runtimeMessage.linkText) rows.push(`<b><a class="white--text" href="${link}">${runtimeMessage.linkText}</a></b>`)
+
+					runtimeMessage.html = rows.join('<br>')
+				}
+
+				message(runtimeMessage)
 			} catch (error) {
 				console.error(`Can't show broadcast message`, {error, comment})
 				Sentry.captureException(error)
@@ -147,26 +158,23 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 
 
 async function loadBroadcast() {
-	const DAY = 86400000
-	let {runtimeMessagesLastCheck} = await local.get({
-		runtimeMessagesLastCheck: Date.now() - DAY * 5,
-	})
-
-	if (!runtimeMessagesLastCheck) {
-		runtimeMessagesLastCheck = Date.now() - DAY * 5
-	}
+	let {runtimeMessagesLastCheck} = await local.get('runtimeMessagesLastCheck')
 
 	// Сохраняем время запуска для ограничения следующей итерации
 	await local.set({
 		runtimeMessagesLastCheck: Date.now(),
 	})
 
+	if (!runtimeMessagesLastCheck || isNaN(runtimeMessagesLastCheck)) {
+		runtimeMessagesLastCheck = Date.now()
+		return []
+	}
+
 	return loadRuntimeMessages(runtimeMessagesLastCheck, 'broadcast')
 }
 
-loadBroadcast()
-setInterval(loadBroadcast, 1000 * 60 * 5)
 
+setInterval(loadBroadcast, /* каждые 5 минут */1000 * 60 * 5)
 
 async function makeRequest({url, options}) {
 
@@ -259,31 +267,22 @@ function fetchAndRetry(request) {
 }
 
 
+async function setBadgeMessageCount() {
+	let {runtimeMessages} = await local.get('runtimeMessages')
+	if (!runtimeMessages || !Array.isArray(runtimeMessages)) {
+		return chrome.browserAction.setBadgeText({text: ``})
+	}
+
+	const count = runtimeMessages.filter(m => !!m.important).length
+	const text = count ? `${count}` : ''
+	return chrome.browserAction.setBadgeText({text})
+}
+
+
+setBadgeMessageCount()
+
 chrome.storage.onChanged.addListener(({runtimeMessages}) => {
 	if (runtimeMessages) {
-		const count = (
-			runtimeMessages.newValue || []
-		).length
-		// await не нужен
-		setBadgeMessageCount(count)
+		return setBadgeMessageCount()
 	}
 })
-
-local.get({runtimeMessages: []}).then(({runtimeMessages}) => {
-	const count = (
-		runtimeMessages || []
-	).length
-	// await не нужен
-	setBadgeMessageCount(count)
-})
-function setBadgeMessageCount(count) {
-	return new Promise(resolve => {
-		if (count) {
-			// @ts-ignore
-			chrome.browserAction.setBadgeText({text: `${count}`}, () => resolve())
-		} else {
-			// @ts-ignore
-			chrome.browserAction.setBadgeText({text: ``}, () => resolve())
-		}
-	})
-}
