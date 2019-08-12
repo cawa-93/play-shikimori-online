@@ -120,6 +120,9 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 		} catch (error) {
 			console.error(`Can't check broadcast message`, {error})
 			Sentry.captureException(error)
+			if (error.error === 'not-granted') {
+				break
+			}
 		}
 	}
 
