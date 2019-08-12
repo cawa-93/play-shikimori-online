@@ -1,6 +1,6 @@
-import * as Sentry                                    from '@sentry/browser'
-import retry                                          from 'async-retry'
-import {local, push as message, sync, versionCompare} from '../helpers'
+import * as Sentry                    from '@sentry/browser'
+import retry                          from 'async-retry'
+import {local, push as message, sync} from '../helpers'
 
 
 Sentry.init({
@@ -12,32 +12,26 @@ Sentry.init({
 /**
  * Отслеживание установок и обновлений
  */
-chrome.runtime.onInstalled.addListener(async ({reason, previousVersion}) => {
+chrome.runtime.onInstalled.addListener(async ({reason}) => {
 	// reason = ENUM "install", "update", "chrome_update", or "shared_module_update"
 
-	// Сохраняем время установки расширения или время обновления начиная с версии 0.4.11
-	if (reason === 'install' || (
-		reason === 'update' && versionCompare('0.4.11', previousVersion) >= 0
-	)) {
+	if (reason === 'install') {
+		// Сохраняем время установки расширения
 		sync.set({
 			installAt: Date.now(),
 		})
 
+		// Загружать соотбения из рассылки начиная с времени установки
 		local.set({
 			runtimeMessagesLastCheck: Date.now(),
 		})
 	}
 
 	// Создаем сообщение об обновлении
-	// if (reason === 'update') {
-
-
-	//   const manifest = chrome.runtime.getManifest()
-	//   message({
-	//     id: 'update-notify',
-	//     html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><a
-	// href="https://shikimori.one/clubs/2372/topics/285394">Открыть список изменений</a>`, color: 'success', payload:
-	// { previousVersion } }) }
+	if (reason === 'update') {
+		const manifest = chrome.runtime.getManifest()
+		loadRuntimeMessages(0, `update-${manifest.version.replace(/\./g, '-')}`, 1)
+	}
 
 })
 
@@ -88,71 +82,90 @@ chrome.browserAction.onClicked.addListener(function () { //Fired when User Click
 })
 
 
-async function loadBroadcast() {
-	try {
-		const DAY = 86400000
-		let [{runtimeMessagesLastCheck}, {response: comments, error}] = await Promise.all([
-			local.get({
-				runtimeMessagesLastCheck: Date.now() - DAY * 5,
-			}),
-
-			makeRequest({
-				url: `https://shikimori.one/api/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=1`,
+async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', maxLoadedMessages = 10) {
+	const commentWithMessages = []
+	let page = 1
+	let lastCommentTimestamp = Date.now()
+	while (minTimestamp <= lastCommentTimestamp && commentWithMessages.length < maxLoadedMessages) {
+		try {
+			const {response: comments, error} = await makeRequest({
+				url: `https://shikimori.one/api/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=${page++}`,
 				options: {
 					headers: {
 						['Accept']: 'application/json',
 						['Content-Type']: 'application/json',
 					},
 				},
-			}),
-		])
+			})
 
-		if (!runtimeMessagesLastCheck) {
-			runtimeMessagesLastCheck = Date.now() - DAY * 5
-		}
+			if (error) {
+				throw error // Обработчик этой ошибки находится в блоке catch ниже
+			}
 
-		// await не нужен
-		local.set({
-			runtimeMessagesLastCheck: Date.now(),
-		})
+			if (!comments.length) {
+				break
+			}
 
-		if (error) {
-			throw error // Обработчик этой ошибки находится в блоке catch ниже
-		}
+			lastCommentTimestamp = new Date(comments[comments.length - 1].created_at).getTime()
 
-		// Отфильтровывает все комментарии в которых нет кодов [broadcast] и [div=runtime-message-broadcast hidden]
-		comments = comments
-			.filter(comment =>
-				comments
-				&& comment.user.id === 143570
-				&& /\[broadcast\]/m.test(comment.body)
-				&& /\[div=runtime-message-broadcast hidden\]/m.test(comment.body)
-				&& new Date(comment.created_at) >= runtimeMessagesLastCheck,
+			commentWithMessages.push(
+				...comments
+					.filter(comment =>
+						comment.user.id === 143570
+						&& new RegExp(`\\[div=runtime-message-${broadcastType} hidden\\]`, 'mi').test(comment.body)
+						&& new Date(comment.created_at).getTime() >= minTimestamp,
+					),
 			)
 
-		for (let comment of comments) {
+		} catch (error) {
+			console.error(`Can't check broadcast message`, {error})
+			Sentry.captureException(error)
+		}
+	}
+
+	if (commentWithMessages.length) {
+		for (let comment of commentWithMessages) {
 			try {
-				const runtimeMessage = JSON.parse(comment.body.replace(/\n+/gim, '<br>').match(/\[div=runtime-message-broadcast hidden\](.+?)\[\/div\]/im)[1])
+				const runtimeMessage = JSON.parse(
+					comment.body
+						.replace(/\n+/gim, '<br>')
+						.match(new RegExp(`\\[div=runtime-message-${broadcastType} hidden\\](.+?)\\[\\/div\\]`, 'im'))[1],
+				)
+				const link = runtimeMessage.link || `https://shikimori.one/comments/${comment.id}`
 				message({
 					id: comment.id,
 					color: runtimeMessage.color || 'info',
-					html: `${runtimeMessage.text}<br><b><a class="white--text" href="https://shikimori.one/comments/${comment.id}">${runtimeMessage.linkText}</a></b>`,
+					html: `${runtimeMessage.text}<br><b><a class="white--text" href="${link}">${runtimeMessage.linkText}</a></b>`,
 				})
 			} catch (error) {
-				console.error(`Can't show broadcast message`, {error})
+				console.error(`Can't show broadcast message`, {error, comment})
+				Sentry.captureException(error)
 			}
 		}
-
-	} catch (error) {
-		console.error(`Can't check broadcast message`, {error})
 	}
 }
 
 
+async function loadBroadcast() {
+	const DAY = 86400000
+	let {runtimeMessagesLastCheck} = await local.get({
+		runtimeMessagesLastCheck: Date.now() - DAY * 5,
+	})
+
+	if (!runtimeMessagesLastCheck) {
+		runtimeMessagesLastCheck = Date.now() - DAY * 5
+	}
+
+	// Сохраняем время запуска для ограничения следующей итерации
+	await local.set({
+		runtimeMessagesLastCheck: Date.now(),
+	})
+
+	return loadRuntimeMessages(runtimeMessagesLastCheck, 'broadcast')
+}
+
 loadBroadcast()
-setInterval(() => {
-	loadBroadcast()
-}, 1000 * 60 * 5)
+setInterval(loadBroadcast, 1000 * 60 * 5)
 
 
 async function makeRequest({url, options}) {
@@ -263,8 +276,6 @@ local.get({runtimeMessages: []}).then(({runtimeMessages}) => {
 	// await не нужен
 	setBadgeMessageCount(count)
 })
-
-
 function setBadgeMessageCount(count) {
 	return new Promise(resolve => {
 		if (count) {
