@@ -142,7 +142,7 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 					const rows = []
 
 					if (runtimeMessage.text) rows.push(runtimeMessage.text)
-					if (runtimeMessage.linkText) rows.push(`<b><a class="white--text" href="${link}">${runtimeMessage.linkText}</a></b>`)
+					if (runtimeMessage.linkText) rows.push(`<b><a class="white--text" href="${runtimeMessage.link}">${runtimeMessage.linkText}</a></b>`)
 
 					runtimeMessage.html = rows.join('<br>')
 				}
