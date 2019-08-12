@@ -13,7 +13,7 @@
 				v-model="selectedEpisode"
 			>
 				<template v-slot:item="{item}">
-					<v-list-item-action @click.prevent.stop="markAsWatched(item)">
+					<v-list-item-action @click.prevent.stop="markAsWatched(item)" v-if="$store.state.shikimori.user">
 						<v-checkbox :input-value="item.episodeInt <= watchedEpisodes" @click.prevent></v-checkbox>
 					</v-list-item-action>
 
