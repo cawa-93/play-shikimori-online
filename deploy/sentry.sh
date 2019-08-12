@@ -1,0 +1,9 @@
+#!/bin/bash
+
+VERSION=${TRAVIS_TAG:1}
+
+# Create a release
+sentry-cli releases new -p extension $VERSION
+sentry-cli releases -p extension files $VERSION upload-sourcemaps ./dist/chrome/
+sentry-cli releases -p extension set-commits --commit @TRAVIS_REPO_SLUG@$TRAVIS_COMMIT $VERSION
+sentry-cli releases -p extension deploys $VERSION new -e production

@@ -41,6 +41,13 @@ jobs:
             repo: cawa-93/play-shikimori-online
             tags: true
 
+        - provider: script
+          script: deploy/sentry.sh
+          skip_cleanup: true
+          on:
+            repo: cawa-93/play-shikimori-online
+            tags: true
+
         - provider: releases
           file:
             - chrome.zip
@@ -51,3 +58,5 @@ jobs:
           on:
             repo: cawa-93/play-shikimori-online
             tags: true
+
+
