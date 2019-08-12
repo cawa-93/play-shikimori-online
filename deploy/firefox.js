@@ -1,6 +1,6 @@
 var fs = require('fs')
 var deploy = require('firefox-extension-deploy')
-const zipFolder = require('zip-folder')
+const zipFolder = require('./zipFolder.js')
 
 
 const browser = 'firefox'
@@ -15,15 +15,15 @@ let SECRET = process.env.FIREFOX_SECRET
 let EXTENSION_ID = process.env.FIREFOX_EXTENSION_ID
 
 
-zipFolder(folder, zipName, function (err) {
-	if (err) {
-		console.log('oh no!', err)
-		process.exit(1)
-	} else {
+zipFolder(folder, zipName)
+	.then(() => {
 		console.log(`Successfully Zipped ${folder} and saved as ${zipName}`)
 		uploadZip() // on successful zipping, call upload
-	}
-})
+	})
+	.catch(err => {
+		console.log('Can not create zip:', err)
+		process.exit(1)
+	})
 
 
 function uploadZip() {
