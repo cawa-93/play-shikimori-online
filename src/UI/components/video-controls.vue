@@ -2,13 +2,13 @@
 	<v-layout>
 		<v-flex class="trunc">
 			<v-btn
-					:disabled="!previous"
-					:href="urls.previous"
-					@click.prevent="$store.dispatch('player/selectPreviousEpisode')"
-					class="flex-parent"
-					target="_self"
-					text
-					v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
+				:disabled="!previous"
+				:href="urls.previous"
+				@click.prevent="$store.dispatch('player/selectPreviousEpisode')"
+				class="flex-parent"
+				target="_self"
+				text
+				v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
 			>
 				<v-icon left>mdi-skip-previous</v-icon>
 				<span class="long-and-truncated">Предыдущая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
@@ -21,24 +21,24 @@
 
 		<v-flex class="text-right trunc">
 			<v-btn
-					:disabled="!next"
-					:href="urls.next"
-					@click.prevent="nextEpisode"
-					class="flex-parent"
-					target="_self"
-					text
-					v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
-					v-if="next || !$store.state.shikimori.nextSeason"
+				:disabled="!next"
+				:href="urls.next"
+				@click.prevent="nextEpisode"
+				class="flex-parent"
+				target="_self"
+				text
+				v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
+				v-if="next || !$store.state.shikimori.nextSeason"
 			>
 				<span class="long-and-truncated">Следующая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
 				<v-icon right>mdi-skip-next</v-icon>
 			</v-btn>
 
 			<v-btn
-					@click.prevent="nextSeason"
-					text
-					v-else-if="$store.state.shikimori.nextSeason"
-					v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
+				@click.prevent="nextSeason"
+				text
+				v-else-if="$store.state.shikimori.nextSeason"
+				v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
 			>
 				{{$store.state.shikimori.nextSeason.name}}
 				<v-icon right>mdi-skip-next</v-icon>
@@ -57,18 +57,19 @@
 		computed: {
 			previous() {
 				return this.$store.state.player.currentEpisode
-					? this.$store.state.player.currentEpisode.previous
-					: null
+				       ? this.$store.state.player.currentEpisode.previous
+				       : null
 			},
 
 			next() {
 				return this.$store.state.player.currentEpisode
-					? this.$store.state.player.currentEpisode.next
-					: null
+				       ? this.$store.state.player.currentEpisode.next
+				       : null
 			},
 
 			urls() {
-				let next, previous
+				let next,
+				    previous
 
 				if (this.previous) {
 					previous = new URL(chrome.runtime.getURL(`UI/index.html`))
@@ -111,7 +112,7 @@
 				this.$store.commit('player/clear')
 
 				this.$store.dispatch('player/loadEpisodes', {
-					anime:   parseInt(this.$store.state.shikimori.nextSeason.id),
+					anime: parseInt(this.$store.state.shikimori.nextSeason.id),
 					episode: parseFloat(this.$store.state.shikimori.nextSeason.episodeInt),
 				}) // Загрузка списка серий и запуск видео
 

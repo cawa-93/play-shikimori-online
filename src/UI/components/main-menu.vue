@@ -4,7 +4,7 @@
 			<v-btn :color="user ? '' : 'error'" class="pr-2" text v-bind="attrs" v-on="on">
 				<v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
 				<span
-						class="long-and-truncated"
+					class="long-and-truncated"
 				>{{$vuetify.breakpoint.xsOnly ? 'Меню' : user ? 'Открыть меню' : 'Синхронизация отключена'}}</span>
 				<v-icon class="ml-1">mdi-menu-down</v-icon>
 			</v-btn>

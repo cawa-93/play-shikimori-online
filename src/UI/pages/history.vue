@@ -3,12 +3,12 @@
 		<v-progress-linear :indeterminate="true" class="ma-0" v-if="loading"></v-progress-linear>
 
 		<div class="d-grid" v-if="history.length">
-			<div :key="anime.id" class="grid-item" md3 sm6 v-for="anime of history" xs12>
+			<div :key="anime.id" class="grid-item" v-for="anime of history">
 				<v-card :to="'/player/anime/' + anime.id + '/' + (anime.episodes + 1)" hover>
 					<v-img
-							:aspect-ratio="225/314"
-							:src="'https://shikimori.one' + anime.image"
-							gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
+						:aspect-ratio="225/314"
+						:src="'https://shikimori.one' + anime.image"
+						gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
 					>
 						<v-container class="fill-height" fill-height fluid>
 							<v-layout fill-height>
@@ -26,9 +26,10 @@
 			<p class="headline">Здесь будет отображаться ваша история просмотров</p>
 			<p class="body-2">
 				Откройте любое аниме на
-				<a href="https://shikimori.one/animes" target="_self">Шикимори</a> или
-				<a href="https://myanimelist.net/anime/season" target="_self">MyAnimeList</a> и нажмите «Начать
-				просмотр»
+				<a href="https://shikimori.one/animes" target="_self">Шикимори</a>
+				или
+				<a href="https://myanimelist.net/anime/season" target="_self">MyAnimeList</a>
+				и нажмите «Начать просмотр»
 			</p>
 		</div>
 	</main>

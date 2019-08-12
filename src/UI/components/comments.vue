@@ -8,13 +8,13 @@
 			<v-tooltip right>
 				<template v-slot:activator="{ on, attrs }">
 					<v-btn
-							:href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
-							class="ml-3"
-							icon
-							small
-							v-bind="attrs"
-							v-if="topic"
-							v-on="on"
+						:href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
+						class="ml-3"
+						icon
+						small
+						v-bind="attrs"
+						v-if="topic"
+						v-on="on"
 					>
 						<v-icon>mdi-link</v-icon>
 					</v-btn>
@@ -35,10 +35,10 @@
 			>
 				<template v-for="comment in comments.items">
 					<v-layout
-							:id="'comment-' + comment.id"
-							:key="comment.id"
-							class="comment-container"
-							tag="article"
+						:id="'comment-' + comment.id"
+						:key="comment.id"
+						class="comment-container"
+						tag="article"
 					>
 						<v-list-item-avatar>
 							<v-img :src="comment.user.avatar"/>
@@ -48,14 +48,14 @@
 							<v-list-item-title>
 								<strong>
 									<a
-											:href="'https://shikimori.one/' + comment.user.nickname"
-											role="author"
+										:href="'https://shikimori.one/' + comment.user.nickname"
+										role="author"
 									>@{{ comment.user.nickname }}</a>
 								</strong>
 								<time :datetime="comment.created_at" :title="comment.created_at">
 									<a
-											:href="'https://shikimori.one/comments/' + comment.id"
-											class="text-lg-right grey--text text--lighten-1 ml-2"
+										:href="'https://shikimori.one/comments/' + comment.id"
+										class="text-lg-right grey--text text--lighten-1 ml-2"
 									>{{comment.created_at_relative}}</a>
 								</time>
 							</v-list-item-title>
@@ -98,18 +98,18 @@
 
 			<v-form @submit.prevent="createComment" class="mt-7" v-if="user">
 				<v-textarea
-						:disabled="layout.newComment.loading"
-						filled
-						label="Опиши свои впечатления от серии"
-						name="input-7-4"
-						required
-						v-model.trim="newCommentText"
+					:disabled="layout.newComment.loading"
+					filled
+					label="Опиши свои впечатления от серии"
+					name="input-7-4"
+					required
+					v-model.trim="newCommentText"
 				></v-textarea>
 				<v-btn
-						:disabled="!newCommentText || layout.newComment.loading"
-						:loading="layout.newComment.loading"
-						block
-						type="submit"
+					:disabled="!newCommentText || layout.newComment.loading"
+					:loading="layout.newComment.loading"
+					block
+					type="submit"
 				>Отправить
 				</v-btn>
 			</v-form>
@@ -134,19 +134,19 @@
 
 		data() {
 			return {
-				layout:         {
-					loading:      true,
+				layout: {
+					loading: true,
 					moreComments: {
 						loading: false,
 					},
-					newComment:   {
+					newComment: {
 						loading: false,
 					},
 				},
-				topic:          null,
-				comments:       {
-					items:   [],
-					page:    1,
+				topic: null,
+				comments: {
+					items: [],
+					page: 1,
 					perPage: 20,
 				},
 				newCommentText: '',
@@ -208,16 +208,21 @@
 				const msPerMonth = msPerDay * 30
 				const msPerYear = msPerDay * 365
 
-				if (Math.abs(diff) < msPerMinute)
+				if (Math.abs(diff) < msPerMinute) {
 					return formatter.format(Math.round(diff / 1000), 'seconds')
-				if (Math.abs(diff) < msPerHour)
+				}
+				if (Math.abs(diff) < msPerHour) {
 					return formatter.format(Math.round(diff / msPerMinute), 'minutes')
-				if (Math.abs(diff) < msPerDay)
+				}
+				if (Math.abs(diff) < msPerDay) {
 					return formatter.format(Math.round(diff / msPerHour), 'hour')
-				if (Math.abs(diff) < msPerMonth)
+				}
+				if (Math.abs(diff) < msPerMonth) {
 					return formatter.format(Math.round(diff / msPerDay), 'day')
-				if (Math.abs(diff) < msPerYear)
+				}
+				if (Math.abs(diff) < msPerYear) {
 					return formatter.format(Math.round(diff / msPerMonth), 'month')
+				}
 				return formatter.format(Math.round(diff / msPerYear), 'year')
 			},
 
@@ -300,19 +305,19 @@
 						{
 							method: 'POST',
 							headers,
-							body:   JSON.stringify({
+							body: JSON.stringify({
 								episode_notification: {
-									aired_at:    new Date(
+									aired_at: new Date(
 										this.currentEpisode.firstUploadedDateTime,
 									).toISOString(),
-									anime_id:    this.currentEpisode.myAnimelist,
-									episode:     this.currentEpisode.episodeInt,
+									anime_id: this.currentEpisode.myAnimelist,
+									episode: this.currentEpisode.episodeInt,
 									is_anime365: true,
 									is_fandub,
 									is_raw,
 									is_subtitles,
 								},
-								token:                process.env.SHIKIMORI_SYSTEM_TOKEN,
+								token: process.env.SHIKIMORI_SYSTEM_TOKEN,
 							}),
 						},
 					)
@@ -333,13 +338,13 @@
 					const newComment = await shikimoriAPI(`/comments`, {
 						method: 'POST',
 						headers,
-						body:   JSON.stringify({
-							comment:  {
-								body:             this.newCommentText,
-								commentable_id:   this.topic.id,
+						body: JSON.stringify({
+							comment: {
+								body: this.newCommentText,
+								commentable_id: this.topic.id,
 								commentable_type: 'Topic',
-								is_offtopic:      false,
-								is_summary:       false,
+								is_offtopic: false,
+								is_summary: false,
 							},
 							frontend: false,
 						}),

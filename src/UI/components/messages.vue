@@ -1,24 +1,24 @@
 <template>
 	<div>
 		<v-snackbar
-				:bottom="snackbar.message.y === 'bottom'"
-				:color="snackbar.message.color"
-				:left="snackbar.message.x === 'left'"
-				:multi-line="snackbar.message.mode === 'multi-line'"
-				:right="snackbar.message.x === 'right'"
-				:timeout="snackbar.message.timeout"
-				:top="snackbar.message.y === 'top'"
-				:vertical="snackbar.message.mode === 'vertical'"
-				close-text="Закрыть сообщение"
-				role="alert"
-				v-model="snackbar.show"
+			:bottom="snackbar.message.y === 'bottom'"
+			:color="snackbar.message.color"
+			:left="snackbar.message.x === 'left'"
+			:multi-line="snackbar.message.mode === 'multi-line'"
+			:right="snackbar.message.x === 'right'"
+			:timeout="snackbar.message.timeout"
+			:top="snackbar.message.y === 'top'"
+			:vertical="snackbar.message.mode === 'vertical'"
+			close-text="Закрыть сообщение"
+			role="alert"
+			v-model="snackbar.show"
 		>
 			<span id="runtime-message-content" v-html="snackbar.message.html"></span>
 			<v-btn
-					:icon="snackbar.message.mode !== 'vertical'"
-					:text="snackbar.message.mode === 'vertical'"
-					@click="closeSnackbar"
-					aria-label="Закрыть"
+				:icon="snackbar.message.mode !== 'vertical'"
+				:text="snackbar.message.mode === 'vertical'"
+				@click="closeSnackbar"
+				aria-label="Закрыть"
 			>
 				<v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
 				<span v-else>Закрыть</span>
@@ -37,7 +37,7 @@
 		data() {
 			return {
 				snackbar: {
-					show:    false,
+					show: false,
 					message: {},
 				},
 			}
