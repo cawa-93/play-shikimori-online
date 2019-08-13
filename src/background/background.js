@@ -184,7 +184,25 @@ async function makeRequest({url, options}) {
 		// if (options && options.method && options.method === 'GET' && options.maxAge) {
 		// }
 
-	const isGranted = await isPermissionsGranted(url)
+	let isGranted = await isPermissionsGranted(url)
+
+	if (!isGranted) {
+		try {
+			isGranted = await requestPermissions([
+				'webRequest',
+				'webRequestBlocking',
+				'storage',
+				'tabs',
+			], [
+				'https://shikimori.one/*',
+				'https://shikimori.org/*',
+				'https://smotret-anime-365.ru/*',
+				'https://api.jikan.moe/*',
+			])
+		} catch (e) {
+		}
+	}
+
 	if (!isGranted) {
 		return {
 			error: {
@@ -220,6 +238,18 @@ function isPermissionsGranted(url) {
 		chrome.permissions.contains(
 			{
 				origins: [`${info.protocol}//${info.hostname}/*`],
+			},
+			resolve,
+		)
+	})
+}
+
+
+function requestPermissions(permissions = [], origins = []) {
+	return new Promise(resolve => {
+		chrome.permissions.request({
+				permissions,
+				origins,
 			},
 			resolve,
 		)
