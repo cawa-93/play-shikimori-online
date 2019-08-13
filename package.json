@@ -23,7 +23,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.5.5",
     "@sentry/cli": "^1.47.1",
-    "@types/video.js": "^7.2.11",
+    "@types/video.js": "^7.2.12",
     "archiver": "^3.1.1",
     "chrome-webstore-upload": "^0.2.2",
     "dotenv": "^8.0.0",
