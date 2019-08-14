@@ -94,7 +94,9 @@
 				</div>
 			</div>
 
-			<p class="pl-0 blockquote" v-else>Ты можешь написать комментарий первым, если поторопишься 😁</p>
+			<p class="pl-0 blockquote"
+			   v-else
+			   ref="comments-feed">Ты можешь написать комментарий первым, если поторопишься 😁</p>
 
 			<v-form @submit.prevent="createComment" class="mt-7" v-if="user">
 				<v-textarea
