@@ -64,15 +64,6 @@ import {throttle} from '../helpers/throttle'
 						toggleNextEpisodeButtonThrottled({currentTime, duration, nextEpisodeButton})
 					}
 				})
-
-				/**
-				 * Подписываем обработчик на события переключения режима Картинка в картинке
-				 */
-				window.addEventListener('message', ({data: event}) => {
-					if (event && event.name === 'pictureInPictureToggle') {
-						pictureInPictureToggle()
-					}
-				})
 			}
 
 
@@ -192,25 +183,6 @@ import {throttle} from '../helpers/throttle'
 			}
 
 
-			function pictureInPictureToggle() {
-				if (!player || !player.tag) {
-					return
-				}
-
-				if (!document.pictureInPictureElement) {
-					player.tag.requestPictureInPicture()
-						.catch(error => {
-							// Video failed to enter Picture-in-Picture mode.
-							console.error('Video failed to enter Picture-in-Picture mode.', {error})
-						})
-				} else {
-					document.exitPictureInPicture()
-						.catch(error => {
-							// Video failed to leave Picture-in-Picture mode.
-							console.error('Video failed to leave Picture-in-Picture mode.', {error})
-						})
-				}
-			}
 		} catch (error) {
 			window.parent.postMessage({
 				name: 'error',
