@@ -2,7 +2,7 @@ import {local} from './chrome-storage'
 
 
 export async function push(message) {
-	if (!message.html) {
+	if (!message || !message.html) {
 		return
 	}
 

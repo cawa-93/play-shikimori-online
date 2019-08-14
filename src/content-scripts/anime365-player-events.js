@@ -35,7 +35,7 @@ import {throttle} from '../helpers/throttle'
 			 * Запускается один раз, при первом запуске видео после рекламы
 			 */
 			function init() {
-				if (!player.concatenate.activated) return
+				if (!player || !player.concatenate || !player.concatenate.activated) return
 				player.off('play', init)
 
 
@@ -178,7 +178,7 @@ import {throttle} from '../helpers/throttle'
 			 * Функция автоматически запускает воспроизведение, если нет рекламной вставки
 			 */
 			async function autoPlay() {
-				if (!player.concatenate.activated) return
+				if (!player || !player.concatenate || !player.concatenate.activated) return
 
 				if (await storage.get(`play-fullscreen-state`) === true) {
 					player.requestFullscreen()

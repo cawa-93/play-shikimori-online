@@ -77,7 +77,7 @@
 
 			this.$ga.page(`/history`) // Отправляем данные в аналитику
 
-			if (!this.history[0]) {
+			if (!this.history || !this.history[0]) {
 				return
 			}
 

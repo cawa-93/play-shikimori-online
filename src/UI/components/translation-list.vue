@@ -76,7 +76,7 @@
 			groupedTranslations() {
 				const items = []
 
-				if (!this.translations.length) {
+				if (!this.translations || !this.translations.length) {
 					return items
 				}
 				const groups = [

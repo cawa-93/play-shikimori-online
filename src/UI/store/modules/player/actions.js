@@ -256,7 +256,7 @@ export function getPriorityTranslation({}, episode) {
  * @param {{state: vuex.Player, dispatch: Function}} context
  */
 export async function preloadNextEpisode({state, dispatch}) {
-	if (!state.currentEpisode.next) {
+	if (!state.currentEpisode || !state.currentEpisode.next) {
 		return
 	}
 

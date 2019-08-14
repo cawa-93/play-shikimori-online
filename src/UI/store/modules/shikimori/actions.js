@@ -4,6 +4,7 @@ import {anime365API, errorMessage, shikimoriAPI, sync, updateAuth} from '../../.
 /**
  * Загружает данный об аниме
  * @param {{commit: Function, dispatch: Function}} context
+ * @param {number} animeId
  */
 export async function loadAnime({commit, dispatch}, animeId) {
 	if (!animeId) {
@@ -122,7 +123,7 @@ export async function loadNextSeason({state, commit, dispatch}) {
 			)
 	}
 
-	if (!series.episodes || !series.episodes.length) {
+	if (!series || !series.episodes || !series.episodes.length) {
 		return
 	}
 
