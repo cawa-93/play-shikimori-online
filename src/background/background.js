@@ -118,9 +118,13 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 			)
 
 		}
-	} catch (error) {
-		console.error(`Can't check broadcast message`, {error})
-		Sentry.captureException(error)
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			console.erro('Невозможно загрузить уведомления: вы запретили доступ к shikimori.one')
+		} else {
+			console.error(`Can't check broadcast message`, {error})
+			Sentry.captureException(error)
+		}
 	}
 
 	if (commentWithMessages.length) {
@@ -148,9 +152,9 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 				}
 
 				message(runtimeMessage)
-			} catch (error) {
-				console.error(`Can't show broadcast message`, {error, comment})
-				Sentry.captureException(error)
+			} catch (e) {
+				console.error(`Can't show broadcast message`, {error: e, comment})
+				Sentry.captureException(e)
 			}
 		}
 	}
