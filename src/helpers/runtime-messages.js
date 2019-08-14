@@ -2,7 +2,7 @@ import {local} from './chrome-storage'
 
 
 export async function push(message) {
-	if (!message.html) {
+	if (!message || !message.html) {
 		return
 	}
 
@@ -31,4 +31,14 @@ export async function shift(...args) {
 	const message = runtimeMessages.shift(...args)
 	await local.set({runtimeMessages})
 	return message
+}
+
+
+export function errorMessage(str) {
+	return push({
+		color: 'error',
+		html: str,
+		mode: 'single',
+		timeout: 15000,
+	})
 }

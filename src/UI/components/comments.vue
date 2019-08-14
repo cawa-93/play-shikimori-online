@@ -128,7 +128,7 @@
 
 
 <script>
-	import {push as message, shikimoriAPI} from '../../helpers'
+	import {errorMessage, shikimoriAPI} from '../../helpers'
 
 
 	export default {
@@ -195,8 +195,12 @@
 					this.comments.items = []
 					this.comments.page = 1
 				} catch (e) {
-					window.Sentry.captureException(e)
-					console.error(e)
+					if (e.error === 'not-granted') {
+						errorMessage('Невозможно отобразить комментарии: вы запретили доступ к shikimori.one')
+					} else {
+						Sentry.captureException(e)
+						console.error(e)
+					}
 				}
 
 				await this.loadComments()
@@ -274,9 +278,13 @@
 
 					this.comments.items.push(...comments.map(c => this.proccessComment(c)))
 					this.comments.page += 1
-				} catch (error) {
-					window.Sentry.captureException(error)
-					console.error(error)
+				} catch (e) {
+					if (e.error === 'not-granted') {
+						errorMessage('Невозможно отобразить комментарии: вы запретили доступ к shikimori.one')
+					} else {
+						Sentry.captureException(e)
+						console.error(e)
+					}
 				}
 
 				this.layout.moreComments.loading = false
@@ -324,38 +332,54 @@
 						}
 					}
 
-					const episode_notifications = await shikimoriAPI(
-						'/v2/episode_notifications',
-						{
-							method: 'POST',
-							headers,
-							body: JSON.stringify({
-								episode_notification: {
-									aired_at: new Date(
-										this.currentEpisode.firstUploadedDateTime,
-									).toISOString(),
-									anime_id: this.currentEpisode.myAnimelist,
-									episode: this.currentEpisode.episodeInt,
-									is_anime365: true,
-									is_fandub,
-									is_raw,
-									is_subtitles,
-								},
-								token: process.env.SHIKIMORI_SYSTEM_TOKEN,
-							}),
-						},
-					)
+					try {
+						const episode_notifications = await shikimoriAPI(
+							'/v2/episode_notifications',
+							{
+								method: 'POST',
+								headers,
+								body: JSON.stringify({
+									episode_notification: {
+										aired_at: new Date(
+											this.currentEpisode.firstUploadedDateTime,
+										).toISOString(),
+										anime_id: this.currentEpisode.myAnimelist,
+										episode: this.currentEpisode.episodeInt,
+										is_anime365: true,
+										is_fandub,
+										is_raw,
+										is_subtitles,
+									},
+									token: process.env.SHIKIMORI_SYSTEM_TOKEN,
+								}),
+							},
+						)
 
-					if (!episode_notifications.topic_id) {
-						this.layout.newComment.loading = false
-						return
+						if (!episode_notifications || !episode_notifications.topic_id) {
+							this.layout.newComment.loading = false
+							return
+						}
+
+						const topic = await shikimoriAPI(
+							`/topics/${episode_notifications.topic_id}`,
+						)
+
+						this.topic = topic
+					} catch (e) {
+						if (e.error === 'not-granted') {
+							errorMessage('Невозможно создать топик обсуждения: вы запретили доступ к shikimori.one')
+						} else {
+							Sentry.captureException(e)
+							console.error(e)
+						}
 					}
 
-					const topic = await shikimoriAPI(
-						`/topics/${episode_notifications.topic_id}`,
-					)
 
-					this.topic = topic
+				}
+
+				if (!this.topic) {
+					this.layout.newComment.loading = false
+					return
 				}
 
 				try {
@@ -374,7 +398,7 @@
 						}),
 					})
 
-					if (!newComment.id) {
+					if (!newComment || !newComment.id) {
 						this.layout.newComment.loading = false
 						return
 					}
@@ -385,15 +409,17 @@
 					this.layout.newComment.loading = false
 
 					this.$ga.event('comments-actions', 'post-comment')
-				} catch (error) {
-					window.Sentry.captureException(error)
-					console.error('Не удалось создать комментарий', {error})
-					message({
-						color: 'error',
-						html: 'Не удалось создать комментарий.\nОткройте консоль для информации об ошибке',
-					})
+				} catch (e) {
+					if (e.error === 'not-granted') {
+						errorMessage('Невозможно создать комментарии: вы запретили доступ к shikimori.one')
+					} else {
+						Sentry.captureException(e)
+						console.error(e)
+						errorMessage('Невозможно создать комментарии. Откройте консоль для информации об ошибке')
+					}
 
 					this.layout.newComment.loading = false
+
 				}
 			},
 

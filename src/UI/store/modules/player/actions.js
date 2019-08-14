@@ -1,6 +1,6 @@
-import Vue                                                        from 'vue'
-import {anime365API, filterEpisodes, findEpisode, myanimelistAPI} from '../../../../helpers'
-import router                                                     from '../../../router'
+import Vue                                                                      from 'vue'
+import {anime365API, errorMessage, filterEpisodes, findEpisode, myanimelistAPI} from '../../../../helpers'
+import router                                                                   from '../../../router'
 
 
 const worker = new Worker('/UI/worker.js')
@@ -12,65 +12,75 @@ const worker = new Worker('/UI/worker.js')
  * @param {{anime: number, episode: number}} payload
  */
 export async function loadEpisodes({state, commit, dispatch}, {anime, episode: startEpisodeInt = 0}) {
-	/**
-	 * @type {anime365.api.SeriesCollection}
-	 */
-	let {data: [{episodes, type, numberOfEpisodes}]} = await anime365API(`/series/?myAnimeListId=${anime}`)
+	try {
 
-	if (!episodes || !episodes.length) {
-		return
+		/**
+		 * @type {anime365.api.SeriesCollection}
+		 */
+		let {data: [{episodes, type, numberOfEpisodes}]} = await anime365API(`/series/?myAnimeListId=${anime}`)
+
+		if (!episodes || !episodes.length) {
+			return
+		}
+
+		episodes = filterEpisodes({episodes, type, numberOfEpisodes})
+
+		episodes = episodes.map((episode, index) => {
+			episode.myAnimelist = anime
+			episode.next = episodes[index + 1]
+			episode.previous = episodes[index - 1]
+			// @ts-ignore
+			episode.episodeInt = parseFloat(episode.episodeInt)
+			return episode
+		})
+
+		commit('setEpisodes', episodes)
+
+		if (!startEpisodeInt) {
+			startEpisodeInt = 0
+		}
+
+		/**
+		 * startEpisodeInt — Номер серии которую необходимо запустить
+		 *
+		 * Поиск наиболее подходящей серии для запуска
+		 */
+		let startEpisode = findEpisode(state.episodes, startEpisodeInt)
+
+		// Если следующей серии не найдено — выполнить поиск предыдущей серии перебором
+		if (!startEpisode) {
+			startEpisode = findEpisode(state.episodes, startEpisodeInt - 1)
+		}
+
+
+		// Если предыдущая серия не найдена — выполнить поиск нулевой серии перебором
+		if (!startEpisode && startEpisodeInt > 2) {
+			startEpisode = findEpisode(state.episodes, 0)
+		}
+
+		// Если нулевая серия не найдена — выполнить поиск первой серии перебором
+		if (!startEpisode && startEpisodeInt > 2) {
+			startEpisode = findEpisode(state.episodes, 1)
+		}
+
+		// Если первая серия не найдена — использовать первый элемент из массива серий
+		if (!startEpisode) {
+			startEpisode = state.episodes[0]
+		}
+
+		if (startEpisode) {
+			await dispatch('selectEpisode', startEpisode)
+		}
+
+		await dispatch('loadEpisodesTitle')
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно загрузить список серий: вы запретили доступ к smotret-anime-365.ru')
+		} else {
+			Sentry.captureException(e)
+			console.error(e)
+		}
 	}
-
-	episodes = filterEpisodes({episodes, type, numberOfEpisodes})
-
-	episodes = episodes.map((episode, index) => {
-		episode.myAnimelist = anime
-		episode.next = episodes[index + 1]
-		episode.previous = episodes[index - 1]
-		// @ts-ignore
-		episode.episodeInt = parseFloat(episode.episodeInt)
-		return episode
-	})
-
-	commit('setEpisodes', episodes)
-
-	if (!startEpisodeInt) {
-		startEpisodeInt = 0
-	}
-
-	/**
-	 * startEpisodeInt — Номер серии которую необходимо запустить
-	 *
-	 * Поиск наиболее подходящей серии для запуска
-	 */
-	let startEpisode = findEpisode(state.episodes, startEpisodeInt)
-
-	// Если следующей серии не найдено — выполнить поиск предыдущей серии перебором
-	if (!startEpisode) {
-		startEpisode = findEpisode(state.episodes, startEpisodeInt - 1)
-	}
-
-
-	// Если предыдущая серия не найдена — выполнить поиск нулевой серии перебором
-	if (!startEpisode && startEpisodeInt > 2) {
-		startEpisode = findEpisode(state.episodes, 0)
-	}
-
-	// Если нулевая серия не найдена — выполнить поиск первой серии перебором
-	if (!startEpisode && startEpisodeInt > 2) {
-		startEpisode = findEpisode(state.episodes, 1)
-	}
-
-	// Если первая серия не найдена — использовать первый элемент из массива серий
-	if (!startEpisode) {
-		startEpisode = state.episodes[0]
-	}
-
-	if (startEpisode) {
-		await dispatch('selectEpisode', startEpisode)
-	}
-
-	await dispatch('loadEpisodesTitle')
 }
 
 
@@ -120,19 +130,28 @@ export async function selectEpisode({state, commit, dispatch}, episode) {
  * @param {anime365.Episode} episode
  */
 export async function loadTranslations({commit}, episode) {
-	if (!episode || (
-		Array.isArray(episode.translations) && episode.translations.length > 0
-	)) {
-		return
+	try {
+		if (!episode || (
+			Array.isArray(episode.translations) && episode.translations.length > 0
+		)) {
+			return
+		}
+
+		/**
+		 * @type {anime365.api.EpisodeSelf}
+		 */
+		let {data: {translations}} = await anime365API(`/episodes/${episode.id}`)
+
+		commit('setTranslations', {episode, translations})
+		return translations
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно загрузить перевод: вы запретили доступ к smotret-anime-365.ru')
+		} else {
+			Sentry.captureException(e)
+			console.error(e)
+		}
 	}
-
-	/**
-	 * @type {anime365.api.EpisodeSelf}
-	 */
-	let {data: {translations}} = await anime365API(`/episodes/${episode.id}`)
-
-	commit('setTranslations', {episode, translations})
-	return translations
 }
 
 
@@ -177,25 +196,35 @@ export async function loadEpisodesTitle({commit, state}) {
 	let currentPage = 1
 	let episodesToCommit = []
 
-	while (true) {
-		const promise = myanimelistAPI(`/anime/${state.currentEpisode.myAnimelist}/episodes/${currentPage}`)
+	try {
+		while (true) {
+			const promise = myanimelistAPI(`/anime/${state.currentEpisode.myAnimelist}/episodes/${currentPage}`)
 
-		if (episodesToCommit.length) {
-			commit('loadEpisodesTitle', episodesToCommit)
-			episodesToCommit = []
+			if (episodesToCommit.length) {
+				commit('loadEpisodesTitle', episodesToCommit)
+				episodesToCommit = []
+			}
+
+			const resp = await promise
+			if (!resp.episodes || !resp.episodes.length) break
+
+			episodesToCommit = resp.episodes
+
+			if (currentPage >= resp.episodes_last_page) {
+				break
+			}
+
+			currentPage++
 		}
-
-		const resp = await promise
-		if (!resp.episodes || !resp.episodes.length) break
-
-		episodesToCommit = resp.episodes
-
-		if (currentPage >= resp.episodes_last_page) {
-			break
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно загрузить названия серий: вы запретили доступ к api.jikan.moe')
+		} else {
+			Sentry.captureException(e)
+			console.error(e)
 		}
-
-		currentPage++
 	}
+
 
 	if (episodesToCommit.length) {
 		commit('loadEpisodesTitle', episodesToCommit)
@@ -227,7 +256,7 @@ export function getPriorityTranslation({}, episode) {
  * @param {{state: vuex.Player, dispatch: Function}} context
  */
 export async function preloadNextEpisode({state, dispatch}) {
-	if (!state.currentEpisode.next) {
+	if (!state.currentEpisode || !state.currentEpisode.next) {
 		return
 	}
 

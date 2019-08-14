@@ -14,7 +14,7 @@ export function getAuthorsPriority(translations) {
 	const authors = new Map()
 
 	translations.forEach(transaction => {
-		if (!transaction.authorsSummary) {
+		if (!transaction || !transaction.authorsSummary) {
 			return
 		}
 
@@ -47,7 +47,7 @@ export function getTypesPriority(translations) {
 	const types = new Map()
 
 	translations.forEach(transaction => {
-		if (!transaction.type) {
+		if (!transaction || !transaction.type) {
 			return
 		}
 
@@ -98,7 +98,7 @@ export function filterTranslationsByAuthor(translations, authorsSummaryRaw, type
  * @param {anime365.Translation[]} translations
  */
 export function getMostPriorityTranslation(translations) {
-	if (!translations.length) {
+	if (!translations || !translations.length) {
 		return null
 	}
 	let maxPriority = 0
