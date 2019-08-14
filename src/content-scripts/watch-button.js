@@ -115,6 +115,10 @@ function getAnime() {
 async function getEpisodes(myAnimeListId) {
 	/** @type {anime365.api.SeriesCollection} */
 	const {data: [series]} = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
+	if (!series) {
+		return []
+	}
+	
 	return filterEpisodes(series)
 }
 

@@ -1,4 +1,4 @@
-export function filterEpisodes({episodes, type, numberOfEpisodes}) {
+export function filterEpisodes({episodes, type, numberOfEpisodes} = {}) {
 	if (!episodes || !episodes.length) {
 		return []
 	}
