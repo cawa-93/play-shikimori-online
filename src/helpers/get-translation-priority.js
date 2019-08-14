@@ -70,8 +70,9 @@ export function getTypesPriority(translations) {
  *
  * @param {anime365.Translation[]} translations
  * @param {string} authorsSummaryRaw
+ * @param {string} type
  */
-export function filterTranslationsByAuthor(translations, authorsSummaryRaw) {
+export function filterTranslationsByAuthor(translations, authorsSummaryRaw, type) {
 	const authorsSummary = clearAuthorSummary(authorsSummaryRaw)
 	if (!authorsSummary) {
 		return []
@@ -80,9 +81,13 @@ export function filterTranslationsByAuthor(translations, authorsSummaryRaw) {
 	return translations.filter(translation => {
 		const summary = clearAuthorSummary(translation.authorsSummary)
 
-		return summary && (
-			authorsSummary.indexOf(summary) >= 0 || summary.indexOf(authorsSummary) >= 0
-		)
+		return summary &&
+		       (
+			       authorsSummary.indexOf(summary) >= 0 || summary.indexOf(authorsSummary) >= 0
+		       )
+		       && (
+			       !type || type === translation.type
+		       )
 
 	})
 }
@@ -118,11 +123,12 @@ export function getMostPriorityTranslation(translations) {
 export function getPriorityTranslationForEpisode(history, episode) {
 
 	// Выбираем перевод используемый для предыдущих серий
-	if (history.has(episode.seriesId)) {
-		const previousUserTranslation = history.get(episode.seriesId)
-
+	const previousUserTranslation = history.get(episode.seriesId)
+	const previousUserTranslationAuthor = previousUserTranslation ? previousUserTranslation.authorsSummary : null
+	const previousUserTranslationType = previousUserTranslation ? previousUserTranslation.type : null
+	if (previousUserTranslationAuthor) {
 		// Поиск перевода от того же автора
-		const priorityTranslations = filterTranslationsByAuthor(episode.translations, previousUserTranslation.authorsSummary)
+		const priorityTranslations = filterTranslationsByAuthor(episode.translations, previousUserTranslationAuthor, previousUserTranslationType)
 
 		// Если для текущей серии найден перевод того же автора что сохранен в истории — возвращаем
 		if (priorityTranslations.length) {
@@ -137,13 +143,24 @@ export function getPriorityTranslationForEpisode(history, episode) {
 		// Сортируем всех авторов в порядке популярности
 		.sort(([, rating1], [, rating2]) => rating2 - rating1)
 
+
 	// Перебираем всех авторов в порядке популярности
 	for (const [author] of authorPriorityMap) {
-		const filtered = filterTranslationsByAuthor(episode.translations, author)
+		const filtered = filterTranslationsByAuthor(episode.translations, author, previousUserTranslationType)
 
 		// Если перевод от одного из популярных авторов найден — вернуть его
 		if (filtered && filtered.length) {
 			return filtered
+		}
+	}
+
+	// Поиск перевода от того же типа что и сохраненный
+	if (previousUserTranslationType) {
+		const priorityTranslations = episode.translations.filter(t => t.type === previousUserTranslationType)
+
+		// Если для текущей серии найден перевод того же типа что сохранен в истории — возвращаем
+		if (priorityTranslations.length) {
+			return priorityTranslations
 		}
 	}
 
