@@ -200,13 +200,18 @@
 				const date = new Date(iso)
 				const now = new Date()
 				const diff = date - now
-				const formatter = new Intl.RelativeTimeFormat()
 
 				const msPerMinute = 60 * 1000
 				const msPerHour = msPerMinute * 60
 				const msPerDay = msPerHour * 24
 				const msPerMonth = msPerDay * 30
 				const msPerYear = msPerDay * 365
+
+				if (diff / msPerMonth < -1 || !Intl || typeof Intl.RelativeTimeFormat !== 'function') {
+					return date.toLocaleString()
+				}
+
+				const formatter = new Intl.RelativeTimeFormat()
 
 				if (Math.abs(diff) < msPerMinute) {
 					return formatter.format(Math.round(diff / 1000), 'seconds')
