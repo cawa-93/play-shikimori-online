@@ -32,3 +32,13 @@ export async function shift(...args) {
 	await local.set({runtimeMessages})
 	return message
 }
+
+
+export function errorMessage(str) {
+	return push({
+		color: 'error',
+		html: str,
+		mode: 'single',
+		timeout: 15000,
+	})
+}

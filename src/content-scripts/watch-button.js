@@ -115,6 +115,16 @@ function getAnime() {
 async function getEpisodes(myAnimeListId) {
 	/** @type {anime365.api.SeriesCollection} */
 	const {data: [series]} = await anime365API(`/series/?myAnimeListId=${myAnimeListId}`)
+		.catch(e => {
+			if (e.error === 'not-granted') {
+				alert('Невозможно найти видео: вы запретили доступ к smotret-anime-365.ru')
+			} else {
+				Sentry.captureException(e)
+				console.error(e)
+			}
+
+			return {data: []}
+		})
 	if (!series) {
 		return []
 	}

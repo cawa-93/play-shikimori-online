@@ -1,4 +1,4 @@
-import {anime365API, push as message, shikimoriAPI, sync, updateAuth} from '../../../../helpers'
+import {anime365API, errorMessage, shikimoriAPI, sync, updateAuth} from '../../../../helpers'
 
 
 /**
@@ -16,10 +16,18 @@ export async function loadAnime({commit, dispatch}, animeId) {
 		headers.Authorization = `${auth.token_type} ${auth.access_token}`
 	}
 
-
-	/** @type {shikimori.Anime} */
-	const anime = await shikimoriAPI(`/animes/${animeId}`, {headers})
-	commit('setAnime', anime)
+	try {
+		/** @type {shikimori.Anime} */
+		const anime = await shikimoriAPI(`/animes/${animeId}`, {headers})
+		commit('setAnime', anime)
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно информацию про аниме: вы запретили доступ к shikimori.one')
+		} else {
+			Sentry.captureException(e)
+			console.error(e)
+		}
+	}
 }
 
 
@@ -34,6 +42,17 @@ export async function loadNextSeason({state, commit, dispatch}) {
 
 	/** @type {{links: shikimori.FranchiseLink[], nodes: shikimori.FranchiseNode[]}} */
 	const franchise = await shikimoriAPI(`/animes/${state.anime.id}/franchise`)
+		.catch(e => {
+			if (e.error === 'not-granted') {
+				errorMessage('Невозможно выполнить поиск следующего сезона: вы запретили доступ к shikimori.one')
+			} else {
+				Sentry.captureException(e)
+				console.error(e)
+			}
+
+			return {links: []}
+		})
+
 	const sequelLink = franchise.links.find(l => l.source_id === state.anime.id && l.relation === 'sequel')
 
 	if (!sequelLink) {
@@ -49,7 +68,17 @@ export async function loadNextSeason({state, commit, dispatch}) {
 
 	/** @type {[anime365.api.SeriesCollection, shikimori.Anime]} */
 	const [{data: [series]}, anime] = await Promise.all([
-		await anime365API(`/series/?myAnimeListId=${sequelNode.id}`),
+		await anime365API(`/series/?myAnimeListId=${sequelNode.id}`)
+			.catch(e => {
+				if (e.error === 'not-granted') {
+					errorMessage('Невозможно загрузить следующий сезон: вы запретили доступ к smotret-anime-365.ru')
+				} else {
+					Sentry.captureException(e)
+					console.error(e)
+				}
+
+				return {data: []}
+			}),
 
 		(
 			async () => {
@@ -64,12 +93,20 @@ export async function loadNextSeason({state, commit, dispatch}) {
 
 				/** @type {shikimori.Anime} */
 				return await shikimoriAPI(`/animes/${sequelNode.id}`, {headers})
+					.catch(e => {
+						if (e.error === 'not-granted') {
+							errorMessage('Невозможно загрузить ваш список: вы запретили доступ к shikimori.one')
+						} else {
+							Sentry.captureException(e)
+							console.error(e)
+						}
+					})
 			}
 		)(),
 
 	])
 
-	if (!series.episodes || !series.episodes.length) {
+	if (!series || !series.episodes || !series.episodes.length) {
 		return
 	}
 
@@ -91,7 +128,7 @@ export async function loadNextSeason({state, commit, dispatch}) {
 
 	sequelNode.series = series.id
 
-	if (anime.user_rate) {
+	if (anime && anime.user_rate) {
 		sequelNode.episodeInt = anime.user_rate.episodes + 1
 	}
 
@@ -109,16 +146,26 @@ export async function loadUser({commit, dispatch}) {
 		return
 	}
 
-	/** @type {shikimori.User} */
-	const user = await shikimoriAPI(`/users/whoami`, {
-		headers: {
-			Authorization: `${auth.token_type} ${auth.access_token}`,
-		},
-	})
+	try {
+		/** @type {shikimori.User} */
+		const user = await shikimoriAPI(`/users/whoami`, {
+			headers: {
+				Authorization: `${auth.token_type} ${auth.access_token}`,
+			},
+		})
 
-	if (user) {
-		commit('setUser', user)
+		if (user) {
+			commit('setUser', user)
+		}
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно загрузить ваш профиль: вы запретили доступ к shikimori.one')
+		} else {
+			Sentry.captureException(e)
+			console.error(e)
+		}
 	}
+
 }
 
 
@@ -174,12 +221,15 @@ export async function saveUserRate({dispatch, commit, state: {anime, user}}, use
 				Authorization: `${auth.token_type} ${auth.access_token}`,
 			},
 		})
-	} catch (error) {
-		console.error('Не удалось синхронизироваться с Шикимори', {error})
-		message({
-			color: 'error',
-			html: 'Не удалось синхронизироваться с Шикимори.\nОткройте консоль для информации об ошибке',
-		})
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно синхронизироваться с вашим списком: вы запретили доступ к shikimori.one')
+		} else {
+			console.error('Не удалось синхронизироваться с Шикимори', {error: e})
+			Sentry.captureException(e)
+			errorMessage('Невозможно синхронизироваться с вашим списком. Откройте консоль для информации об ошибке')
+
+		}
 	}
 
 	commit('setUserRate', newUserRate)
@@ -214,24 +264,35 @@ export function markAsWatched({rootState, dispatch}) {
 
 
 export async function getValidCredentials({state, commit}, force = false) {
-	let auth = state.credentials
-	if (!auth || !auth.access_token) {
+	try {
+		let auth = state.credentials
+		if (!auth || !auth.access_token) {
 
-		if (!force) {
-			return null
+			if (!force) {
+				return null
+			}
+
+			auth = await updateAuth()
+			commit('saveCredentials', auth)
+			return auth
 		}
 
-		auth = await updateAuth()
-		commit('saveCredentials', auth)
+		if (1000 * (
+			auth.created_at + auth.expires_in
+		) <= Date.now()) {
+			auth = await updateAuth()
+			commit('saveCredentials', auth)
+		}
+
 		return auth
-	}
 
-	if (1000 * (
-		auth.created_at + auth.expires_in
-	) <= Date.now()) {
-		auth = await updateAuth()
-		commit('saveCredentials', auth)
+	} catch (e) {
+		if (e.error === 'not-granted') {
+			errorMessage('Невозможно авторизоваться: вы запретили доступ к shikimori.one')
+		} else {
+			console.error('Невозможно авторизоваться', {error: e})
+			Sentry.captureException(e)
+			errorMessage('Невозможно авторизоваться. Откройте консоль для информации об ошибке')
+		}
 	}
-
-	return auth
 }

@@ -39,7 +39,7 @@ export function shikimoriCallAPI(url, options = {}) {
 					) {
 						error.message = error.response[0]
 					}
-					return reject(new Error(error))
+					return reject(error)
 				}
 
 				resolve(response)
