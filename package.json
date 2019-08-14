@@ -1,6 +1,6 @@
 {
   "name": "play-shikimori-online",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "main": "index.js",
   "type": "module",
