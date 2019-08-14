@@ -9,7 +9,7 @@
     "npm": "6.9"
   },
   "dependencies": {
-    "@mdi/font": "^3.9.97",
+    "@mdi/font": "^4.0.96",
     "@sentry/browser": "^5.6.1",
     "@sentry/integrations": "^5.6.1",
     "async-retry": "^1.2.3",
