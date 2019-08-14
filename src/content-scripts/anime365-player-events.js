@@ -9,7 +9,16 @@ try {
 	 */
 	const player = window.playerGlobal
 	if (!player) {
-		throw new Error(`window.playerGlobal is ${window.playerGlobal}`)
+		const waitUntilEmbedAvailable = document.body.querySelector('.wait-until-embed-available')
+		if (!waitUntilEmbedAvailable) {
+			throw new Error(`window.playerGlobal is ${window.playerGlobal}`) // Исключение обрабатывается в блоке catch
+		                                                                     // ниже
+		}
+
+		const addUploadRequestForm = document.body.querySelector('form[action*="/translations/embedAddUploadRequest"]')
+		if (addUploadRequestForm) {
+			addUploadRequestForm.submit()
+		}
 	}
 	const seriesId = config.get('play-shikimori[seriesId]')
 	const episodeId = config.get('play-shikimori[episodeId]')
