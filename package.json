@@ -1,6 +1,6 @@
 {
   "name": "play-shikimori-online",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "main": "index.js",
   "type": "module",
@@ -9,7 +9,7 @@
     "npm": "6.9"
   },
   "dependencies": {
-    "@mdi/font": "^3.9.97",
+    "@mdi/font": "^4.0.96",
     "@sentry/browser": "^5.6.1",
     "@sentry/integrations": "^5.6.1",
     "async-retry": "^1.2.3",
@@ -17,13 +17,13 @@
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.0",
     "vue-router": "^3.1.2",
-    "vuetify": "^2.0.5",
+    "vuetify": "^2.0.7",
     "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.5.5",
     "@sentry/cli": "^1.47.1",
-    "@types/video.js": "^7.2.11",
+    "@types/video.js": "^7.2.12",
     "archiver": "^3.1.1",
     "chrome-webstore-upload": "^0.2.2",
     "dotenv": "^8.0.0",

@@ -31,7 +31,15 @@ export function shikimoriCallAPI(url, options = {}) {
 			},
 			({response, error}) => {
 				if (error) {
-					return reject(error)
+					if (!error.message
+					    && error.response
+					    && Array.isArray(error.response)
+					    && error.response.length === 1
+					    && typeof error.response[0] === 'string'
+					) {
+						error.message = error.response[0]
+					}
+					return reject(new Error(error))
 				}
 
 				resolve(response)

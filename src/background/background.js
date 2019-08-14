@@ -86,8 +86,8 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 	const commentWithMessages = []
 	let page = 1
 	let lastCommentTimestamp = Date.now()
-	while (minTimestamp <= lastCommentTimestamp && commentWithMessages.length < maxLoadedMessages) {
-		try {
+	try {
+		while (minTimestamp <= lastCommentTimestamp && commentWithMessages.length < maxLoadedMessages) {
 			const {response: comments, error} = await makeRequest({
 				url: `https://shikimori.one/api/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=${page++}`,
 				options: {
@@ -117,13 +117,10 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 					),
 			)
 
-		} catch (error) {
-			console.error(`Can't check broadcast message`, {error})
-			Sentry.captureException(error)
-			if (error.error === 'not-granted') {
-				break
-			}
 		}
+	} catch (error) {
+		console.error(`Can't check broadcast message`, {error})
+		Sentry.captureException(error)
 	}
 
 	if (commentWithMessages.length) {
@@ -187,7 +184,25 @@ async function makeRequest({url, options}) {
 		// if (options && options.method && options.method === 'GET' && options.maxAge) {
 		// }
 
-	const isGranted = await isPermissionsGranted(url)
+	let isGranted = await isPermissionsGranted(url)
+
+	if (!isGranted) {
+		try {
+			isGranted = await requestPermissions([
+				'webRequest',
+				'webRequestBlocking',
+				'storage',
+				'tabs',
+			], [
+				'https://shikimori.one/*',
+				'https://shikimori.org/*',
+				'https://smotret-anime-365.ru/*',
+				'https://api.jikan.moe/*',
+			])
+		} catch (e) {
+		}
+	}
+
 	if (!isGranted) {
 		return {
 			error: {
@@ -223,6 +238,18 @@ function isPermissionsGranted(url) {
 		chrome.permissions.contains(
 			{
 				origins: [`${info.protocol}//${info.hostname}/*`],
+			},
+			resolve,
+		)
+	})
+}
+
+
+function requestPermissions(permissions = [], origins = []) {
+	return new Promise(resolve => {
+		chrome.permissions.request({
+				permissions,
+				origins,
 			},
 			resolve,
 		)

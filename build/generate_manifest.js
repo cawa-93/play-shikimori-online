@@ -82,7 +82,6 @@ const manimest = {
 	permissions: [
 		'https://shikimori.one/*',
 		'https://shikimori.org/*',
-		'https://smotretanime.ru/*',
 		'https://smotret-anime-365.ru/*',
 		'https://api.jikan.moe/*',
 		'webRequest',

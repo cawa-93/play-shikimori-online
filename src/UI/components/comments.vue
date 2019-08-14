@@ -1,5 +1,5 @@
 <template>
-	<section class="comments-container">
+	<section class="comments-container" v-if="allowComments">
 		<div class="display-1 mt-6 mb-4 d-flex topic-title">
 			<h2 class="display-1"
 			    @click="$vuetify.goTo($refs['comments-feed'], {duration: 300})">
@@ -94,7 +94,9 @@
 				</div>
 			</div>
 
-			<p class="pl-0 blockquote" v-else>Ты можешь написать комментарий первым, если поторопишься 😁</p>
+			<p class="pl-0 blockquote"
+			   v-else
+			   ref="comments-feed">Ты можешь написать комментарий первым, если поторопишься 😁</p>
 
 			<v-form @submit.prevent="createComment" class="mt-7" v-if="user">
 				<v-textarea
@@ -134,6 +136,7 @@
 
 		data() {
 			return {
+
 				layout: {
 					loading: true,
 					moreComments: {
@@ -161,6 +164,10 @@
 			currentEpisode() {
 				return this.$store.state.player.currentEpisode
 			},
+
+			allowComments() {
+				return this.currentEpisode && this.currentEpisode.episodeInt % 1 === 0
+			},
 		},
 
 		methods: {
@@ -169,16 +176,28 @@
 			},
 
 			async init() {
-				if (!this.currentEpisode) return
-				this.layout.loading = true
-
-				const topics = await shikimoriAPI(
-					`/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`,
-				)
-
-				this.topic = topics[0]
+				this.topic = null
 				this.comments.items = []
 				this.comments.page = 1
+
+				if (!this.allowComments) return
+
+
+				this.layout.loading = true
+
+
+				try {
+					const topics = await shikimoriAPI(
+						`/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`,
+					)
+
+					this.topic = topics[0]
+					this.comments.items = []
+					this.comments.page = 1
+				} catch (e) {
+					window.Sentry.captureException(e)
+					console.error(e)
+				}
 
 				await this.loadComments()
 
@@ -200,13 +219,18 @@
 				const date = new Date(iso)
 				const now = new Date()
 				const diff = date - now
-				const formatter = new Intl.RelativeTimeFormat()
 
 				const msPerMinute = 60 * 1000
 				const msPerHour = msPerMinute * 60
 				const msPerDay = msPerHour * 24
 				const msPerMonth = msPerDay * 30
 				const msPerYear = msPerDay * 365
+
+				if (diff / msPerMonth < -1 || !Intl || typeof Intl.RelativeTimeFormat !== 'function') {
+					return date.toLocaleString()
+				}
+
+				const formatter = new Intl.RelativeTimeFormat()
 
 				if (Math.abs(diff) < msPerMinute) {
 					return formatter.format(Math.round(diff / 1000), 'seconds')
