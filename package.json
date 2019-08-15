@@ -13,7 +13,7 @@
     "@sentry/browser": "^5.6.1",
     "@sentry/integrations": "^5.6.1",
     "async-retry": "^1.2.3",
-    "kv-storage-polyfill": "^1.1.0",
+    "kv-storage-polyfill": "^2.0.0",
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.0",
     "vue-router": "^3.1.2",
