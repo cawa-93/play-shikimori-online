@@ -40,7 +40,7 @@ chrome.runtime.onInstalled.addListener(async ({reason}) => {
  * Исполнение сетевых запросов
  */
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	if (request.contentScriptQuery == 'fetchUrl') {
+	if (request.contentScriptQuery === 'fetchUrl') {
 		makeRequest(request).then(resp => sendResponse(resp))
 		return true // Will respond asynchronously.
 	}
@@ -122,8 +122,8 @@ async function loadRuntimeMessages(minTimestamp, broadcastType = 'broadcast', ma
 		if (e.error === 'not-granted') {
 			console.error('Невозможно загрузить уведомления: вы запретили доступ к shikimori.one')
 		} else {
-			console.error(`Can't check broadcast message`, {error})
-			Sentry.captureException(error)
+			console.error(`Can't check broadcast message`, {error: e})
+			Sentry.captureException(e)
 		}
 	}
 
