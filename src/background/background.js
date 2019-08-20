@@ -29,8 +29,15 @@ chrome.runtime.onInstalled.addListener(async ({reason}) => {
 
 	// Создаем сообщение об обновлении
 	if (reason === 'update') {
-		const version = chrome.runtime.getManifest().version.replace(/\./g, '-')
-		loadRuntimeMessages(0, `update-${version}`, 1)
+		const manifest = chrome.runtime.getManifest()
+		message({
+			id: 'runtime-message-update',
+			color: 'success',
+			html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><b><a class="white--text" href="https://github.com/cawa-93/play-shikimori-online/releases/tag/v${manifest.version}">Подробнее об изменениях →</a></b>`,
+		})
+
+		// Загрузка сообщений из клуба более не доступна
+		// loadRuntimeMessages(0, `update-${version}`, 1)
 	}
 
 })
