@@ -64,7 +64,17 @@
 					{
 						icon: 'mdi-account-question',
 						label: 'Обсудить расширение или задать вопрос автору',
-						url: manifest.homepage_url,
+						url: 'https://t.me/playshikionline_chat',
+					},
+					{
+						icon: 'mdi-telegram',
+						label: 'Следите за новинками в Telegram',
+						url: 'https://t.me/playshikionline',
+					},
+					{
+						icon: 'mdi-vk',
+						label: 'Следите за новинками в VK',
+						url: 'https://vk.com/playshikionline',
 					},
 					{
 						icon: 'mdi-github-circle',

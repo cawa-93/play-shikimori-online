@@ -11,7 +11,7 @@ const manimest = {
 
 	default_locale: 'ru',
 
-	homepage_url: 'https://shikimori.one/clubs/2372',
+	homepage_url: 'https://t.me/playshikionline',
 	author: package.author,
 	icons: {
 		'192': 'icons/play.png',
