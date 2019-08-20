@@ -87,7 +87,7 @@ function createButton(infoSection) {
 	WatchButtonSection.innerHTML = `
 		<div class="subheadline m10">Онлайн просмотр</div>
 		<a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;"><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></a>
-		<p style="color:#7b8084;text-align:center">Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong></p>
+		<p style="color:#7b8084;text-align:center">Все новости и обсуждение в <br><strong><a href="${chrome.runtime.getManifest().homepage_url}">Telegram</a></strong></p>
 		`
 
 	if (infoSection.querySelector('.block[itemprop="aggregateRating"] + .block')) {
@@ -128,7 +128,7 @@ async function getEpisodes(myAnimeListId) {
 	if (!series) {
 		return []
 	}
-	
+
 	return filterEpisodes(series)
 }
 
