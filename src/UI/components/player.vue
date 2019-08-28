@@ -1,111 +1,112 @@
 <template>
-	<v-card class="player-container d-flex w-100 h-100">
-		<iframe
-			:src="src"
-			allowfullscreen
-			frameborder="0"
-			height="100%"
-			id="player"
-			ref="player"
-			v-ga.load="'trackView'"
-			v-if="$store.state.player.currentTranslation"
-			width="100%"
-		></iframe>
-	</v-card>
+    <v-card class="player-container d-flex w-100 h-100" v-if="translation">
+        <iframe
+            :src="src"
+            allowfullscreen
+            height="100%"
+            id="player"
+            loading="eager"
+            ref="player"
+            style="border: none;"
+            width="100%"
+        ></iframe>
+    </v-card>
 </template>
 
 
-<script>
-	let _listener = null
+<script lang="ts">
+    import {playerStore, shikimoriStore} from '@/UI/store';
+    import {Component, Vue, Watch} from 'vue-property-decorator';
 
-	export default {
-		name: 'player',
+    let _listener: ((this: Window, ev: WindowEventMap['message']) => any) | null = null;
+    const iconLink: HTMLLinkElement | null = document.head.querySelector('link[rel="icon"]');
+    @Component({
+        name: 'player',
+    })
+    export default class Player extends Vue {
+        get translation() {
+            return playerStore.currentTranslation;
+        }
 
-		data() {
-			return {}
-		},
+        get src() {
+            if (!this.translation) {
+                return null;
+            }
 
-		computed: {
-			translation() {
-				return this.$store.state.player.currentTranslation
-			},
-			src() {
-				const src = new URL(this.translation.embedUrl)
-				const config = new URLSearchParams()
+            const src = new URL(this.translation.embedUrl);
+            const config = new URLSearchParams();
 
-				config.append('extension-id', chrome.runtime.id)
-				config.append('play-shikimori[seriesId]', this.translation.seriesId)
-				config.append('play-shikimori[episodeId]', this.translation.episodeId)
-				config.append('play-shikimori[id]', this.translation.id)
-				config.append('play-shikimori[isAutoPlay]', '1')
+            config.append('extension-id', chrome.runtime.id);
+            config.append('play-shikimori[seriesId]', `${this.translation.seriesId}`);
+            config.append('play-shikimori[episodeId]', `${this.translation.episodeId}`);
+            config.append('play-shikimori[id]', `${this.translation.id}`);
+            config.append('play-shikimori[isAutoPlay]', '1');
 
-				config.set(
-					'play-shikimori[nextEpisode]',
-					this.$store.state.player.currentEpisode.next ? '1' : '0',
-				)
+            if (playerStore.currentEpisode) {
+                config.set(
+                    'play-shikimori[nextEpisode]',
+                    playerStore.currentEpisode.next ? '1' : '0',
+                );
+            }
 
-				src.hash = config.toString()
+            src.hash = config.toString();
 
-				return src.toString()
-			},
-		},
+            return src.toString();
+        }
 
-		watch: {
-			translation(newTranslation, oldTranslation) {
-				const n = newTranslation || {}
-				const o = oldTranslation || {}
-				if ((
-					    n.title && n.title !== o.title
-				    ) || !o.title) {
-					this.setTitle()
-				}
-			},
-		},
 
-		methods: {
-			setTitle() {
-				if (!this.$store.state.player.currentTranslation) {
-					document.title = `Загрузка ...`
-				} else {
-					document.title = `${this.$store.state.player.currentTranslation.title} — онлайн просмотр`
-				}
-			},
-		},
+        public setTitle() {
+            if (!this.translation) {
+                document.title = `Загрузка ...`;
+            } else {
+                document.title = `${this.translation.title} — онлайн просмотр`;
+            }
+        }
 
-		created() {
-			this.setTitle()
+        @Watch('translation')
+        public onTranslationChange(newTranslation: anime365.Translation, oldTranslation: anime365.Translation) {
+            const n = newTranslation || {};
+            const o = oldTranslation || {};
+            if ((n.title && n.title !== o.title) || !o.title) {
+                this.setTitle();
+            }
+        }
 
-			_listener = ({data: event}) => {
-				if (event === 'watched') {
-					this.$store.dispatch('shikimori/markAsWatched')
-					this.$store.dispatch('player/preloadNextEpisode')
-				} else if (event.name === 'ended' || event.name === 'mark-as-watched') {
-					if (event.name === 'mark-as-watched') {
-						// console.log({ event: event.name });
-						this.$ga.event('player-controls', 'next-episode', 'in-frame')
-					}
 
-					this.$store.dispatch('shikimori/markAsWatched')
-					this.$store.dispatch('player/selectNextEpisode')
-				}
+        public created() {
+            this.setTitle();
 
-				// TODO: Сохранять прогресс просмотра серии в облачное хранилище для синхронизации между устройствами
-				// else if (event.name === "timeupdate") {
+            _listener = ({data: event}) => {
+                if (event === 'watched') {
+                    shikimoriStore.markAsWatched();
+                    playerStore.preloadNextEpisode();
+                } else if (event.name === 'ended' || event.name === 'mark-as-watched') {
 
-				// }
-				else if (event.name === 'play' || event.name === 'pause') {
-					document.head.querySelector(
-						'link[rel="icon"]',
-					).href = `/icons/${event.name}.png`
-				} else if (event.name === 'error') {
-					window.Sentry.captureException(event.error)
-				}
-			}
-			window.addEventListener('message', _listener)
-		},
+                    // FIXME: Логирование
+                    if (event.name === 'mark-as-watched') {
+                        // console.log({ event: event.name });
+                        // this.$ga.event('player-controls', 'next-episode', 'in-frame');
+                    }
 
-		destroyed() {
-			window.removeEventListener('message', _listener)
-		},
-	}
+                    shikimoriStore.markAsWatched();
+                    playerStore.selectNextEpisode();
+                } else if (event.name === 'play' || event.name === 'pause') {
+                    if (iconLink) {
+                        iconLink.href = `/${event.name}.png`;
+                    }
+                } else if (event.name === 'error') {
+                    console.error(event.error);
+                    // window.Sentry.captureException(event.error);
+                }
+            };
+            window.addEventListener('message', _listener);
+        }
+
+        public destroyed() {
+            if (_listener) {
+                window.removeEventListener('message', _listener);
+                _listener = null;
+            }
+        }
+    }
 </script>

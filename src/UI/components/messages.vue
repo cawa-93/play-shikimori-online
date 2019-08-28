@@ -1,30 +1,30 @@
 <template>
-	<div>
-		<v-snackbar
-			:bottom="snackbar.message.y === 'bottom'"
-			:color="snackbar.message.color"
-			:left="snackbar.message.x === 'left'"
-			:multi-line="snackbar.message.mode === 'multi-line'"
-			:right="snackbar.message.x === 'right'"
-			:timeout="snackbar.message.timeout"
-			:top="snackbar.message.y === 'top'"
-			:vertical="snackbar.message.mode === 'vertical'"
-			close-text="Закрыть сообщение"
-			role="alert"
-			v-model="snackbar.show"
-		>
-			<span id="runtime-message-content" v-html="snackbar.message.html"></span>
-			<v-btn
-				:icon="snackbar.message.mode !== 'vertical'"
-				:text="snackbar.message.mode === 'vertical'"
-				@click="closeSnackbar"
-				aria-label="Закрыть"
-			>
-				<v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
-				<span v-else>Закрыть</span>
-			</v-btn>
-		</v-snackbar>
-	</div>
+    <div>
+        <v-snackbar
+            :bottom="snackbar.message.y === 'bottom'"
+            :color="snackbar.message.color"
+            :left="snackbar.message.x === 'left'"
+            :multi-line="snackbar.message.mode === 'multi-line'"
+            :right="snackbar.message.x === 'right'"
+            :timeout="snackbar.message.timeout"
+            :top="snackbar.message.y === 'top'"
+            :vertical="snackbar.message.mode === 'vertical'"
+            close-text="Закрыть сообщение"
+            role="alert"
+            v-model="snackbar.show"
+        >
+            <span id="runtime-message-content" v-html="snackbar.message.html"></span>
+            <v-btn
+                :icon="snackbar.message.mode !== 'vertical'"
+                :text="snackbar.message.mode === 'vertical'"
+                @click="closeSnackbar"
+                aria-label="Закрыть"
+            >
+                <v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
+                <span v-else>Закрыть</span>
+            </v-btn>
+        </v-snackbar>
+    </div>
 </template>
 
 <script>
@@ -104,13 +104,13 @@
 </script>
 
 <style>
-	@media only screen and (min-width: 600px) {
-		.v-snack__wrapper {
-			max-width: 852px;
-		}
-	}
+    @media only screen and (min-width: 600px) {
+        .v-snack__wrapper {
+            max-width: 852px;
+        }
+    }
 
-	.v-snack__content {
-		height: auto !important;
-	}
+    .v-snack__content {
+        height: auto !important;
+    }
 </style>
