@@ -27,80 +27,80 @@
     </div>
 </template>
 
-<script>
-	import {shift as getMessage} from '../../helpers'
+<script lang="ts">
+    import {shift} from '@/helpers';
+    import {Component, Vue} from 'vue-property-decorator';
 
+    @Component({
+        name: 'messages',
+    })
+    export default class Messages extends Vue {
+        public snackbar: {
+            show: boolean,
+            message: RuntimeMessage | null,
+        } = {
+            show: false,
+            message: null,
+        };
 
-	export default {
-		name: 'messages',
+        public async loadOneRuntimeMessage() {
+            chrome.storage.onChanged.removeListener((c) => this.storageOnChanged(c));
 
-		data() {
-			return {
-				snackbar: {
-					show: false,
-					message: {},
-				},
-			}
-		},
+            let message = await shift();
 
-		methods: {
-			async loadOneRuntimeMessage() {
-				chrome.storage.onChanged.removeListener(this.storageOnChanged)
+            chrome.storage.onChanged.addListener((c) => this.storageOnChanged(c));
 
-				let message = await getMessage()
+            if (!message) {
+                return;
+            }
 
-				chrome.storage.onChanged.addListener(this.storageOnChanged)
+            message = Object.assign(
+                {},
+                {y: 'top', mode: 'multi-line', timeout: 0},
+                message,
+            );
 
-				if (!message) {
-					return
-				}
+            if (!message.html) {
+                console.error('Got empty runtime message', {message});
+                return;
+            }
 
-				message = Object.assign(
-					{},
-					{y: 'top', mode: 'multi-line', timeout: 0},
-					message,
-				)
+            this.snackbar.show = true;
+            this.snackbar.message = message;
+        }
 
-				if (!message.html) {
-					console.error('Got empty runtime message', {message})
-					return
-				}
+        public closeSnackbar() {
+            this.snackbar.show = false;
 
-				this.snackbar.show = true
-				this.snackbar.message = message
-			},
+            setTimeout(() => {
+                this.snackbar.message = null;
+                this.loadOneRuntimeMessage();
+            }, 500);
+        }
 
-			closeSnackbar() {
-				this.snackbar.show = false
+        public storageOnChanged(changes: { [key: string]: chrome.storage.StorageChange }) {
+            if (
+                changes.runtimeMessages &&
+                changes.runtimeMessages.newValue &&
+                changes.runtimeMessages.newValue.length &&
+                !this.snackbar.message
+            ) {
+                this.loadOneRuntimeMessage();
+            }
+        }
 
-				setTimeout(() => {
-					this.snackbar.message = {}
-					this.loadOneRuntimeMessage()
-				}, 1000)
-			},
+        public mounted() {
+            this.loadOneRuntimeMessage();
 
-			storageOnChanged(changes) {
-				if (
-					changes.runtimeMessages &&
-					changes.runtimeMessages.newValue &&
-					changes.runtimeMessages.newValue.length &&
-					!this.snackbar.message.html
-				) {
-					this.loadOneRuntimeMessage()
-				}
-			},
-		},
-
-		mounted() {
-			this.loadOneRuntimeMessage()
-
-			this.$el.addEventListener('click', event => {
-				if (event.target.matches('#runtime-message-content a')) {
-					this.$ga.event('actions', 'runtime-message-link', event.target.href)
-				}
-			})
-		},
-	}
+            this.$el.addEventListener('click', (event) => {
+                const target = event.target as HTMLAnchorElement | null;
+                if (target && target.matches('#runtime-message-content a')) {
+                    // FIXME: восстановить отслеживание кликов
+                    // this.$ga.event('actions', 'runtime-message-link', target.href);
+                }
+            });
+        }
+    }
 </script>
 
 <style>

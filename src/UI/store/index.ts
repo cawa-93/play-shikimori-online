@@ -13,7 +13,8 @@ Vue.use(Vuex);
 
 /**
  * FIXME:
- *  Error: ERR_ACTION_ACCESS_UNDEFINED: Are you trying to access this.someMutation() or this.someGetter inside an @Action?
+ *  Error: ERR_ACTION_ACCESS_UNDEFINED:
+ *  Are you trying to access this.someMutation() or this.someGetter inside an @Action?
  *  That works only in dynamic modules.
  *  If not dynamic use this.context.commit("mutationName", payload) and this.context.getters["getterName"]
  *  Error: Could not perform action loadAnime

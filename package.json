@@ -8,7 +8,8 @@
     "build": "vue-cli-service build",
     "build:dev": "vue-cli-service build --mode development",
     "build:watch": "npm run build:dev -- --watch",
-    "lint": "vue-cli-service lint --fix",
+    "lint": "vue-cli-service lint",
+    "lint:fix": "vue-cli-service lint --fix",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },

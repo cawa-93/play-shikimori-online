@@ -65,7 +65,7 @@
 
 
         public async mounted() {
-            const anime = parseInt(this.$route.params.anime);
+            const anime = parseInt(this.$route.params.anime, 10);
             const episode = parseFloat(this.$route.params.episode);
 
             // Нужно ли перезагружать серии
@@ -109,7 +109,8 @@
             }
 
             if (!shikimoriStore.anime || shikimoriStore.anime.id !== anime) {
-                promises.push(shikimoriStore.loadAnime(anime)); // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+                // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+                promises.push(shikimoriStore.loadAnime(anime));
             }
 
             // Дожидаемся выполнения всех операций в очереди

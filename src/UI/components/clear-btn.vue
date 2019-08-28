@@ -12,7 +12,7 @@
 
 <script lang="ts">
     // @ts-ignore
-    import {storage} from 'kv-storage-polyfill';
+    import storage from 'kv-storage-polyfill';
     import {Component, Vue} from 'vue-property-decorator';
     import {local, sync} from '../../helpers';
 

@@ -18,7 +18,7 @@
     import {playerStore, shikimoriStore} from '@/UI/store';
     import {Component, Vue, Watch} from 'vue-property-decorator';
 
-    let _listener: ((this: Window, ev: WindowEventMap['message']) => any) | null = null;
+    let listener: ((this: Window, ev: WindowEventMap['message']) => any) | null = null;
     const iconLink: HTMLLinkElement | null = document.head.querySelector('link[rel="icon"]');
     @Component({
         name: 'player',
@@ -76,7 +76,7 @@
         public created() {
             this.setTitle();
 
-            _listener = ({data: event}) => {
+            listener = ({data: event}) => {
                 if (event === 'watched') {
                     shikimoriStore.markAsWatched();
                     playerStore.preloadNextEpisode();
@@ -99,13 +99,13 @@
                     // window.Sentry.captureException(event.error);
                 }
             };
-            window.addEventListener('message', _listener);
+            window.addEventListener('message', listener);
         }
 
         public destroyed() {
-            if (_listener) {
-                window.removeEventListener('message', _listener);
-                _listener = null;
+            if (listener) {
+                window.removeEventListener('message', listener);
+                listener = null;
             }
         }
     }

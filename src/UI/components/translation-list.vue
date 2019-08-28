@@ -71,7 +71,17 @@
 
 
         get groupedTranslations() {
-            const items: Array<anime365.Translation | { label: string, disabled: true } | { divider: true, disabled: true }> = [];
+            interface Divider {
+                divider: true;
+                disabled: true;
+            }
+
+            interface Label {
+                label: string;
+                disabled: true;
+            }
+
+            const items: Array<anime365.Translation | Divider | Label> = [];
 
             if (!this.translations || !this.translations.length) {
                 return items;
@@ -116,16 +126,12 @@
 
 
         get currentTranslation() {
-            return playerStore.currentTranslation
-                   ? playerStore.currentTranslation.id
-                   : 0;
+            return playerStore.currentTranslation ? playerStore.currentTranslation.id : 0;
         }
 
 
         set currentTranslation(id) {
-            const translation = this.translations.find(
-                (translation) => translation.id === id,
-            );
+            const translation = this.translations.find((t) => t.id === id);
 
             if (translation) {
                 playerStore.setCurrentTranslation(translation);

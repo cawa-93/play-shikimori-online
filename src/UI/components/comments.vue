@@ -326,32 +326,32 @@
             };
 
             if (!this.topic) {
-                let is_fandub = false;
-                let is_raw = false;
-                let is_subtitles = false;
+                let isFandub = false;
+                let isRaw = false;
+                let isSubtitles = false;
 
                 for (const translation of this.currentEpisode.translations || []) {
                     switch (translation.typeKind) {
                         case 'raw':
-                            is_raw = true;
+                            isRaw = true;
                             break;
 
                         case 'sub':
-                            is_subtitles = true;
+                            isSubtitles = true;
                             break;
 
                         case 'voice':
-                            is_fandub = true;
+                            isFandub = true;
                             break;
                     }
 
-                    if (is_fandub && is_raw && is_subtitles) {
+                    if (isFandub && isRaw && isSubtitles) {
                         break;
                     }
                 }
 
                 try {
-                    const episode_notifications = await ShikimoriProvider.fetch<shikimori.EpisodeNotification>(
+                    const episodeNotification = await ShikimoriProvider.fetch<shikimori.EpisodeNotification>(
                         '/api/v2/episode_notifications',
                         {
                             errorMessage: 'Невозможно создать топик обсуждения',
@@ -365,22 +365,22 @@
                                     anime_id: this.currentEpisode.myAnimelist,
                                     episode: this.currentEpisode.episodeInt,
                                     is_anime365: true,
-                                    is_fandub,
-                                    is_raw,
-                                    is_subtitles,
+                                    is_fandub: isFandub,
+                                    is_raw: isRaw,
+                                    is_subtitles: isSubtitles,
                                 },
                                 token: process.env.VUE_APP_SHIKIMORI_SYSTEM_TOKEN,
                             }),
                         },
                     );
 
-                    if (!episode_notifications || !episode_notifications.topic_id) {
+                    if (!episodeNotification || !episodeNotification.topic_id) {
                         this.layout.newComment.loading = false;
                         return;
                     }
 
                     this.topic = await ShikimoriProvider.fetch<shikimori.Topic>(
-                        `/api/topics/${episode_notifications.topic_id}`,
+                        `/api/topics/${episodeNotification.topic_id}`,
                     );
                 } catch (e) {
                     console.error(e);

@@ -22,10 +22,10 @@ import videojs from 'video.js';
 
                 return;
             }
-            const seriesId = config.get('play-shikimori[seriesId]');
-            const episodeId = config.get('play-shikimori[episodeId]');
-            const nextEpisode = config.get('play-shikimori[nextEpisode]') === '1';
-            const isAutoPlay = config.get('play-shikimori[isAutoPlay]') === '1';
+            const SERIES_ID = config.get('play-shikimori[seriesId]');
+            const EPISODE_ID = config.get('play-shikimori[episodeId]');
+            const NEXT_EPISODE = config.get('play-shikimori[nextEpisode]') === '1';
+            const IS_AUTO_PLAY = config.get('play-shikimori[isAutoPlay]') === '1';
 
 
             /**
@@ -42,7 +42,7 @@ import videojs from 'video.js';
                 setCurrentTime();
                 initSaveFullScreenState();
                 let nextEpisodeButton: HTMLButtonElement | null;
-                if (nextEpisode) {
+                if (NEXT_EPISODE) {
                     nextEpisodeButton = createNextEpisodeButton();
                 }
 
@@ -55,15 +55,15 @@ import videojs from 'video.js';
                 const toggleNextEpisodeButtonThrottled = throttle(toggleNextEpisodeButton, 1000);
 
                 player.on('timeupdate', () => {
-                    if (!seriesId || !episodeId) {
+                    if (!SERIES_ID || !EPISODE_ID) {
                         return;
                     }
 
                     const currentTime = player.currentTime();
                     const duration = player.duration();
 
-                    saveCurrentTimeThrottled({seriesId, episodeId, currentTime});
-                    if (nextEpisode && nextEpisodeButton) {
+                    saveCurrentTimeThrottled({seriesId: SERIES_ID, episodeId: EPISODE_ID, currentTime});
+                    if (NEXT_EPISODE && nextEpisodeButton) {
                         toggleNextEpisodeButtonThrottled({currentTime, duration, nextEpisodeButton});
                     }
                 });
@@ -143,12 +143,12 @@ import videojs from 'video.js';
              * Загружаем сохранённое время и устанавливаем значение в плеере
              */
             async function setCurrentTime() {
-                const savedTime = await storage.get(`play-${seriesId}-time`);
-                if (!seriesId || !episodeId || !savedTime) {
+                const savedTime = await storage.get(`play-${SERIES_ID}-time`);
+                if (!SERIES_ID || !EPISODE_ID || !savedTime) {
                     return;
                 }
 
-                if (savedTime.episodeId === episodeId) {
+                if (savedTime.episodeId === EPISODE_ID) {
                     player.currentTime(Math.max(0, savedTime.time));
                 }
             }
@@ -197,7 +197,7 @@ import videojs from 'video.js';
             }
 
 
-            if (isAutoPlay) {
+            if (IS_AUTO_PLAY) {
                 autoPlay();
             }
 

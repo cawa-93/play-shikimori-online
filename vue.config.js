@@ -51,6 +51,11 @@ module.exports = {
 	configureWebpack: {
 		devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
 
+		performance: {
+			maxEntrypointSize: 2048000,
+			maxAssetSize: 2048000,
+		},
+
 		entry: {
 			'shikimori-watch-button': './src/content-scripts/shikimori-watch-button.ts',
 			// 'watch-button-myanime-list': './src/content-scripts/myanimelist.ts',
