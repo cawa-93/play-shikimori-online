@@ -235,7 +235,9 @@
                 .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
                 .replace(/<img/gimu, '<img loading="lazy" ')
                 .replace(/b-quote/gi, 'blockquote primary elevation-2" role="blockquote')
-                .replace(/class="smiley"/gi, 'class="smiley" height="32px"');
+                .replace(/class="smiley"/gi, 'class="smiley" height="32px"')
+                .replace(/class="ban"/gi, 'class="ban error elevation-2"')
+            ;
 
             comment.created_at_relative = this.getCreatedAtRelative(comment.created_at);
 
@@ -527,7 +529,7 @@
         word-break: break-word;
     }
 
-    .comment-container .comment-body .blockquote {
+    .comment-container .comment-body .blockquote, .comment-container .comment-body .ban {
         border-radius: 4px;
         position: relative;
         border-left: 8px solid;
@@ -678,8 +680,25 @@
         display: inline;
     }
 
-    .comment-container .ban [class*="b-user"] {
-        display: inline-block;
+    .comment-container .comment-body .ban {
+        padding: 5px 10px;
+        display: flex;
+        margin-top: 0;
+    }
+
+
+    .comment-container .comment-body .ban [class*="b-user"] > a {
+        display: flex;
+        align-items: center;
+    }
+
+    .comment-container .comment-body .ban [class*="b-user"] img {
+        border-radius: 20px;
+        margin-right: 0.2em;
+    }
+
+    .comment-container .comment-body .ban .resolution {
+        margin-left: 0.2em;
     }
 
     @keyframes shake {
