@@ -5,6 +5,9 @@
                 :items="episodes"
                 :label="label"
                 :loading="episodes.length === 0"
+                :menu-props="{
+                    maxHeight: 585
+                }"
                 filled
                 hide-details
                 item-text="episodeFull"

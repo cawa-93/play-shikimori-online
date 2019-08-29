@@ -4,6 +4,9 @@
             :items="groupedTranslations"
             :label="label"
             :loading="translations.length === 0"
+            :menu-props="{
+                maxHeight: 585
+            }"
             filled
             hide-details
             item-text="authorsSummary"
