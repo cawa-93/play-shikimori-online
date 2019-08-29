@@ -83,9 +83,9 @@
                                         v-bind="attrs"
                                         v-if="comments.items.length < topic.comments_count"
                                         v-on="{
-											mouseenter: () => {left.mouseenter(); right.mouseenter()},
-											mouseleave: () => {left.mouseleave(); right.mouseleave()},
-										}"
+                                            mouseenter: () => {left.mouseenter(); right.mouseenter()},
+                                            mouseleave: () => {left.mouseleave(); right.mouseleave()},
+                                        }"
                                     >
                                         <v-icon large>mdi-chevron-down</v-icon>
                                     </v-btn>
@@ -104,29 +104,37 @@
                ref="comments-feed"
                v-else>Ты можешь написать комментарий первым, если поторопишься 😁</p>
 
-            <v-form @submit.prevent="createComment" class="mt-7" v-if="user">
-                <v-textarea
+            <v-form @submit.prevent="createComment" class="mt-7 create-comment-form" v-if="user">
+                <v-text-field
                     :disabled="layout.newComment.loading"
+                    :loading="layout.newComment.loading"
+                    @click:append-outer="createComment"
                     filled
                     label="Опиши свои впечатления от серии"
-                    name="input-7-4"
                     required
                     v-model.trim="newCommentText"
-                ></v-textarea>
-                <v-btn
-                    :disabled="!newCommentText || layout.newComment.loading"
-                    :loading="layout.newComment.loading"
-                    block
-                    depressed
-                    type="submit"
-                >Отправить
-                </v-btn>
+                >
+                    <v-avatar slot="prepend">
+                        <img :alt="user.nickname" :src="user.image.x80"/>
+                    </v-avatar>
+
+                    <v-btn
+                        :disabled="!newCommentText || layout.newComment.loading"
+                        :loading="layout.newComment.loading"
+                        icon
+                        large
+                        slot="append-outer"
+                        type="submit"
+                    >
+                        <v-icon>mdi-send</v-icon>
+                    </v-btn>
+                </v-text-field>
             </v-form>
 
             <div class="text-center mt-6" v-else>
-                <v-btn @click="logIn" class="pl-4" large>
+                <v-btn @click="logIn" class="pl-4" large outlined>
                     <v-icon class="mr-2">mdi-sync</v-icon>
-                    Оставить отзыв
+                    Чтобы оставить отзыв необходимо включить синхронизацию
                 </v-btn>
             </div>
         </template>
@@ -309,11 +317,12 @@
 
 
         public async createComment() {
-            if (!this.user || !this.currentEpisode || !this.newCommentText) {
+            if (!this.user || !this.currentEpisode || !this.newCommentText || this.layout.newComment.loading) {
                 return;
             }
 
             this.layout.newComment.loading = true;
+
 
             const auth = await profileStore.getValidCredentials();
             if (!auth) {
@@ -418,6 +427,8 @@
 
                 this.newCommentText = '';
                 this.layout.newComment.loading = false;
+
+                this.topic.comments_count = (this.topic.comments_count || 0) + 1;
 
                 // this.$ga.event('comments-actions', 'post-comment');
             } catch (e) {
@@ -700,5 +711,14 @@
 
     .topic-title:not(:hover) .v-btn:not(:focus) {
         opacity: 0;
+    }
+
+
+    .create-comment-form .v-text-field.v-text-field--enclosed .v-input__prepend-outer {
+        margin: 4px 15px 0 0;
+    }
+
+    .create-comment-form .v-text-field.v-text-field--enclosed .v-input__append-outer {
+        margin: 6px 0 0 10px;
     }
 </style>
