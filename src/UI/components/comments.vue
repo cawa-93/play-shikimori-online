@@ -61,6 +61,7 @@
                                 >
                                     <a
                                         :href="'https://shikimori.one/comments/' + comment.id"
+                                        @click.prevent="answer(comment)"
                                         class="caption grey--text"
                                     >{{comment.created_at_relative}}</a>
                                 </time>
@@ -111,6 +112,7 @@
                     @click:append-outer="createComment"
                     filled
                     label="Опиши свои впечатления от серии"
+                    ref="create-comment-field"
                     required
                     v-model.trim="newCommentText"
                 >
@@ -448,6 +450,12 @@
                 await this.loadComments();
                 return this.loadAllComments();
             }
+        }
+
+
+        public answer(comment: shikimori.Comment) {
+            this.newCommentText += `[comment=${comment.id}]${comment.user.nickname}[/comment], `;
+            return (this.$refs['create-comment-field'] as HTMLInputElement).focus();
         }
 
         public scrollTo(top: number | HTMLElement) {
