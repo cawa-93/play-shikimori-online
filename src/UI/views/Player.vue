@@ -1,6 +1,6 @@
 <template>
     <main>
-        <v-layout column style="height: calc(100vh - 110px);min-height: 378px;" tag="article">
+        <v-layout column style="height: calc(100vh - 72px);min-height: 378px;" tag="article">
             <v-flex class="flex-grow-unset mb-4">
                 <v-container fluid grid-list-md pa-0>
                     <v-layout wrap>

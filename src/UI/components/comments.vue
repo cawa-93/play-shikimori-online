@@ -1,6 +1,6 @@
 <template>
     <section class="comments-container" v-if="allowComments">
-        <div class="display-1 mt-6 mb-4 d-flex topic-title">
+        <div class="display-1 my-2 d-flex topic-title">
             <h2 @click="scrollTo($refs['comments-feed'])"
                 class="display-1">
                 Обсуждение {{currentEpisode.episodeInt}} серии

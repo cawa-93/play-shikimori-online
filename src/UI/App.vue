@@ -24,6 +24,10 @@
 </script>
 
 <style>
+    .v-application--wrap > .container {
+        padding-bottom: 0;
+    }
+
     .w-100 {
         width: 100%;
     }
