@@ -37,7 +37,7 @@
 
 <script lang="ts">
     import {sync} from '@/helpers';
-    import {playerStore} from '@/UI/store';
+    import playerStore from '@/UI/store/player';
     import {Component, Vue} from 'vue-property-decorator';
     import {WatchingHistoryItem} from '../../../types/UI';
 

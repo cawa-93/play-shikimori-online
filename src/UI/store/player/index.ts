@@ -2,19 +2,20 @@ import {clearString, filterEpisodes, findEpisode} from '@/helpers';
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {MyAnimeListProvider} from '@/helpers/API/MyAnimeListProvider';
 import router from '@/UI/router';
-import {shikimoriStore, worker} from '@/UI/store';
+import store, {worker} from '@/UI/store';
+import shikimoriStore from '@/UI/store/shikimori';
 import Vue from 'vue';
-import {Action, Module, Mutation, VuexModule} from 'vuex-module-decorators';
-// import Store from '../index';
+import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
+
 
 // tslint:disable-next-line:no-var-requires
 // const worker = new Worker(require('@/UI/store/worker.ts'));
 
 @Module({
-    // dynamic: true,
+    dynamic: true,
     namespaced: true,
     name: 'player',
-    // store: Store,
+    store,
 })
 export class Player extends VuexModule {
     public episodes: anime365.Episode[] = [];
@@ -383,3 +384,5 @@ export class Player extends VuexModule {
         return translation;
     }
 }
+
+export default getModule(Player);

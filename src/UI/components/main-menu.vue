@@ -117,7 +117,8 @@
 </template>
 
 <script lang="ts">
-    import {playerStore, profileStore} from '@/UI/store';
+    import playerStore from '@/UI/store/player';
+    import profileStore from '@/UI/store/profile';
     import {Component, Vue} from 'vue-property-decorator';
 
     @Component({

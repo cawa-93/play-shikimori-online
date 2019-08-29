@@ -1,12 +1,13 @@
 import {updateAuth} from '@/helpers';
 import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
-import {Action, Module, Mutation, VuexModule} from 'vuex-module-decorators';
+import store from '@/UI/store';
+import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 
 @Module({
-    // dynamic: true,
+    dynamic: true,
     namespaced: true,
     name: 'profile',
-    // store: Store,
+    store,
 })
 export class Profile extends VuexModule {
     public user: shikimori.User | null = null;
@@ -98,3 +99,5 @@ export class Profile extends VuexModule {
         }
     }
 }
+
+export default getModule(Profile);

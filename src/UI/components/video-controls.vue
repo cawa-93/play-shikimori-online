@@ -46,7 +46,8 @@
 
 
 <script lang="ts">
-    import {playerStore, shikimoriStore} from '@/UI/store';
+    import playerStore from '@/UI/store/player';
+    import shikimoriStore from '@/UI/store/shikimori';
     import {Component, Vue} from 'vue-property-decorator';
 
     @Component({

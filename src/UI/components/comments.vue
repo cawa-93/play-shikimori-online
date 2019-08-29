@@ -144,7 +144,8 @@
 
 <script lang="ts">
     import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
-    import {playerStore, profileStore} from '@/UI/store';
+    import playerStore from '@/UI/store/player';
+    import profileStore from '@/UI/store/profile';
     import {Component, Vue, Watch} from 'vue-property-decorator';
 
     @Component({

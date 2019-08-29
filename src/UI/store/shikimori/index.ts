@@ -1,19 +1,18 @@
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
 import {sync} from '@/helpers/chrome-storage';
-
-import {playerStore, profileStore} from '@/UI/store';
+import store from '@/UI/store';
+import playerStore from '@/UI/store/player';
+import profileStore from '@/UI/store/profile';
 import Vue from 'vue';
-import {Action, Module, Mutation, VuexModule} from 'vuex-module-decorators';
-
-// import Store from '../index';
+import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 
 
 @Module({
-    // dynamic: true,
+    dynamic: true,
     namespaced: true,
     name: 'shikimori',
-    // store: Store,
+    store,
 })
 export class Shikimori extends VuexModule {
     public anime: shikimori.Anime | null = null;
@@ -261,3 +260,5 @@ export class Shikimori extends VuexModule {
     }
 
 }
+
+export default getModule(Shikimori);

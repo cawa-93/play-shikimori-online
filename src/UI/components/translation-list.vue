@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-    import {playerStore} from '@/UI/store';
+    import playerStore from '@/UI/store/player';
     // @ts-ignore
     import storage from 'kv-storage-polyfill';
     import {Component, Vue} from 'vue-property-decorator';
