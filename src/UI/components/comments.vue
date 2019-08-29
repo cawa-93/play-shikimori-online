@@ -237,6 +237,7 @@
                 .replace(/b-quote/gi, 'blockquote primary elevation-2" role="blockquote')
                 .replace(/class="smiley"/gi, 'class="smiley" height="32px"')
                 .replace(/class="ban"/gi, 'class="ban error elevation-2"')
+                .replace(/(b-image|b-img|video-link)/gi, '$1 v-card d-inline-block')
             ;
 
             comment.created_at_relative = this.getCreatedAtRelative(comment.created_at);
@@ -598,7 +599,7 @@
         position: relative;
     }
 
-    .comment-container .b-image img {
+    .comment-container .v-card.d-inline-block > img {
         display: block;
     }
 
