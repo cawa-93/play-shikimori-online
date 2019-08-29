@@ -1,6 +1,5 @@
-import {loadRuntimeMessages} from '@/background/loadRuntimeMessages';
-import {local} from '@/helpers';
-
+import {local} from '@/helpers/chrome-storage';
+import {loadRuntimeMessages} from './loadRuntimeMessages';
 
 export async function loadBroadcast() {
     let {runtimeMessagesLastCheck} = await local.get('runtimeMessagesLastCheck');

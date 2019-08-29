@@ -304,12 +304,6 @@
 
                 if (comments.length > this.comments.perPage) {
                     comments.pop();
-                } else if (this.comments.page !== 1) {
-                    // this.$ga.event(
-                    //     'comments-actions',
-                    //     'load-all-comments',
-                    //     this.comments.page,
-                    // );
                 }
 
                 this.comments.items.push(...comments.map((c) => this.processComment(c)));
@@ -435,8 +429,6 @@
                 this.layout.newComment.loading = false;
 
                 this.topic.comments_count = (this.topic.comments_count || 0) + 1;
-
-                // this.$ga.event('comments-actions', 'post-comment');
             } catch (e) {
                 console.error(e);
                 e.alert().track();

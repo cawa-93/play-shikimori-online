@@ -82,13 +82,6 @@
                     shikimoriStore.markAsWatched();
                     playerStore.preloadNextEpisode();
                 } else if (event.name === 'ended' || event.name === 'mark-as-watched') {
-
-                    // FIXME: Логирование
-                    if (event.name === 'mark-as-watched') {
-                        // console.log({ event: event.name });
-                        // this.$ga.event('player-controls', 'next-episode', 'in-frame');
-                    }
-
                     shikimoriStore.markAsWatched();
                     playerStore.selectNextEpisode();
                 } else if (event.name === 'play' || event.name === 'pause') {

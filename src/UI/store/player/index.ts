@@ -1,6 +1,8 @@
-import {clearString, filterEpisodes, findEpisode} from '@/helpers';
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {MyAnimeListProvider} from '@/helpers/API/MyAnimeListProvider';
+import {clearString} from '@/helpers/clear-string';
+import {filterEpisodes} from '@/helpers/filter-episodes';
+import {findEpisode} from '@/helpers/find-episode';
 import router from '@/UI/router';
 import store, {worker} from '@/UI/store';
 import shikimoriStore from '@/UI/store/shikimori';

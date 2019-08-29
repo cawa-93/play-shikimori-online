@@ -1,6 +1,6 @@
 // import * as Sentry                              from '@sentry/browser'
-import {pluralize} from '@/helpers';
 import {BackgroundRequestProvider} from '@/helpers/API/BackgroundRequestProvider';
+import {pluralize} from '@/helpers/pluralize';
 
 
 // Sentry.init({

@@ -1,6 +1,5 @@
-import {push as message} from '@/helpers';
 import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
-import {PermissionError} from '@/helpers/errors/PermissionError.class';
+import {push as message} from '@/helpers/runtime-messages';
 
 export async function loadRuntimeMessages(minTimestamp: number, broadcastType = 'broadcast', maxLoadedMessages = 10) {
     const commentWithMessages = [];

@@ -1,4 +1,4 @@
-import {local} from '@/helpers';
+import {local} from '@/helpers/chrome-storage';
 
 async function setBadgeMessageCount() {
     const {runtimeMessages} = await local.get('runtimeMessages');

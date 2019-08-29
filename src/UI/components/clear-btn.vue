@@ -11,10 +11,10 @@
 
 
 <script lang="ts">
+    import {local, sync} from '@/helpers/chrome-storage';
     // @ts-ignore
     import storage from 'kv-storage-polyfill';
     import {Component, Vue} from 'vue-property-decorator';
-    import {local, sync} from '../../helpers';
 
     @Component
     export default class ClearBtn extends Vue {
@@ -40,8 +40,6 @@
             if (!confirm(confirmMessage)) {
                 return;
             }
-
-            // this.$ga.event('actions', 'clear-all-data');
 
             const promise = Promise.all([
                 sync.clear(),

@@ -38,7 +38,7 @@ const manifest = {
         persistent: true,
     },
 
-    content_security_policy: `script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://www.google-analytics.com; object-src 'self'`,
+    content_security_policy: `script-src 'self' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com https://tagmanager.google.com; object-src 'self'`,
 
     web_accessible_resources: [
         '*',

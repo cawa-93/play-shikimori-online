@@ -32,7 +32,9 @@
 
 <script lang="ts">
 
-    import {getReviewUrl, push as message, sync} from '@/helpers';
+    import {sync} from '@/helpers/chrome-storage';
+    import {getReviewUrl} from '@/helpers/get-review-url';
+    import {push as message} from '@/helpers/runtime-messages';
     import Comments from '@/UI/components/comments.vue';
     import EpisodeList from '@/UI/components/episode-list.vue';
     import MainMenu from '@/UI/components/main-menu.vue';

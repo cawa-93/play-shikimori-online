@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-    import {shift} from '@/helpers';
+    import {shift} from '@/helpers/runtime-messages';
     import {Component, Vue} from 'vue-property-decorator';
 
     @Component({
@@ -91,14 +91,6 @@
 
         public mounted() {
             this.loadOneRuntimeMessage();
-
-            this.$el.addEventListener('click', (event) => {
-                const target = event.target as HTMLAnchorElement | null;
-                if (target && target.matches('#runtime-message-content a')) {
-                    // FIXME: восстановить отслеживание кликов
-                    // this.$ga.event('actions', 'runtime-message-link', target.href);
-                }
-            });
         }
     }
 </script>

@@ -1,5 +1,4 @@
-import {loadRuntimeMessages} from '@/background/loadRuntimeMessages';
-import {local, sync} from '@/helpers';
+import {local, sync} from '@/helpers/chrome-storage';
 
 /**
  * Отслеживание установок и обновлений
@@ -20,9 +19,9 @@ chrome.runtime.onInstalled.addListener(({reason}: chrome.runtime.InstalledDetail
     }
 
     // Создаем сообщение об обновлении
-    if (reason === 'update') {
-        const version = chrome.runtime.getManifest().version.replace(/\./g, '-');
-        loadRuntimeMessages(0, `update-${version}`, 1);
-    }
+    // if (reason === 'update') {
+    //     const version = chrome.runtime.getManifest().version.replace(/\./g, '-');
+    //     loadRuntimeMessages(0, `update-${version}`, 1);
+    // }
 
 });

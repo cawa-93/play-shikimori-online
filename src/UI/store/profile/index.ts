@@ -1,5 +1,5 @@
-import {updateAuth} from '@/helpers';
 import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
+import {updateAuth} from '@/helpers/oauth-provider';
 import store from '@/UI/store';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 
