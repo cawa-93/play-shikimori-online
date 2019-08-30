@@ -1,4 +1,5 @@
 import {local, sync} from '@/helpers/chrome-storage';
+import {push} from '@/helpers/runtime-messages';
 
 /**
  * Отслеживание установок и обновлений
@@ -19,9 +20,13 @@ chrome.runtime.onInstalled.addListener(({reason}: chrome.runtime.InstalledDetail
     }
 
     // Создаем сообщение об обновлении
-    // if (reason === 'update') {
-    //     const version = chrome.runtime.getManifest().version.replace(/\./g, '-');
-    //     loadRuntimeMessages(0, `update-${version}`, 1);
-    // }
+    if (reason === 'update') {
+        const manifest = chrome.runtime.getManifest();
+        push({
+            id: 'runtime-message-update',
+            color: 'success',
+            html: `${manifest.name} обновлен до версии <b>${manifest.version}</b><br><b><a class="white--text" href="https://github.com/cawa-93/play-shikimori-online/releases/tag/v${manifest.version}">Подробнее об изменениях →</a></b>`,
+        });
+    }
 
 });

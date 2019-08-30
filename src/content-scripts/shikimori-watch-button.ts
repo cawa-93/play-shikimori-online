@@ -96,7 +96,7 @@ function createButton(infoSection: HTMLElement): HTMLAnchorElement {
             <!-- Неразрывный пробел--> <!-- /Неразрывный пробел-->
         </a>
         <p style="color:#7b8084;text-align:center">
-            Все новости и предложения в клубе<br><strong><a href="/clubs/2372">Play Шикимори Online</a></strong>
+            <strong><a href="${chrome.runtime.getManifest().homepage_url}">Обратная связь</a></strong>
         </p>
     `;
 

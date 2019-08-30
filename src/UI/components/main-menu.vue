@@ -1,5 +1,5 @@
 <template>
-    <v-menu :close-on-content-click="true" :nudge-width="240" nudge-left="80" nudge-top="83">
+    <v-menu :close-on-content-click="true" :nudge-width="240" content-class="main-menu" nudge-left="80" nudge-top="83">
         <template v-slot:activator="{ on, attrs }">
             <v-btn :color="user ? '' : 'error'" class="pr-2" text v-bind="attrs" v-on="on">
                 <v-icon class="mr-1" v-if="!user">mdi-sync-alert</v-icon>
@@ -25,7 +25,12 @@
                 <v-list-item-action>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="toggleTheme" icon small v-bind="attrs" v-on="on">
+                            <v-btn @click="toggleTheme"
+                                   data-ga-event-label="toggle-theme"
+                                   icon
+                                   small
+                                   v-bind="attrs"
+                                   v-on="on">
                                 <v-icon>mdi-brightness-6</v-icon>
                             </v-btn>
                         </template>
@@ -36,7 +41,12 @@
                 <v-list-item-action key="open-history">
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn :to="{name: 'history'}" icon small v-bind="attrs" v-on="on">
+                            <v-btn :to="{name: 'history'}"
+                                   data-ga-event-label="open-history"
+                                   icon
+                                   small
+                                   v-bind="attrs"
+                                   v-on="on">
                                 <v-icon>mdi-history</v-icon>
                             </v-btn>
                         </template>
@@ -47,7 +57,7 @@
                 <v-list-item-action>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="logout" icon small v-bind="attrs" v-on="on">
+                            <v-btn @click="logout" ga-event-label="logout" icon small v-bind="attrs" v-on="on">
                                 <v-icon>mdi-sync-off</v-icon>
                             </v-btn>
                         </template>
@@ -59,7 +69,7 @@
             <!-- Ссылка на авторизацию -->
             <!-- Обязательну нужно указать key отличный от предыдущего пункта -->
             <!-- Иначе клик по вложенным кнопкам будет запускать авторизацию -->
-            <v-list-item @click="logIn" key="user-logged-out" v-else>
+            <v-list-item @click="logIn" data-ga-event-label="login" key="user-logged-out" v-else>
                 <v-list-item-avatar>
                     <v-icon>mdi-sync</v-icon>
                 </v-list-item-avatar>
@@ -71,16 +81,24 @@
                 <v-list-item-action @click.stop>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="toggleTheme" icon small v-bind="attrs" v-on="on">
+                            <v-btn @click="toggleTheme"
+                                   data-ga-event-label="toggle-theme"
+                                   icon
+                                   small
+                                   v-bind="attrs"
+                                   v-on="on">
                                 <v-icon>mdi-brightness-6</v-icon>
                             </v-btn>
                         </template>
                         <span>Включить {{$vuetify.theme.dark ? 'светлую' : 'темную'}} тему</span>
                     </v-tooltip>
                 </v-list-item-action>
-
                 <v-list-item-action @click.stop key="open-history">
-                    <v-btn :to="{name: 'history'}" icon small title="История просмотров">
+                    <v-btn :to="{name: 'history'}"
+                           data-ga-event-label="open-history"
+                           icon
+                           small
+                           title="История просмотров">
                         <v-icon>mdi-history</v-icon>
                     </v-btn>
                 </v-list-item-action>

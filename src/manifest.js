@@ -18,7 +18,7 @@ const manifest = {
 
     default_locale: 'ru',
 
-    homepage_url: 'https://shikimori.one/clubs/2372',
+    homepage_url: 'https://t.me/playshikionline',
 
     icons: {
         '192': 'play.png',
@@ -68,6 +68,9 @@ const manifest = {
             ],
             js: [
                 'anime-365-inject.js',
+            ],
+            css: [
+                'css/anime-365-player.css',
             ],
             run_at: 'document_end',
             all_frames: true,
