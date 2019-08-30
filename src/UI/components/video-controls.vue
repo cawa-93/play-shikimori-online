@@ -1,156 +1,138 @@
 <template>
-	<v-layout>
-		<v-flex class="trunc">
-			<v-btn
-				:disabled="!previous"
-				:href="urls.previous"
-				@click.prevent="$store.dispatch('player/selectPreviousEpisode')"
-				class="flex-parent"
-				target="_self"
-				text
-				v-ga="$ga.commands.trackVideoControls.bind(this, 'previous-episode', 'out-frame')"
-			>
-				<v-icon left>mdi-skip-previous</v-icon>
-				<span class="long-and-truncated">Предыдущая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
-			</v-btn>
-		</v-flex>
+    <v-layout>
+        <v-flex class="trunc">
+            <v-btn
+                :disabled="!previous"
+                :href="urls.previous"
+                @click.prevent="selectPreviousEpisode"
+                class="flex-parent"
+                target="_self"
+                text
+            >
+                <v-icon left>mdi-skip-previous</v-icon>
+                <span class="long-and-truncated">Предыдущая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
+            </v-btn>
+        </v-flex>
 
-		<v-flex class="text-center main-menu trunc">
-			<slot></slot>
-		</v-flex>
+        <v-flex class="text-center main-menu trunc">
+            <slot></slot>
+        </v-flex>
 
-		<v-flex class="text-right trunc">
-			<v-btn
-				:disabled="!next"
-				:href="urls.next"
-				@click.prevent="nextEpisode"
-				class="flex-parent"
-				target="_self"
-				text
-				v-ga="$ga.commands.trackVideoControls.bind(this, 'next-episode', 'out-frame')"
-				v-if="next || !$store.state.shikimori.nextSeason"
-			>
-				<span class="long-and-truncated">Следующая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
-				<v-icon right>mdi-skip-next</v-icon>
-			</v-btn>
+        <v-flex class="text-right trunc">
+            <v-btn
+                :disabled="!next"
+                :href="urls.next"
+                @click.prevent="nextEpisode"
+                class="flex-parent"
+                target="_self"
+                text
+                v-if="next || !nextSeason"
+            >
+                <span class="long-and-truncated">Следующая {{ $vuetify.breakpoint.xsOnly ? '' : 'серия'}}</span>
+                <v-icon right>mdi-skip-next</v-icon>
+            </v-btn>
 
-			<v-btn
-				@click.prevent="nextSeason"
-				text
-				v-else-if="$store.state.shikimori.nextSeason"
-				v-ga="$ga.commands.trackVideoControls.bind(this, 'next-season', 'out-frame')"
-			>
-				{{$store.state.shikimori.nextSeason.name}}
-				<v-icon right>mdi-skip-next</v-icon>
-			</v-btn>
-		</v-flex>
-	</v-layout>
+            <v-btn
+                @click.prevent="selectNextSeason"
+                text
+                v-else-if="nextSeason"
+            >
+                {{nextSeason.name}}
+                <v-icon right>mdi-skip-next</v-icon>
+            </v-btn>
+        </v-flex>
+    </v-layout>
 </template>
 
 
-<script>
+<script lang="ts">
+    import playerStore from '@/UI/store/player';
+    import shikimoriStore from '@/UI/store/shikimori';
+    import {Component, Vue} from 'vue-property-decorator';
+
+    @Component({
+        name: 'video-controls',
+    })
+    export default class VideoControls extends Vue {
+        get previous() {
+            return playerStore.currentEpisode ? playerStore.currentEpisode.previous : null;
+        }
 
 
-	export default {
-		name: 'video-controls',
+        get next() {
+            return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
+        }
 
-		computed: {
-			previous() {
-				return this.$store.state.player.currentEpisode
-				       ? this.$store.state.player.currentEpisode.previous
-				       : null
-			},
 
-			next() {
-				return this.$store.state.player.currentEpisode
-				       ? this.$store.state.player.currentEpisode.next
-				       : null
-			},
+        get urls() {
+            let next;
+            let previous;
 
-			urls() {
-				let next,
-				    previous
+            if (this.previous) {
+                previous = new URL(chrome.runtime.getURL(`UI/index.html`));
+                previous.hash = `/player/anime/${this.previous.myAnimelist}/${this.previous.episodeInt}`;
 
-				if (this.previous) {
-					previous = new URL(chrome.runtime.getURL(`UI/index.html`))
-					previous.hash = `/player/anime/${this.previous.myAnimelist}/${this.previous.episodeInt}`
+                previous = previous.toString();
+            }
 
-					previous = previous.toString()
-				}
+            if (this.next) {
+                next = new URL(chrome.runtime.getURL(`UI/index.html`));
+                next.hash = `/player/anime/${this.next.myAnimelist}/${this.next.episodeInt}`;
 
-				if (this.next) {
-					next = new URL(chrome.runtime.getURL(`UI/index.html`))
-					next.hash = `/player/anime/${this.next.myAnimelist}/${this.next.episodeInt}`
+                next = next.toString();
+            }
 
-					next = next.toString()
-				}
+            return {next, previous};
+        }
 
-				// else if (this.$store.state.shikimori.nextSeason) {
-				//   next = new URL(chrome.runtime.getURL(`UI/index.html`));
-				//   next.hash = `/player/anime/${this.$store.state.shikimori.nextSeason.id}`;
 
-				//   if (this.$store.state.shikimori.nextSeason.episodeInt !== undefined) {
-				//     next.hash += `/${this.$store.state.shikimori.nextSeason.episodeInt}`;
-				//   }
+        get nextSeason() {
+            return shikimoriStore.nextSeason;
+        }
 
-				//   next = next.toString();
-				// }
+        public nextEpisode() {
+            shikimoriStore.markAsWatched();
+            return playerStore.selectNextEpisode();
+        }
 
-				return {next, previous}
-			},
-		},
+        public selectPreviousEpisode() {
+            return playerStore.selectPreviousEpisode();
+        }
 
-		methods: {
-			async nextEpisode() {
-				this.$store.dispatch('shikimori/markAsWatched')
-				this.$store.dispatch('player/selectNextEpisode')
-			},
 
-			async nextSeason() {
-				this.$store.dispatch('shikimori/markAsWatched')
+        public async selectNextSeason() {
+            shikimoriStore.markAsWatched();
+            if (!shikimoriStore.nextSeason) {
+                return;
+            }
 
-				this.$store.commit('player/clear')
+            playerStore.clear();
 
-				this.$store.dispatch('player/loadEpisodes', {
-					anime: parseInt(this.$store.state.shikimori.nextSeason.id),
-					episode: parseFloat(this.$store.state.shikimori.nextSeason.episodeInt),
-				}) // Загрузка списка серий и запуск видео
+            // Загрузка списка серий и запуск видео
+            await playerStore.loadEpisodes({
+                anime: shikimoriStore.nextSeason.id,
+                episode: shikimoriStore.nextSeason.episodeInt || 0,
+            });
 
-				this.$store.dispatch(
-					'shikimori/loadAnime',
-					this.$store.state.shikimori.nextSeason.id,
-				) // Загрузка информации про аниме и оценку от пользователя если тот авторизован
-			},
-		},
-	}
+            // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+            await shikimoriStore.loadAnime(shikimoriStore.nextSeason.id);
+        }
+    }
 </script>
 
 <style>
-	.flex.trunc,
-	.flex.trunc .v-btn__content {
-		min-width: 0 !important;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		max-width: 100%;
-	}
+    .flex.trunc,
+    .flex.trunc .v-btn__content {
+        min-width: 0 !important;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
 
-	.long-and-truncated {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	/* @media (max-width: 670px) {
-	  .main-menu {
-		order: 3;
-		flex-basis: 100%;
-	  }
-	}
-
-	@media (max-width: 768px) {
-	  .hide-on-xs {
-		display: none;
-	  }
-	} */
+    .long-and-truncated {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
