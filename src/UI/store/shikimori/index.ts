@@ -60,7 +60,8 @@ export class Shikimori extends VuexModule {
                 errorMessage: 'Невозможно информацию про аниме',
             });
         } catch (e) {
-            e.show().track();
+            console.error(e);
+            e.alert().track();
         }
     }
 
@@ -178,6 +179,7 @@ export class Shikimori extends VuexModule {
                 });
         } catch (e) {
             console.error(e);
+            e.track();
             return;
         }
 
@@ -200,8 +202,9 @@ export class Shikimori extends VuexModule {
             await Anime365Provider.fetch<anime365.api.SeriesCollection>(`/series/?myAnimeListId=${sequelNode.id}`, {
                 errorMessage: 'Невозможно загрузить следующий сезон',
             })
-                .catch((e: typeof Error) => {
+                .catch((e: Error) => {
                     console.error(e);
+                    e.track();
                     return {data: []};
                 }),
 
@@ -222,6 +225,7 @@ export class Shikimori extends VuexModule {
                     })
                         .catch((e) => {
                             console.error(e);
+                            e.track();
                             return null;
                         });
                 }

@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@mdi/font": "^4.2.95",
+    "@sentry/browser": "^5.6.3",
+    "@sentry/integrations": "^5.6.1",
     "@types/lodash.throttle": "^4.1.6",
     "async-retry": "latest",
     "kv-storage-polyfill": "^2.0.0",

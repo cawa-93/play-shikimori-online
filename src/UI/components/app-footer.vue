@@ -56,7 +56,7 @@
         },
     })
     export default class AppFooter extends Vue {
-        // public manifest = chrome.runtime.getManifest();
+
         public copyright = ['shikimori.one', 'smotret-anime-365.ru', 'myanimelist.net'];
         public links = [
             {

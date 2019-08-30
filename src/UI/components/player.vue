@@ -78,19 +78,30 @@
             this.setTitle();
 
             listener = ({data: event}) => {
+
+                // Просмотрена большая часть серии
                 if (event === 'watched') {
                     shikimoriStore.markAsWatched();
                     playerStore.preloadNextEpisode();
+
+                    // Серия закончилась или пользователь нажал кнопку "Слежующая серия
                 } else if (event.name === 'ended' || event.name === 'mark-as-watched') {
                     shikimoriStore.markAsWatched();
                     playerStore.selectNextEpisode();
+
+                    // Плей или пауза
                 } else if (event.name === 'play' || event.name === 'pause') {
                     if (iconLink) {
                         iconLink.href = `/${event.name}.png`;
                     }
+
+                    // Ошибка
                 } else if (event.name === 'error') {
-                    console.error(event.error);
-                    // window.Sentry.captureException(event.error);
+                    const error = new Error(event.error.message);
+                    error.name = event.error.name;
+                    error.stack = event.error.stack;
+                    console.error(error);
+                    error.track();
                 }
             };
             window.addEventListener('message', listener);

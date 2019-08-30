@@ -23,3 +23,22 @@ new Vue({
     render: (h) => h(App),
 }).$mount('#app');
 
+
+/**
+ * Отслеживание ошибок в интерфейсе
+ */
+if (process.env.NODE_ENV !== 'development') {
+    Promise.all([
+        import('@sentry/browser'),
+        import('@sentry/integrations'),
+    ]).then(([Sentry, Integrations]) => {
+
+        Sentry.init({
+            dsn: process.env.VUE_APP_SENTRY_DSN,
+            integrations: [new Integrations.Vue({Vue, attachProps: true})],
+        });
+
+        // @ts-ignore
+        self.Sentry = Sentry;
+    });
+}

@@ -1,5 +1,6 @@
 import {errorMessage} from '@/helpers/runtime-messages';
 
+
 /**
  * Показывает всплывающий попап с ошибкой для пользователя
  */
@@ -13,7 +14,15 @@ Error.prototype.alert = function() {
  * Отправить ошибку в систему трекинга
  */
 Error.prototype.track = function() {
-    // Sentry.captureException
+    // @ts-ignore
+    if (self.Sentry) {
+        // @ts-ignore
+        self.Sentry.captureException(this);
+    } else if (process.env.NODE_ENV === 'production') {
+        // @ts-ignore
+        console.warn('Невозможно отправить отчет об ошибке', {Sentry: self.Sentry});
+    }
+
     return this;
 };
 

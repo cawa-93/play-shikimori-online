@@ -5,7 +5,6 @@ import {RequestProvider} from '@/helpers/API/RequestProvider';
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.contentScriptQuery === 'fetchUrl') {
-        // makeRequest(request).then((resp) => sendResponse(resp));
         RequestProvider.fetch(request.url, request.options)
             .then((response) => sendResponse({response}))
             .catch((error) => sendResponse({error}));

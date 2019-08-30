@@ -1,4 +1,5 @@
 import {sync} from '@/helpers/chrome-storage';
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Worker from 'worker-loader!./worker.ts';

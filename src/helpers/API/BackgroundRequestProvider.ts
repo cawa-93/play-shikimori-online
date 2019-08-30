@@ -7,7 +7,7 @@ import {PermissionError} from '@/helpers/errors/PermissionError.class';
 export class BackgroundRequestProvider extends RequestProvider {
     public static request<T>(
         url: string,
-        options: RequestInit & { errorMessage: string } = {errorMessage: 'Невозможно выполнить запрос'},
+        options: RequestInit & { errorMessage: string },
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             chrome.runtime.sendMessage(

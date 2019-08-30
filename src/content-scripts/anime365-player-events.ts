@@ -205,7 +205,11 @@ import videojs from 'video.js';
         } catch (error) {
             window.parent.postMessage({
                 name: 'error',
-                error: `${error.message}\n\n${error.stack}`,
+                error: {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack,
+                },
             }, '*');
         }
     }

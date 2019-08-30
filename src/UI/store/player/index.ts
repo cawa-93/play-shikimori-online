@@ -10,9 +10,6 @@ import Vue from 'vue';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 
 
-// tslint:disable-next-line:no-var-requires
-// const worker = new Worker(require('@/UI/store/worker.ts'));
-
 @Module({
     dynamic: true,
     namespaced: true,
@@ -199,7 +196,7 @@ export class Player extends VuexModule {
             await this.loadEpisodesTitle();
         } catch (e) {
             console.error(e);
-            e.track();
+            e.alert().track();
         }
     }
 

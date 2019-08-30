@@ -32,10 +32,8 @@ export async function loadRuntimeMessages(minTimestamp: number, broadcastType = 
 
         }
     } catch (e) {
-        // @ts-ignore
-        if (!e instanceof PermissionError) {
-            console.error(e);
-        }
+        console.error(e);
+        e.track();
     }
 
     if (commentWithMessages.length) {
@@ -85,7 +83,7 @@ export async function loadRuntimeMessages(minTimestamp: number, broadcastType = 
                 message(runtimeMessage);
             } catch (e) {
                 console.error(`Can't show broadcast message`, {error: e, comment});
-                // Sentry.captureException(e);
+                e.track();
             }
         }
     }

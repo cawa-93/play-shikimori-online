@@ -1,12 +1,5 @@
-// import * as Sentry                              from '@sentry/browser'
 import {BackgroundRequestProvider} from '@/helpers/API/BackgroundRequestProvider';
 import {pluralize} from '@/helpers/pluralize';
-
-
-// Sentry.init({
-//     dsn: process.env.VUE_APP_SENTRY_DSN,
-//     release: `${chrome.runtime.getManifest().name}@${chrome.runtime.getManifest().version}`,
-// })
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main);
@@ -147,8 +140,6 @@ async function getEpisodes(myAnimeListId: number) {
     } catch (e) {
         console.error(e);
         alert(e.message);
-        // if (e instanceof PermissionError) {
-        // }
         return [];
     }
 

@@ -30,7 +30,7 @@ export class RequestProvider {
 
     public static async fetch<T>(
         url: string,
-        options: RequestInit & { errorMessage: string } = {errorMessage: 'Невозможно выполнить запрос'},
+        options: RequestInit & { errorMessage: string },
     ): Promise<T> {
         url = this.baseURL + url;
         let granted = await this.isPermissionsGranted(url);
@@ -53,7 +53,7 @@ export class RequestProvider {
 
     public static async request<T>(
         url: string,
-        options: RequestInit & { errorMessage: string } = {errorMessage: 'Невозможно выполнить запрос'},
+        options: RequestInit & { errorMessage: string },
     ): Promise<T> {
 
         if (options.credentials === undefined) {
@@ -164,7 +164,6 @@ export class RequestProvider {
         } catch (e) {
             try {
                 body = await resp.text();
-                // tslint:disable-next-line:no-empty
             } catch {
             }
         }

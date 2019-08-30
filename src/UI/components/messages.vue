@@ -1,30 +1,29 @@
 <template>
-    <div>
-        <v-snackbar
-            :bottom="snackbar.message.y === 'bottom'"
-            :color="snackbar.message.color"
-            :left="snackbar.message.x === 'left'"
-            :multi-line="snackbar.message.mode === 'multi-line'"
-            :right="snackbar.message.x === 'right'"
-            :timeout="snackbar.message.timeout"
-            :top="snackbar.message.y === 'top'"
-            :vertical="snackbar.message.mode === 'vertical'"
-            close-text="Закрыть сообщение"
-            role="alert"
-            v-model="snackbar.show"
+    <v-snackbar
+        :bottom="snackbar.message.y === 'bottom'"
+        :color="snackbar.message.color"
+        :left="snackbar.message.x === 'left'"
+        :multi-line="snackbar.message.mode === 'multi-line'"
+        :right="snackbar.message.x === 'right'"
+        :timeout="snackbar.message.timeout"
+        :top="snackbar.message.y === 'top'"
+        :vertical="snackbar.message.mode === 'vertical'"
+        close-text="Закрыть сообщение"
+        role="alert"
+        v-if="snackbar.message"
+        v-model="snackbar.show"
+    >
+        <span id="runtime-message-content" v-html="snackbar.message.html"></span>
+        <v-btn
+            :icon="snackbar.message.mode !== 'vertical'"
+            :text="snackbar.message.mode === 'vertical'"
+            @click="closeSnackbar"
+            aria-label="Закрыть"
         >
-            <span id="runtime-message-content" v-html="snackbar.message.html"></span>
-            <v-btn
-                :icon="snackbar.message.mode !== 'vertical'"
-                :text="snackbar.message.mode === 'vertical'"
-                @click="closeSnackbar"
-                aria-label="Закрыть"
-            >
-                <v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
-                <span v-else>Закрыть</span>
-            </v-btn>
-        </v-snackbar>
-    </div>
+            <v-icon v-if="snackbar.message.mode !== 'vertical'">mdi-close-circle</v-icon>
+            <span v-else>Закрыть</span>
+        </v-btn>
+    </v-snackbar>
 </template>
 
 <script lang="ts">
@@ -37,18 +36,18 @@
     export default class Messages extends Vue {
         public snackbar: {
             show: boolean,
-            message: RuntimeMessage | {},
+            message: RuntimeMessage | null,
         } = {
             show: false,
-            message: {},
+            message: null,
         };
 
         public async loadOneRuntimeMessage() {
-            chrome.storage.onChanged.removeListener((c) => this.storageOnChanged(c));
+            chrome.storage.onChanged.removeListener(this.storageOnChanged);
 
             let message = await shift();
 
-            chrome.storage.onChanged.addListener((c) => this.storageOnChanged(c));
+            chrome.storage.onChanged.addListener(this.storageOnChanged);
 
             if (!message) {
                 return;
@@ -73,7 +72,7 @@
             this.snackbar.show = false;
 
             setTimeout(() => {
-                this.snackbar.message = {};
+                this.snackbar.message = null;
                 this.loadOneRuntimeMessage();
             }, 500);
         }
@@ -83,7 +82,7 @@
                 changes.runtimeMessages &&
                 changes.runtimeMessages.newValue &&
                 changes.runtimeMessages.newValue.length &&
-                !this.snackbar.message
+                !this.snackbar.show
             ) {
                 this.loadOneRuntimeMessage();
             }

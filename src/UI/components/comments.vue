@@ -216,6 +216,7 @@
             try {
                 const topics = await ShikimoriProvider.fetch<shikimori.Topic[]>(
                     `/api/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`,
+                    {errorMessage: 'Невозможно найти топик с обсуждением серии'},
                 );
 
                 this.topic = topics[0];
@@ -310,6 +311,7 @@
                 this.comments.page += 1;
             } catch (e) {
                 console.error(e);
+                e.alert().track();
             }
 
             this.layout.moreComments.loading = false;
@@ -390,9 +392,13 @@
 
                     this.topic = await ShikimoriProvider.fetch<shikimori.Topic>(
                         `/api/topics/${episodeNotification.topic_id}`,
+                        {
+                            errorMessage: 'Невозможно найти созданный топик с обсуждением серии',
+                        },
                     );
                 } catch (e) {
                     console.error(e);
+                    e.alert().track();
                 }
             }
 
