@@ -37,10 +37,10 @@
     export default class Messages extends Vue {
         public snackbar: {
             show: boolean,
-            message: RuntimeMessage | null,
+            message: RuntimeMessage | {},
         } = {
             show: false,
-            message: null,
+            message: {},
         };
 
         public async loadOneRuntimeMessage() {
@@ -73,7 +73,7 @@
             this.snackbar.show = false;
 
             setTimeout(() => {
-                this.snackbar.message = null;
+                this.snackbar.message = {};
                 this.loadOneRuntimeMessage();
             }, 500);
         }

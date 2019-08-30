@@ -5,18 +5,20 @@
         </v-container>
         <app-footer></app-footer>
 
-        <!--    <messages></messages>-->
+        <messages></messages>
     </v-app>
 </template>
 
 
 <script lang="ts">
     import AppFooter from '@/UI/components/app-footer.vue';
+    import Messages from '@/UI/components/messages.vue';
     import {Component, Vue} from 'vue-property-decorator';
 
     @Component({
         components: {
             AppFooter,
+            Messages,
         },
     })
     export default class App extends Vue {
