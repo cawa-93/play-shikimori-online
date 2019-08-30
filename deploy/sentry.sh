@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="Play Шикимори Online@${TRAVIS_TAG:1}"
+VERSION="Play Шики Online@${TRAVIS_TAG:1}"
 echo version is "$VERSION"
 
 # Create a release
