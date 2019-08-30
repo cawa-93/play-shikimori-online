@@ -1,50 +1,71 @@
 {
-  "name": "play-shikimori-online",
-  "version": "1.0.9",
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
-  "main": "index.js",
-  "type": "module",
-  "engines": {
-    "node": "10.15",
-    "npm": "6.9"
+  "name": "play-shiki-online",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:dev": "vue-cli-service build --mode development",
+    "build:watch": "npm run build:dev -- --watch",
+    "lint": "vue-cli-service lint",
+    "lint:fix": "vue-cli-service lint --fix",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@mdi/font": "^4.0.96",
-    "@sentry/browser": "^5.6.1",
+    "@mdi/font": "^4.2.95",
+    "@sentry/browser": "^5.6.3",
     "@sentry/integrations": "^5.6.1",
-    "async-retry": "^1.2.3",
-    "kv-storage-polyfill": "^1.1.0",
+    "@types/lodash.throttle": "^4.1.6",
+    "async-retry": "latest",
+    "kv-storage-polyfill": "^2.0.0",
+    "lodash.throttle": "^4.1.1",
+    "roboto-fontface": "*",
     "vue": "^2.6.10",
-    "vue-analytics": "^5.17.0",
-    "vue-router": "^3.1.2",
-    "vuetify": "^2.0.7",
-    "vuex": "^3.1.1"
+    "vue-class-component": "^7.0.2",
+    "vue-property-decorator": "^8.2.2",
+    "vue-router": "^3.0.3",
+    "vuetify": "^2.0.11",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.5.5",
     "@sentry/cli": "^1.47.1",
-    "@types/video.js": "^7.2.12",
-    "archiver": "^3.1.1",
-    "chrome-webstore-upload": "^0.2.2",
-    "dotenv": "^8.0.0",
-    "firefox-extension-deploy": "^1.1.1",
-    "jest": "^24.8.0",
-    "rollup": "^1.19.4",
-    "rollup-plugin-commonjs": "^10.0.2",
-    "rollup-plugin-copy": "^2.0.1",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-vue": "^5.0.1",
-    "vue-template-compiler": "^2.6.10"
+    "@types/async-retry": "^1.4.1",
+    "@types/chai": "^4.1.0",
+    "@types/chrome": "0.0.88",
+    "@types/mocha": "^5.2.4",
+    "@types/video.js": "^7.2.14",
+    "@vue/cli-plugin-e2e-cypress": "^3.11.0",
+    "@vue/cli-plugin-typescript": "^3.11.0",
+    "@vue/cli-plugin-unit-mocha": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
+    "@vue/devtools": "^5.1.1",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "chai": "^4.1.2",
+    "copy-webpack-plugin": "^5.0.4",
+    "lint-staged": "^9.2.5",
+    "sass": "^1.17.4",
+    "sass-loader": "^7.3.1",
+    "typescript": "^3.4.3",
+    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2",
+    "vuex-module-decorators": "^0.10.1",
+    "webpack-extension-manifest-plugin": "^0.5.0",
+    "worker-loader": "^2.0.0"
   },
-  "scripts": {
-    "build": "rollup -c rollup.config.js && node ./build/generate_manifest.js",
-    "dev": "node ./build/generate_manifest.js && rollup -c rollup.config.js --watch",
-    "test": "jest",
-    "lint": "echo \"No lint specified\" && exit 0"
+  "gitHooks": {
+    "pre-commit": "lint-staged"
   },
-  "repository": "github:cawa-93/play-shikimori-online",
-  "keywords": [],
-  "author": "Alex Kozack",
-  "license": "GPL-3.0"
+  "lint-staged": {
+    "*.ts": [
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  }
 }

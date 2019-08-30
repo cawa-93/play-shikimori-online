@@ -19,7 +19,10 @@ jobs:
       name: "Test"
       script:
         - npm run lint
-        - npm test
+        # TODO: написать тесты
+        - NODE_ENV=production npm run build
+        # - npm run test:unit
+        # - npm run test:e2e
 
     - stage: deploy
       name: "Deploy"

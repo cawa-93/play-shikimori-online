@@ -32,6 +32,12 @@
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+### Project setup
+```
+npm install
+```
+
+### Environments
 ```bash
 # Setup environment
 NODE_ENV=production
@@ -41,10 +47,41 @@ BROWSER=chrome # or firefox
 SHIKIMORI_REDIRECT_URI=
 SHIKIMORI_CLIENT_ID=
 SHIKIMORI_CLIENT_SECRET=
+```
 
-# Run build
+### Compiles for development
+```
+npm run build:dev
+```
+
+### Compiles and minifies for production
+```
 npm run build
 ```
+
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Run your end-to-end tests
+```
+npm run test:e2e
+```
+
+### Run your unit tests
+```
+npm run test:unit
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
 
 ## License
 [GPL-3.0](https://github.com/cawa-93/play-shikimori-online/blob/master/LICENSE)
