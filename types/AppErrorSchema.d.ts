@@ -21,3 +21,10 @@ interface Error {
     track: () => Error;
     toJSON: () => AppErrorSchema;
 }
+
+interface DOMException {
+    alert: () => Error;
+    track: () => Error;
+    toJSON: () => AppErrorSchema;
+    stack?: string;
+}

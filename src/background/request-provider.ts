@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.contentScriptQuery === 'fetchUrl') {
         RequestProvider.fetch(request.url, request.options)
             .then((response) => sendResponse({response}))
-            .catch((error) => sendResponse({error}));
+            .catch((error) => sendResponse({error: error.toJSON ? error.toJSON() : error}));
 
         return true; // Will respond asynchronously.
     }

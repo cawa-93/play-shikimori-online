@@ -33,8 +33,7 @@ export class BackgroundRequestProvider extends RequestProvider {
                             case 'PermissionError':
                                 return reject(new PermissionError(error));
                             default:
-                                // @ts-ignore
-                                return reject(new window[error.name](error));
+                                return reject(new AppError(error));
                         }
                     } else {
                         resolve(response);
