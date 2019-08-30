@@ -65,9 +65,24 @@ export class RequestProvider {
             'Content-Type': 'application/json',
         }, options.headers || {});
 
+
         const request = new Request(url, options);
-        const cache = await caches.open(this.cacheName);
-        const cachedResp = await cache.match(request);
+
+        /**
+         * Попытка открыть кэш на Firefox вызывает SecurityError
+         * @see https://stackoverflow.com/questions/11768221/firefox-websocket-security-issue/12042843#12042843
+         */
+        let cachedResp: Response | undefined;
+        let cache: Cache | undefined;
+        try {
+            cache = await caches.open(this.cacheName);
+            cachedResp = await cache.match(request);
+        } catch (e) {
+            console.error(e);
+            if (!(e instanceof DOMException) && e.track) {
+                e.track();
+            }
+        }
 
         return retry(async (bail: (e: Error) => void) => {
             return fetch(url, options)
@@ -102,7 +117,7 @@ export class RequestProvider {
                         }
 
                     } else {
-                        if (request.method === 'GET') {
+                        if (cache && request.method === 'GET') {
                             await cache.put(request, resp.clone());
                         }
 
