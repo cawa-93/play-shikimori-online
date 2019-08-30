@@ -4,7 +4,7 @@ import {errorMessage} from '@/helpers/runtime-messages';
 /**
  * Показывает всплывающий попап с ошибкой для пользователя
  */
-Error.prototype.alert = function() {
+Error.prototype.alert = DOMException.prototype.alert = function() {
     errorMessage(this.message);
     return this;
 };
@@ -13,7 +13,7 @@ Error.prototype.alert = function() {
 /**
  * Отправить ошибку в систему трекинга
  */
-Error.prototype.track = function() {
+Error.prototype.track = DOMException.prototype.track = function() {
     // @ts-ignore
     if (self.Sentry) {
         // @ts-ignore
@@ -27,11 +27,11 @@ Error.prototype.track = function() {
 };
 
 
-Error.prototype.toJSON = function() {
+Error.prototype.toJSON = DOMException.prototype.toJSON = function() {
     const error = {
         name: this.name,
         message: this.message,
-        stack: this.stack,
+        stack: this.stack || '',
     };
 
     for (const key in this) {
