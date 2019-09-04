@@ -71,7 +71,7 @@
                     </v-layout>
                 </template>
 
-                <div class="text-center mt-7">
+                <div class="text-center my-4">
                     <v-tooltip left nudge-left="36" transition="slide-x-reverse-transition">
                         <template v-slot:activator="{on: left}">
                             <v-tooltip right transition="slide-x-transition">
@@ -103,421 +103,395 @@
 
             <p class="pl-0 blockquote"
                ref="comments-feed"
-               v-else>Ты можешь написать комментарий первым, если поторопишься 😁</p>
+               v-else>
+                Ты можешь написать комментарий первым, если поторопишься 😁
+            </p>
 
-            <v-form @submit.prevent="createComment" class="mt-7 create-comment-form" v-if="user">
-                <v-text-field
-                    :disabled="layout.newComment.loading"
-                    :loading="layout.newComment.loading"
-                    @click:append-outer="createComment"
-                    filled
-                    label="Опиши свои впечатления от серии"
-                    ref="create-comment-field"
-                    required
-                    v-model.trim="newCommentText"
-                >
-                    <v-avatar slot="prepend">
-                        <img :alt="user.nickname" :src="user.image.x80"/>
-                    </v-avatar>
-
-                    <v-btn
-                        :disabled="!newCommentText || layout.newComment.loading"
-                        :loading="layout.newComment.loading"
-                        icon
-                        large
-                        slot="append-outer"
-                        type="submit"
-                    >
-                        <v-icon>mdi-send</v-icon>
-                    </v-btn>
-                </v-text-field>
-            </v-form>
-
-            <div class="text-center mt-6" v-else>
-                <v-btn @click="logIn" class="pl-4" large outlined>
-                    <v-icon class="mr-2">mdi-sync</v-icon>
-                    Чтобы оставить отзыв необходимо включить синхронизацию
-                </v-btn>
-            </div>
+            <comment-form :loading="layout.newComment.loading"
+                          :text.sync="layout.newComment.text"
+                          @submit="createComment"
+                          ref="commentField"></comment-form>
         </template>
     </section>
 </template>
 
 
 <script lang="ts">
-    import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
-    import playerStore from '@/UI/store/player';
-    import profileStore from '@/UI/store/profile';
-    import {Component, Vue, Watch} from 'vue-property-decorator';
-
-    @Component({
-        name: 'comments',
-    })
-    export default class Comments extends Vue {
-        public layout = {
-            loading: true,
-            moreComments: {
-                loading: false,
-            },
-            newComment: {
-                loading: false,
-            },
-        };
-
-        public topic: shikimori.Topic | null = null;
-
-        public comments: {
-            items: shikimori.Comment[];
-            page: number;
-            perPage: number;
-        } = {
-            items: [],
-            page: 1,
-            perPage: 20,
-        };
-
-        public newCommentText = '';
+import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
+import CommentForm from '@/UI/components/comment-form.vue';
+import playerStore from '@/UI/store/player';
+import profileStore from '@/UI/store/profile';
+import {Component, Ref, Vue, Watch} from 'vue-property-decorator';
 
 
-        get user() {
-            return profileStore.user;
+@Component({
+    name: 'comments',
+    components: {CommentForm},
+})
+export default class Comments extends Vue {
+    public layout = {
+        loading: true,
+        moreComments: {
+            loading: false,
+        },
+        newComment: {
+            loading: false,
+            text: '',
+        },
+    };
+
+    public topic: shikimori.Topic | null = null;
+
+    public comments: {
+        items: shikimori.Comment[];
+        page: number;
+        perPage: number;
+    } = {
+        items: [],
+        page: 1,
+        perPage: 20,
+    };
+
+    @Ref() public readonly commentField!: CommentForm;
+
+    get user() {
+        return profileStore.user;
+    }
+
+    get currentEpisode() {
+        return playerStore.currentEpisode;
+    }
+
+    get allowComments() {
+        return this.currentEpisode && this.currentEpisode.episodeInt % 1 === 0;
+    }
+
+
+    public async init() {
+        if (!this.currentEpisode) {
+            return;
         }
 
-        get currentEpisode() {
-            return playerStore.currentEpisode;
-        }
+        this.topic = null;
+        this.comments.items = [];
+        this.comments.page = 1;
 
-        get allowComments() {
-            return this.currentEpisode && this.currentEpisode.episodeInt % 1 === 0;
-        }
-
-        public logIn() {
-            return profileStore.getValidCredentials(true);
+        if (!this.allowComments) {
+            return;
         }
 
 
-        public async init() {
-            if (!this.currentEpisode) {
-                return;
-            }
+        this.layout.loading = true;
 
-            this.topic = null;
+
+        try {
+            const topics = await ShikimoriProvider.fetch<shikimori.Topic[]>(
+                `/api/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`,
+                {errorMessage: 'Невозможно найти топик с обсуждением серии'},
+            );
+
+            this.topic = topics[0];
             this.comments.items = [];
             this.comments.page = 1;
+        } catch (e) {
+            console.error(e);
+            e.alert().track();
+        }
 
-            if (!this.allowComments) {
-                return;
+        await this.loadComments();
+
+        this.layout.loading = false;
+    }
+
+
+    public processComment(comment: shikimori.Comment) {
+        comment.html_body = comment.html_body
+            .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
+            .replace(/<img/gimu, '<img loading="lazy" ')
+            .replace(/b-quote/gi, 'blockquote primary elevation-2" role="blockquote')
+            .replace(/class="smiley"/gi, 'class="smiley" height="32px"')
+            .replace(/class="ban"/gi, 'class="ban error elevation-2"')
+            .replace(/(b-image|b-img|video-link)/gi, '$1 v-card d-inline-block')
+        ;
+
+        comment.created_at_relative = this.getCreatedAtRelative(comment.created_at);
+
+        return comment;
+    }
+
+
+    public getCreatedAtRelative(iso: string) {
+        const date = new Date(iso);
+        const now = new Date();
+        const diff = date.getTime() - now.getTime();
+
+        const msPerMinute = 60 * 1000;
+        const msPerHour = msPerMinute * 60;
+        const msPerDay = msPerHour * 24;
+        const msPerMonth = msPerDay * 30;
+        const msPerYear = msPerDay * 365;
+
+        // @ts-ignore
+        if (!Intl || !Intl.RelativeTimeFormat || diff / msPerMonth < -1) {
+            // @ts-ignore
+            return date.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'});
+        }
+
+        // @ts-ignore
+        const formatter = new Intl.RelativeTimeFormat();
+
+        if (Math.abs(diff) < msPerMinute) {
+            return formatter.format(Math.round(diff / 1000), 'seconds');
+        }
+        if (Math.abs(diff) < msPerHour) {
+            return formatter.format(Math.round(diff / msPerMinute), 'minutes');
+        }
+        if (Math.abs(diff) < msPerDay) {
+            return formatter.format(Math.round(diff / msPerHour), 'hour');
+        }
+        if (Math.abs(diff) < msPerMonth) {
+            return formatter.format(Math.round(diff / msPerDay), 'day');
+        }
+        if (Math.abs(diff) < msPerYear) {
+            return formatter.format(Math.round(diff / msPerMonth), 'month');
+        }
+        return formatter.format(Math.round(diff / msPerYear), 'year');
+    }
+
+
+    public async loadComments() {
+        if (!this.topic) {
+            return;
+        }
+
+        this.layout.moreComments.loading = true;
+
+        try {
+            const comments = await ShikimoriProvider.fetch<shikimori.Comment[]>(
+                `/api/comments/?desc=0&commentable_id=${this.topic.id}&commentable_type=Topic&limit=${this.comments.perPage}&page=${this.comments.page}`,
+                {
+                    errorMessage: 'Невозможно загрузить комментарии',
+                },
+            );
+
+            if (comments.length > this.comments.perPage) {
+                comments.pop();
             }
 
+            this.comments.items.push(...comments.map((c) => this.processComment(c)));
+            this.comments.page += 1;
+        } catch (e) {
+            console.error(e);
+            e.alert().track();
+        }
 
-            this.layout.loading = true;
+        this.layout.moreComments.loading = false;
+    }
 
+
+    public async createComment() {
+        if (!this.user || !this.currentEpisode || !this.layout.newComment.text || this.layout.newComment.loading) {
+            return;
+        }
+
+        this.layout.newComment.loading = true;
+
+
+        const auth = await profileStore.getValidCredentials();
+        if (!auth) {
+            this.layout.newComment.loading = false;
+            return;
+        }
+
+        const headers = {
+            Authorization: `${auth.token_type} ${auth.access_token}`,
+        };
+
+        if (!this.topic) {
+            let isFandub = false;
+            let isRaw = false;
+            let isSubtitles = false;
+
+            for (const translation of this.currentEpisode.translations || []) {
+                switch (translation.typeKind) {
+                    case 'raw':
+                        isRaw = true;
+                        break;
+
+                    case 'sub':
+                        isSubtitles = true;
+                        break;
+
+                    case 'voice':
+                        isFandub = true;
+                        break;
+                }
+
+                if (isFandub && isRaw && isSubtitles) {
+                    break;
+                }
+            }
 
             try {
-                const topics = await ShikimoriProvider.fetch<shikimori.Topic[]>(
-                    `/api/animes/${this.currentEpisode.myAnimelist}/topics?kind=episode&episode=${this.currentEpisode.episodeInt}`,
-                    {errorMessage: 'Невозможно найти топик с обсуждением серии'},
-                );
-
-                this.topic = topics[0];
-                this.comments.items = [];
-                this.comments.page = 1;
-            } catch (e) {
-                console.error(e);
-                e.alert().track();
-            }
-
-            await this.loadComments();
-
-            this.layout.loading = false;
-        }
-
-
-        public processComment(comment: shikimori.Comment) {
-            comment.html_body = comment.html_body
-                .replace(/(href|src)="\//gimu, '$1="https://shikimori.one/')
-                .replace(/<img/gimu, '<img loading="lazy" ')
-                .replace(/b-quote/gi, 'blockquote primary elevation-2" role="blockquote')
-                .replace(/class="smiley"/gi, 'class="smiley" height="32px"')
-                .replace(/class="ban"/gi, 'class="ban error elevation-2"')
-                .replace(/(b-image|b-img|video-link)/gi, '$1 v-card d-inline-block')
-            ;
-
-            comment.created_at_relative = this.getCreatedAtRelative(comment.created_at);
-
-            return comment;
-        }
-
-
-        public getCreatedAtRelative(iso: string) {
-            const date = new Date(iso);
-            const now = new Date();
-            const diff = date.getTime() - now.getTime();
-
-            const msPerMinute = 60 * 1000;
-            const msPerHour = msPerMinute * 60;
-            const msPerDay = msPerHour * 24;
-            const msPerMonth = msPerDay * 30;
-            const msPerYear = msPerDay * 365;
-
-            // @ts-ignore
-            if (!Intl || !Intl.RelativeTimeFormat || diff / msPerMonth < -1) {
-                // @ts-ignore
-                return date.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'});
-            }
-
-            // @ts-ignore
-            const formatter = new Intl.RelativeTimeFormat();
-
-            if (Math.abs(diff) < msPerMinute) {
-                return formatter.format(Math.round(diff / 1000), 'seconds');
-            }
-            if (Math.abs(diff) < msPerHour) {
-                return formatter.format(Math.round(diff / msPerMinute), 'minutes');
-            }
-            if (Math.abs(diff) < msPerDay) {
-                return formatter.format(Math.round(diff / msPerHour), 'hour');
-            }
-            if (Math.abs(diff) < msPerMonth) {
-                return formatter.format(Math.round(diff / msPerDay), 'day');
-            }
-            if (Math.abs(diff) < msPerYear) {
-                return formatter.format(Math.round(diff / msPerMonth), 'month');
-            }
-            return formatter.format(Math.round(diff / msPerYear), 'year');
-        }
-
-
-        public async loadComments() {
-            if (!this.topic) {
-                return;
-            }
-
-            this.layout.moreComments.loading = true;
-
-            try {
-                const comments = await ShikimoriProvider.fetch<shikimori.Comment[]>(
-                    `/api/comments/?desc=0&commentable_id=${this.topic.id}&commentable_type=Topic&limit=${this.comments.perPage}&page=${this.comments.page}`,
+                const episodeNotification = await ShikimoriProvider.fetch<shikimori.EpisodeNotification>(
+                    '/api/v2/episode_notifications',
                     {
-                        errorMessage: 'Невозможно загрузить комментарии',
+                        errorMessage: 'Невозможно создать топик обсуждения',
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({
+                            episode_notification: {
+                                aired_at: new Date(
+                                    this.currentEpisode.firstUploadedDateTime,
+                                ).toISOString(),
+                                anime_id: this.currentEpisode.myAnimelist,
+                                episode: this.currentEpisode.episodeInt,
+                                is_anime365: true,
+                                is_fandub: isFandub,
+                                is_raw: isRaw,
+                                is_subtitles: isSubtitles,
+                            },
+                            token: process.env.VUE_APP_SHIKIMORI_SYSTEM_TOKEN,
+                        }),
                     },
                 );
 
-                if (comments.length > this.comments.perPage) {
-                    comments.pop();
-                }
-
-                this.comments.items.push(...comments.map((c) => this.processComment(c)));
-                this.comments.page += 1;
-            } catch (e) {
-                console.error(e);
-                e.alert().track();
-            }
-
-            this.layout.moreComments.loading = false;
-        }
-
-
-        public async createComment() {
-            if (!this.user || !this.currentEpisode || !this.newCommentText || this.layout.newComment.loading) {
-                return;
-            }
-
-            this.layout.newComment.loading = true;
-
-
-            const auth = await profileStore.getValidCredentials();
-            if (!auth) {
-                this.layout.newComment.loading = false;
-                return;
-            }
-
-            const headers = {
-                Authorization: `${auth.token_type} ${auth.access_token}`,
-            };
-
-            if (!this.topic) {
-                let isFandub = false;
-                let isRaw = false;
-                let isSubtitles = false;
-
-                for (const translation of this.currentEpisode.translations || []) {
-                    switch (translation.typeKind) {
-                        case 'raw':
-                            isRaw = true;
-                            break;
-
-                        case 'sub':
-                            isSubtitles = true;
-                            break;
-
-                        case 'voice':
-                            isFandub = true;
-                            break;
-                    }
-
-                    if (isFandub && isRaw && isSubtitles) {
-                        break;
-                    }
-                }
-
-                try {
-                    const episodeNotification = await ShikimoriProvider.fetch<shikimori.EpisodeNotification>(
-                        '/api/v2/episode_notifications',
-                        {
-                            errorMessage: 'Невозможно создать топик обсуждения',
-                            method: 'POST',
-                            headers,
-                            body: JSON.stringify({
-                                episode_notification: {
-                                    aired_at: new Date(
-                                        this.currentEpisode.firstUploadedDateTime,
-                                    ).toISOString(),
-                                    anime_id: this.currentEpisode.myAnimelist,
-                                    episode: this.currentEpisode.episodeInt,
-                                    is_anime365: true,
-                                    is_fandub: isFandub,
-                                    is_raw: isRaw,
-                                    is_subtitles: isSubtitles,
-                                },
-                                token: process.env.VUE_APP_SHIKIMORI_SYSTEM_TOKEN,
-                            }),
-                        },
-                    );
-
-                    if (!episodeNotification || !episodeNotification.topic_id) {
-                        this.layout.newComment.loading = false;
-                        return;
-                    }
-
-                    this.topic = await ShikimoriProvider.fetch<shikimori.Topic>(
-                        `/api/topics/${episodeNotification.topic_id}`,
-                        {
-                            errorMessage: 'Невозможно найти созданный топик с обсуждением серии',
-                        },
-                    );
-                } catch (e) {
-                    console.error(e);
-                    e.alert().track();
-                }
-            }
-
-            if (!this.topic) {
-                this.layout.newComment.loading = false;
-                return;
-            }
-
-            try {
-                const newComment = await ShikimoriProvider.fetch<shikimori.Comment>(`/api/comments`, {
-                    errorMessage: 'Невозможно создать комментарий',
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({
-                        comment: {
-                            body: this.newCommentText,
-                            commentable_id: this.topic.id,
-                            commentable_type: 'Topic',
-                            is_offtopic: false,
-                            is_summary: false,
-                        },
-                        frontend: false,
-                    }),
-                });
-
-                if (!newComment || !newComment.id) {
+                if (!episodeNotification || !episodeNotification.topic_id) {
                     this.layout.newComment.loading = false;
                     return;
                 }
 
-                this.comments.items.push(this.processComment(newComment));
-
-                this.newCommentText = '';
-                this.layout.newComment.loading = false;
-
-                this.topic.comments_count = (this.topic.comments_count || 0) + 1;
+                this.topic = await ShikimoriProvider.fetch<shikimori.Topic>(
+                    `/api/topics/${episodeNotification.topic_id}`,
+                    {
+                        errorMessage: 'Невозможно найти созданный топик с обсуждением серии',
+                    },
+                );
             } catch (e) {
                 console.error(e);
                 e.alert().track();
+            }
+        }
+
+        if (!this.topic) {
+            this.layout.newComment.loading = false;
+            return;
+        }
+
+        try {
+            const newComment = await ShikimoriProvider.fetch<shikimori.Comment>(`/api/comments`, {
+                errorMessage: 'Невозможно создать комментарий',
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    comment: {
+                        body: this.layout.newComment.text,
+                        commentable_id: this.topic.id,
+                        commentable_type: 'Topic',
+                        is_offtopic: false,
+                        is_summary: false,
+                    },
+                    frontend: false,
+                }),
+            });
+
+            if (!newComment || !newComment.id) {
                 this.layout.newComment.loading = false;
-            }
-        }
-
-
-        public async loadAllComments(): Promise<void> {
-            if (this.topic && this.comments.items.length < this.topic.comments_count) {
-                await this.loadComments();
-                return this.loadAllComments();
-            }
-        }
-
-
-        public answer(comment: shikimori.Comment) {
-            this.newCommentText += `[comment=${comment.id}]${comment.user.nickname}[/comment], `;
-            return (this.$refs['create-comment-field'] as HTMLInputElement).focus();
-        }
-
-        public scrollTo(top: number | HTMLElement) {
-            if (typeof top !== 'number') {
-                top = top.offsetTop;
+                return;
             }
 
-            scroll({top, behavior: 'smooth'});
+            this.comments.items.push(this.processComment(newComment));
+
+            this.layout.newComment.loading = false;
+
+            this.layout.newComment.text = '';
+            this.topic.comments_count = (this.topic.comments_count || 0) + 1;
+        } catch (e) {
+            console.error(e);
+            e.alert().track();
+            this.layout.newComment.loading = false;
+        }
+    }
+
+
+    public async loadAllComments(): Promise<void> {
+        if (this.topic && this.comments.items.length < this.topic.comments_count) {
+            await this.loadComments();
+            return this.loadAllComments();
+        }
+    }
+
+
+    public answer(comment: shikimori.Comment) {
+        this.layout.newComment.text += `[comment=${comment.id}]${comment.user.nickname}[/comment], `;
+        // @see https://github.com/kaorun343/vue-property-decorator/issues/257
+        // @ts-ignore
+        this.commentField.focus();
+    }
+
+
+    public scrollTo(top: number | HTMLElement) {
+        if (typeof top !== 'number') {
+            top = top.offsetTop;
         }
 
+        scroll({top, behavior: 'smooth'});
+    }
 
-        public mounted() {
-            this.init();
-            this.$el.addEventListener('click', (event) => {
-                const target = event.target as HTMLAnchorElement | null;
-                if (target
-                    && target.matches('.comment-body a[href*="/comments/"], .comment-body a[href*="/comments/"] *')
-                ) {
-                    event.preventDefault();
-                    const link = target.closest('a[href*="/comments/"]') as HTMLAnchorElement | null;
-                    if (!link || !link.href) {
-                        return;
-                    }
 
-                    const match = link.href.match(/comments\/(\d+)/);
-                    if (!match || !match[1]) {
-                        return;
-                    }
-
-                    const commentId = match[1];
-
-                    const element: HTMLDivElement | null = document.querySelector(`#comment-${commentId}`);
-                    if (element) {
-                        element.classList.add('shake');
-                        this.scrollTo(element);
-                        setTimeout(() => element.classList.remove('shake'), 1000);
-                    }
-
+    public mounted() {
+        this.init();
+        this.$el.addEventListener('click', (event) => {
+            const target = event.target as HTMLAnchorElement | null;
+            if (target
+                && target.matches('.comment-body a[href*="/comments/"], .comment-body a[href*="/comments/"] *')
+            ) {
+                event.preventDefault();
+                const link = target.closest('a[href*="/comments/"]') as HTMLAnchorElement | null;
+                if (!link || !link.href) {
                     return;
                 }
 
-                if (target && target.matches(
-                    '.comment-body .b-spoiler label, .comment-body .b-spoiler .before, .comment-body .b-spoiler .after')
-                ) {
-                    event.preventDefault();
-
-                    const spoiler = target.closest('.b-spoiler');
-                    if (!spoiler) {
-                        return;
-                    }
-
-                    spoiler.classList.toggle('open');
+                const match = link.href.match(/comments\/(\d+)/);
+                if (!match || !match[1]) {
+                    return;
                 }
-            });
-        }
 
+                const commentId = match[1];
 
-        @Watch('currentEpisode')
-        public currentEpisodeOnChange(newEpisode: anime365.Episode, oldEpisode: anime365.Episode) {
-            if (newEpisode.id !== oldEpisode.id) {
-                this.init();
+                const element: HTMLDivElement | null = document.querySelector(`#comment-${commentId}`);
+                if (element) {
+                    element.classList.add('shake');
+                    this.scrollTo(element);
+                    setTimeout(() => element.classList.remove('shake'), 1000);
+                }
+
+                return;
             }
+
+            if (target && target.matches(
+                '.comment-body .b-spoiler label, .comment-body .b-spoiler .before, .comment-body .b-spoiler .after')
+            ) {
+                event.preventDefault();
+
+                const spoiler = target.closest('.b-spoiler');
+                if (!spoiler) {
+                    return;
+                }
+
+                spoiler.classList.toggle('open');
+            }
+        });
+    }
+
+
+    @Watch('currentEpisode')
+    public currentEpisodeOnChange(newEpisode: anime365.Episode, oldEpisode: anime365.Episode) {
+        if (newEpisode.id !== oldEpisode.id) {
+            this.init();
         }
     }
+}
 </script>
 
 
