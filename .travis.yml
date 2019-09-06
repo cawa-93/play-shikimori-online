@@ -58,7 +58,7 @@ jobs:
 
 
         - provider: script
-          script: deploy/sentry.sh
+          script: bash deploy/sentry.sh
           skip_cleanup: true
           on:
             repo: cawa-93/play-shikimori-online

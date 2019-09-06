@@ -15,6 +15,10 @@ export class RequestProvider {
     }
 
     public static async clearLegacyCaches() {
+        /**
+         * FIXME: Может вызывать превышение лимита на хранение
+         *  Необходимо удалять устаревший кэш
+         */
         const cacheNames = await caches.keys();
         const regExp = new RegExp(`${this.cachePrefix}[0-9]+`, 'i');
         return Promise.all(

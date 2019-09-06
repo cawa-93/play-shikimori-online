@@ -140,6 +140,10 @@
                 playerStore.setCurrentTranslation(translation);
 
                 this.$nextTick(async () => {
+                    /**
+                     * FIXME: Может вызывать превышение лимита на хранение
+                     *  Необходимо удалять старые данные
+                     */
                     let history: Map<number, anime365.Translation> | undefined
                         = await storage.get('lastSelectedTranslations');
 

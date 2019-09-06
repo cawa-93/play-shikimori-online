@@ -9,6 +9,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
                         :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
+                        aria-label="Открыть обсуждение на Шикимори"
                         class="ml-3"
                         icon
                         v-bind="attrs"
@@ -71,7 +72,7 @@
                     </v-layout>
                 </template>
 
-                <div class="text-center mt-7">
+                <div class="text-center my-4">
                     <v-tooltip left nudge-left="36" transition="slide-x-reverse-transition">
                         <template v-slot:activator="{on: left}">
                             <v-tooltip right transition="slide-x-transition">
@@ -103,42 +104,14 @@
 
             <p class="pl-0 blockquote"
                ref="comments-feed"
-               v-else>Ты можешь написать комментарий первым, если поторопишься 😁</p>
+               v-else>
+                Ты можешь написать комментарий первым, если поторопишься 😁
+            </p>
 
-            <v-form @submit.prevent="createComment" class="mt-7 create-comment-form" v-if="user">
-                <v-text-field
-                    :disabled="layout.newComment.loading"
-                    :loading="layout.newComment.loading"
-                    @click:append-outer="createComment"
-                    filled
-                    label="Опиши свои впечатления от серии"
-                    ref="create-comment-field"
-                    required
-                    v-model.trim="newCommentText"
-                >
-                    <v-avatar slot="prepend">
-                        <img :alt="user.nickname" :src="user.image.x80"/>
-                    </v-avatar>
-
-                    <v-btn
-                        :disabled="!newCommentText || layout.newComment.loading"
-                        :loading="layout.newComment.loading"
-                        icon
-                        large
-                        slot="append-outer"
-                        type="submit"
-                    >
-                        <v-icon>mdi-send</v-icon>
-                    </v-btn>
-                </v-text-field>
-            </v-form>
-
-            <div class="text-center mt-6" v-else>
-                <v-btn @click="logIn" class="pl-4" large outlined>
-                    <v-icon class="mr-2">mdi-sync</v-icon>
-                    Чтобы оставить отзыв необходимо включить синхронизацию
-                </v-btn>
-            </div>
+            <comment-form :loading="layout.newComment.loading"
+                          :text.sync="layout.newComment.text"
+                          @submit="createComment"
+                          ref="commentField"></comment-form>
         </template>
     </section>
 </template>
@@ -146,12 +119,15 @@
 
 <script lang="ts">
     import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
+    import CommentForm from '@/UI/components/comment-form.vue';
     import playerStore from '@/UI/store/player';
     import profileStore from '@/UI/store/profile';
-    import {Component, Vue, Watch} from 'vue-property-decorator';
+    import {Component, Ref, Vue, Watch} from 'vue-property-decorator';
+
 
     @Component({
         name: 'comments',
+        components: {CommentForm},
     })
     export default class Comments extends Vue {
         public layout = {
@@ -161,6 +137,7 @@
             },
             newComment: {
                 loading: false,
+                text: '',
             },
         };
 
@@ -176,8 +153,7 @@
             perPage: 20,
         };
 
-        public newCommentText = '';
-
+        @Ref() public readonly commentField!: CommentForm;
 
         get user() {
             return profileStore.user;
@@ -189,10 +165,6 @@
 
         get allowComments() {
             return this.currentEpisode && this.currentEpisode.episodeInt % 1 === 0;
-        }
-
-        public logIn() {
-            return profileStore.getValidCredentials(true);
         }
 
 
@@ -319,7 +291,7 @@
 
 
         public async createComment() {
-            if (!this.user || !this.currentEpisode || !this.newCommentText || this.layout.newComment.loading) {
+            if (!this.user || !this.currentEpisode || !this.layout.newComment.text || this.layout.newComment.loading) {
                 return;
             }
 
@@ -414,7 +386,7 @@
                     headers,
                     body: JSON.stringify({
                         comment: {
-                            body: this.newCommentText,
+                            body: this.layout.newComment.text,
                             commentable_id: this.topic.id,
                             commentable_type: 'Topic',
                             is_offtopic: false,
@@ -431,9 +403,9 @@
 
                 this.comments.items.push(this.processComment(newComment));
 
-                this.newCommentText = '';
                 this.layout.newComment.loading = false;
 
+                this.layout.newComment.text = '';
                 this.topic.comments_count = (this.topic.comments_count || 0) + 1;
             } catch (e) {
                 console.error(e);
@@ -452,9 +424,12 @@
 
 
         public answer(comment: shikimori.Comment) {
-            this.newCommentText += `[comment=${comment.id}]${comment.user.nickname}[/comment], `;
-            return (this.$refs['create-comment-field'] as HTMLInputElement).focus();
+            this.layout.newComment.text += `[comment=${comment.id}]${comment.user.nickname}[/comment], `;
+            // @see https://github.com/kaorun343/vue-property-decorator/issues/257
+            // @ts-ignore
+            this.commentField.focus();
         }
+
 
         public scrollTo(top: number | HTMLElement) {
             if (typeof top !== 'number') {

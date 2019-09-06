@@ -138,8 +138,8 @@ async function getEpisodes(myAnimeListId: number) {
         return data[0].episodes;
 
     } catch (e) {
-        console.error(e);
-        alert(e.message);
+        console.error(e.message, {error: e.toJSON ? e.toJSON() : e});
+        alert(`${e.message}. Подробности можно увидеть в консоли (F12)`);
         return [];
     }
 

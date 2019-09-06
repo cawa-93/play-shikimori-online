@@ -49,7 +49,7 @@ module.exports = {
     outputDir: `./dist/${process.env.BROWSER}`,
 
     configureWebpack: {
-        devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
+        devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'inline-source-map',
 
         performance: {
             maxEntrypointSize: 2048000,
