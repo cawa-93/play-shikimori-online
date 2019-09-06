@@ -25,8 +25,8 @@
                 <v-list-item-action>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="toggleTheme"
-                                   data-ga-event-label="toggle-theme"
+                            <v-btn :aria-label="`Включить ${$vuetify.theme.dark ? 'светлую' : 'темную'} тему`"
+                                   @click="toggleTheme"
                                    icon
                                    small
                                    v-bind="attrs"
@@ -42,7 +42,7 @@
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
                             <v-btn :to="{name: 'history'}"
-                                   data-ga-event-label="open-history"
+                                   aria-label="История просмотров"
                                    icon
                                    small
                                    v-bind="attrs"
@@ -57,7 +57,12 @@
                 <v-list-item-action>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="logout" ga-event-label="logout" icon small v-bind="attrs" v-on="on">
+                            <v-btn @click="logout"
+                                   aria-label="Выключить синхронизацию"
+                                   icon
+                                   small
+                                   v-bind="attrs"
+                                   v-on="on">
                                 <v-icon>mdi-sync-off</v-icon>
                             </v-btn>
                         </template>
@@ -69,7 +74,7 @@
             <!-- Ссылка на авторизацию -->
             <!-- Обязательну нужно указать key отличный от предыдущего пункта -->
             <!-- Иначе клик по вложенным кнопкам будет запускать авторизацию -->
-            <v-list-item @click="logIn" data-ga-event-label="login" key="user-logged-out" v-else>
+            <v-list-item @click="logIn" key="user-logged-out" v-else>
                 <v-list-item-avatar>
                     <v-icon>mdi-sync</v-icon>
                 </v-list-item-avatar>
@@ -81,12 +86,13 @@
                 <v-list-item-action @click.stop>
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
-                            <v-btn @click="toggleTheme"
-                                   data-ga-event-label="toggle-theme"
+                            <v-btn :aria-label="`Включить ${$vuetify.theme.dark ? 'светлую' : 'темную'} тему`"
+                                   @click="toggleTheme"
                                    icon
                                    small
                                    v-bind="attrs"
-                                   v-on="on">
+                                   v-on="on"
+                            >
                                 <v-icon>mdi-brightness-6</v-icon>
                             </v-btn>
                         </template>
@@ -95,10 +101,10 @@
                 </v-list-item-action>
                 <v-list-item-action @click.stop key="open-history">
                     <v-btn :to="{name: 'history'}"
-                           data-ga-event-label="open-history"
+                           aria-label="История просмотров"
                            icon
                            small
-                           title="История просмотров">
+                    >
                         <v-icon>mdi-history</v-icon>
                     </v-btn>
                 </v-list-item-action>

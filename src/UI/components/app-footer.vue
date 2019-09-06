@@ -14,6 +14,7 @@
                 <v-tooltip :key="link.url" top v-for="link of links">
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
+                            :aria-label="link.label"
                             :href="link.url"
                             class="mx-4"
                             icon
