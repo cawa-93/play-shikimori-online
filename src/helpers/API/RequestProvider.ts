@@ -1,3 +1,4 @@
+import {local} from '@/helpers/chrome-storage';
 import {APIError} from '@/helpers/errors/APIError.class';
 import {NetworkError} from '@/helpers/errors/NetworkError.class';
 import {PermissionError} from '@/helpers/errors/PermissionError.class';
@@ -16,19 +17,28 @@ export class RequestProvider {
 
     public static async clearLegacyCaches() {
         /**
-         * FIXME: Может вызывать превышение лимита на хранение
-         *  Необходимо удалять устаревший кэш
+         * TODO: Удалить очистку Caches хранилища когда все пользователи обновятся на версию выше 1.1.1
          */
         const cacheNames = await caches.keys();
-        const regExp = new RegExp(`${this.cachePrefix}[0-9]+`, 'i');
-        return Promise.all(
+        await Promise.all(
             cacheNames.map((cacheName) => {
-                if (regExp.test(cacheName) && cacheName !== this.cacheName) {
-                    return caches.delete(cacheName);
+                return caches.delete(cacheName);
+            }),
+        );
+
+        // Удаление старого кэша в хранилище chrome.storage.local
+        const regExp = new RegExp(`${this.cachePrefix}[0-9]+`, 'i');
+        const localStorageKeys = Object.keys(await local.get(null));
+
+        await Promise.all(
+            localStorageKeys.map((key) => {
+                if (regExp.test(key) && key !== this.cacheName) {
+                    return local.remove(key);
                 }
                 return Promise.resolve(true);
             }),
         );
+
     }
 
 
@@ -72,67 +82,40 @@ export class RequestProvider {
 
         const request = new Request(url, options);
 
-        /**
-         * Попытка открыть кэш на Firefox вызывает SecurityError
-         * @see https://stackoverflow.com/questions/11768221/firefox-websocket-security-issue/12042843#12042843
-         */
-        let cachedResp: Response | undefined;
-        let cache: Cache | undefined;
-        try {
-            cache = await caches.open(this.cacheName);
-            cachedResp = await cache.match(request);
-        } catch (e) {
-            console.error(e);
-            if (!(e instanceof DOMException) && e.track) {
-                e.track();
-            }
-        }
-
         return retry(async (bail: (e: Error) => void) => {
             return fetch(url, options)
-                .catch(() => {
-
-                    const error = new NetworkError({
-                        message: options.errorMessage,
-                    });
-
-                    if (cachedResp) {
-                        console.error('Ответ возвращен из кэша', error);
-                        return cachedResp;
-                    }
-
-                    throw error;
-                })
                 .then(async (resp) => {
                     const error = await this.checkResponse(resp, bail, options.errorMessage);
                     if (error) {
                         error.request = {url, options};
 
                         const apiError = new APIError(error);
-                        if (cachedResp) {
-                            console.error('Ответ возвращен из кэша', apiError);
-                            return cachedResp;
-                        }
 
                         if (resp.status !== 429 && resp.status >= 400 && resp.status < 500) {
                             return bail(apiError);
                         } else {
                             throw apiError;
                         }
-
                     } else {
-                        if (cache && request.method === 'GET') {
-                            await cache.put(request, resp.clone());
-                        }
-
-                        return resp;
+                        const respData = await resp.json();
+                        this.saveCachedResponse(request, respData);
+                        return respData;
                     }
                 })
-                .then((resp) => {
-                    if (resp) {
-                        return resp.json();
-                    } else {
-                        return resp;
+
+                .catch(async (error) => {
+
+                    if (!error) {
+                        error = new NetworkError({
+                            message: options.errorMessage,
+                        });
+                    }
+
+                    const cachedResp = await this.getCachedResponse(request);
+
+                    if (cachedResp) {
+                        console.error('Ответ возвращен из кэша', error);
+                        return cachedResp;
                     }
                 });
         }, {
@@ -202,6 +185,42 @@ export class RequestProvider {
                 body,
             },
         };
+    }
+
+    protected static async getCache() {
+        const caches = await local.get<{ [key: string]: any[] }>({[this.cacheName]: []});
+        return caches[this.cacheName];
+    }
+
+    protected static async getCachedResponse(request: Request) {
+        if (!request || request.method !== 'GET') {
+            return null;
+        }
+
+        const cache = await this.getCache();
+
+        if (!cache || !cache.length) {
+            return null;
+        }
+
+        const requestHash = request.url;
+        const {resp} = cache.find(({id}) => requestHash === id);
+
+        return resp;
+    }
+
+    protected static async saveCachedResponse(request: Request, respData: any) {
+        if (!request || request.method !== 'GET') {
+            return null;
+        }
+
+        const requestHash = request.url;
+
+        local.unshift(this.cacheName, {
+            id: requestHash,
+            resp: respData,
+        });
+
     }
 }
 
