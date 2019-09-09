@@ -25,7 +25,7 @@
             </v-flex>
         </v-layout>
 
-        <comments v-if="anime && currentEpisode"></comments>
+        <comments-feed v-if="anime && currentEpisode"></comments-feed>
     </main>
 </template>
 
@@ -35,7 +35,7 @@
     import {sync} from '@/helpers/chrome-storage';
     import {getReviewUrl} from '@/helpers/get-review-url';
     import {push as message} from '@/helpers/runtime-messages';
-    import Comments from '@/UI/components/comments.vue';
+    import CommentsFeed from '@/UI/components/comments-feed/index.vue';
     import EpisodeList from '@/UI/components/episode-list.vue';
     import MainMenu from '@/UI/components/main-menu.vue';
     import Player from '@/UI/components/player.vue';
@@ -54,7 +54,7 @@
             Player,
             VideoControls,
             MainMenu,
-            Comments,
+            CommentsFeed,
         },
     })
     export default class PlayerView extends Vue {
