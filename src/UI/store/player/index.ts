@@ -1,5 +1,6 @@
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {MyAnimeListProvider} from '@/helpers/API/MyAnimeListProvider';
+import {sync} from '@/helpers/chrome-storage';
 import {clearString} from '@/helpers/clear-string';
 import {filterEpisodes} from '@/helpers/filter-episodes';
 import {findEpisode} from '@/helpers/find-episode';
@@ -8,6 +9,7 @@ import store, {worker} from '@/UI/store';
 import shikimoriStore from '@/UI/store/shikimori';
 import Vue from 'vue';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
+import {SelectedTranslation} from '../../../../types/UI';
 
 
 @Module({
@@ -349,14 +351,17 @@ export class Player extends VuexModule {
      */
     @Action
     public getPriorityTranslation(episode: anime365.Episode): Promise<anime365.Translation> {
-        return new Promise((resolve) => {
+        return sync.get<{ selectedTranslations: SelectedTranslation[] }>({selectedTranslations: []})
+            .then(({selectedTranslations}) => {
+                return new Promise((resolve) => {
 
-            worker.onmessage = ({data: {translation}}: { data: { translation: anime365.Translation } }) => {
-                worker.onmessage = null;
-                resolve(translation);
-            };
-            worker.postMessage({episode});
-        });
+                    worker.onmessage = ({data: {translation}}: { data: { translation: anime365.Translation } }) => {
+                        worker.onmessage = null;
+                        resolve(translation);
+                    };
+                    worker.postMessage({episode, selectedTranslations});
+                });
+            });
     }
 
 

@@ -23,7 +23,7 @@
 export function versionCompare(
     v1: string,
     v2: string,
-    options: { lexicographical: boolean, zeroExtend: boolean },
+    options?: { lexicographical: boolean, zeroExtend: boolean },
 ): number {
     const lexicographical = (options && options.lexicographical) || false;
     const zeroExtend = (options && options.zeroExtend) || true;

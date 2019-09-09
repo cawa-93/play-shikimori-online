@@ -50,9 +50,10 @@
 </template>
 
 <script lang="ts">
+    import {sync} from '@/helpers/chrome-storage';
     import playerStore from '@/UI/store/player';
     // @ts-ignore
-    import storage from 'kv-storage-polyfill';
+    import {SelectedTranslation} from 'types/UI';
     import {Component, Vue} from 'vue-property-decorator';
 
     @Component({
@@ -140,21 +141,16 @@
                 playerStore.setCurrentTranslation(translation);
 
                 this.$nextTick(async () => {
-                    /**
-                     * FIXME: Может вызывать превышение лимита на хранение
-                     *  Необходимо удалять старые данные
-                     */
-                    let history: Map<number, anime365.Translation> | undefined
-                        = await storage.get('lastSelectedTranslations');
+                    const dataToSave: SelectedTranslation = {
+                        tId: translation.id,
+                        id: translation.seriesId,
+                        eId: translation.episodeId,
+                        type: translation.type,
+                        author: translation.authorsSummary,
+                        priority: translation.priority,
+                    };
 
-                    // Если ранее хранилище переводов не создавалось — инициализировать его
-                    if (!history) {
-                        history = new Map();
-                    }
-
-                    history.set(translation.seriesId, translation);
-
-                    await storage.set('lastSelectedTranslations', history);
+                    await sync.unshift('selectedTranslations', dataToSave);
                 });
             }
         }

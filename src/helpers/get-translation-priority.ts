@@ -1,3 +1,4 @@
+import {SelectedTranslation} from '../../types/UI';
 import {clearString} from './clear-string';
 
 
@@ -10,15 +11,15 @@ export function clearAuthorSummary(authorsSummary: string) {
  *
  * @param {Map<number, anime365.Translation>} translations
  */
-export function getAuthorsPriority(translations: Map<number, anime365.Translation>) {
+export function getAuthorsPriority(translations: Map<number, SelectedTranslation>) {
     const authors = new Map();
 
     translations.forEach((transaction) => {
-        if (!transaction || !transaction.authorsSummary) {
+        if (!transaction || !transaction.author) {
             return;
         }
 
-        const authorsSummary = clearAuthorSummary(transaction.authorsSummary);
+        const authorsSummary = clearAuthorSummary(transaction.author);
 
         if (!authorsSummary) {
             return;
@@ -43,7 +44,7 @@ export function getAuthorsPriority(translations: Map<number, anime365.Translatio
  *
  * @param {Map<number, anime365.Translation>} translations
  */
-export function getTypesPriority(translations: Map<number, anime365.Translation>) {
+export function getTypesPriority(translations: Map<number, SelectedTranslation>) {
     const types = new Map();
 
     translations.forEach((transaction) => {
@@ -125,7 +126,7 @@ export function getMostPriorityTranslation(translations: anime365.Translation[])
  * @param {anime365.Episode} episode
  */
 export function getPriorityTranslationForEpisode(
-    history: Map<number, anime365.Translation>,
+    history: Map<number, SelectedTranslation>,
     episode: anime365.Episode,
 ) {
 
@@ -135,7 +136,8 @@ export function getPriorityTranslationForEpisode(
 
     // Выбираем перевод используемый для предыдущих серий
     const previousUserTranslation = history.get(episode.seriesId);
-    const previousUserTranslationAuthor = previousUserTranslation ? previousUserTranslation.authorsSummary : undefined;
+
+    const previousUserTranslationAuthor = previousUserTranslation ? previousUserTranslation.author : undefined;
     const previousUserTranslationType = previousUserTranslation ? previousUserTranslation.type : undefined;
     if (previousUserTranslationAuthor && previousUserTranslationType) {
         // Поиск перевода от того же автора

@@ -1,46 +1,50 @@
 import {getMostPriorityTranslation, getPriorityTranslationForEpisode} from '@/helpers/get-translation-priority';
+import {SelectedTranslation} from '../../../types/UI';
 // @ts-ignore
-import storage from 'kv-storage-polyfill';
 
 
 const ctx: Worker = self as any;
 
-ctx.onmessage = async ({data: {episode}}) => {
-    let history = await storage.get('lastSelectedTranslations');
-
-    if (!history) {
-        history = new Map();
-        await storage.set('lastSelectedTranslations', history);
-    }
-
+ctx.onmessage = async (
+    {
+        data: {episode, selectedTranslations},
+    }: {
+        data: { episode: anime365.Episode; selectedTranslations: SelectedTranslation[] };
+    },
+) => {
     if (!episode || !episode.translations || !episode.translations.length) {
-        // @ts-ignore
-        return postMessage({translation: undefined});
+        return ctx.postMessage({translation: undefined});
     }
 
-    const previousUserTranslation = history.get(episode.seriesId);
+    const history = new Map<number, SelectedTranslation>();
+
+    selectedTranslations.forEach((translation) => {
+        history.set(translation.id, translation);
+    });
+
+    const previousSelectedTranslation = history.get(episode.seriesId);
 
     // Если предыдущий перевод принадлежит текущей серии — его и возвращаем
-    if (previousUserTranslation && previousUserTranslation.episodeId === episode.id) {
-        // @ts-ignore
-        return postMessage({translation: previousUserTranslation});
+    if (previousSelectedTranslation && previousSelectedTranslation.eId === episode.id) {
+        const previousSelectedTranslationInEpisode = episode.translations.find(
+            (t) => t.id === previousSelectedTranslation.id);
+        if (previousSelectedTranslationInEpisode) {
+            return ctx.postMessage({translation: previousSelectedTranslationInEpisode});
+        }
     }
 
     const primaryTranslations = getPriorityTranslationForEpisode(history, episode);
     const primaryActiveTranslations = filterActiveTranslations(primaryTranslations);
 
     if (primaryActiveTranslations.length) {
-        // @ts-ignore
-        return postMessage({translation: getMostPriorityTranslation(primaryActiveTranslations)});
+        return ctx.postMessage({translation: getMostPriorityTranslation(primaryActiveTranslations)});
     }
 
     if (primaryTranslations.length) {
-        // @ts-ignore
-        return postMessage({translation: getMostPriorityTranslation(primaryTranslations)});
+        return ctx.postMessage({translation: getMostPriorityTranslation(primaryTranslations)});
     }
 
-    // @ts-ignore
-    return postMessage({translation: getMostPriorityTranslation(episode.translations)});
+    return ctx.postMessage({translation: getMostPriorityTranslation(episode.translations)});
 
 
 };
