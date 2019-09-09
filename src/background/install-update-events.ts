@@ -13,12 +13,12 @@ chrome.runtime.onInstalled.addListener(async ({reason, previousVersion}: chrome.
 
     if (reason === 'install') {
         // Сохраняем время установки расширения
-        sync.set({
+        await sync.set({
             installAt: Date.now(),
         });
 
         // Загружать сообщения из рассылки начиная с времени установки
-        local.set({
+        await local.set({
             runtimeMessagesLastCheck: Date.now(),
         });
     }
