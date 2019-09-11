@@ -216,7 +216,7 @@ export class RequestProvider {
 
         const requestHash = request.url;
 
-        local.unshift(this.cacheName, {
+        return local.unshift(this.cacheName, {
             id: requestHash,
             resp: respData,
         });
