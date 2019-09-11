@@ -444,6 +444,10 @@
 
 
 <style>
+    .comments-container {
+        contain: content;
+    }
+
     @keyframes shake {
         10%,
         90% {
