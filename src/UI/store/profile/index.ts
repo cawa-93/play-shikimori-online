@@ -101,6 +101,8 @@ export class Profile extends VuexModule {
             if (e.response && e.response.status && e.response.status === 401) {
                 this.logout();
             }
+
+            return null;
         }
 
     }
