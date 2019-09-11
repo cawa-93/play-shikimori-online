@@ -1,6 +1,5 @@
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {MyAnimeListProvider} from '@/helpers/API/MyAnimeListProvider';
-import {sync} from '@/helpers/chrome-storage';
 import {clearString} from '@/helpers/clear-string';
 import {filterEpisodes} from '@/helpers/filter-episodes';
 import {findEpisode} from '@/helpers/find-episode';
@@ -9,7 +8,7 @@ import store, {worker} from '@/UI/store';
 import shikimoriStore from '@/UI/store/shikimori';
 import Vue from 'vue';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
-import {SelectedTranslation} from '../../../../types/UI';
+import {SelectedTranslation, WatchingHistoryItem} from '../../../../types/UI';
 
 
 @Module({
@@ -22,6 +21,9 @@ export class Player extends VuexModule {
     public episodes: anime365.Episode[] = [];
     public currentEpisode: anime365.Episode | null = null;
     public currentTranslation: anime365.Translation | null = null;
+
+    public selectedTranslations: SelectedTranslation[] = [];
+    public watchingHistory: WatchingHistoryItem[] = [];
 
 
     /**
@@ -124,6 +126,18 @@ export class Player extends VuexModule {
             episode.episodeFull = `${episode.episodeInt}. ${episode.episodeTitle}`;
         }
 
+    }
+
+
+    @Mutation
+    public setWatchingHistory(watchingHistory: WatchingHistoryItem[]) {
+        this.watchingHistory = watchingHistory;
+    }
+
+
+    @Mutation
+    public setSelectedTranslations(selectedTranslations: SelectedTranslation[]) {
+        this.selectedTranslations = selectedTranslations;
     }
 
 
@@ -351,17 +365,14 @@ export class Player extends VuexModule {
      */
     @Action
     public getPriorityTranslation(episode: anime365.Episode): Promise<anime365.Translation> {
-        return sync.get<{ selectedTranslations: SelectedTranslation[] }>({selectedTranslations: []})
-            .then(({selectedTranslations}) => {
-                return new Promise((resolve) => {
+        return new Promise((resolve) => {
 
-                    worker.onmessage = ({data: {translation}}: { data: { translation: anime365.Translation } }) => {
-                        worker.onmessage = null;
-                        resolve(translation);
-                    };
-                    worker.postMessage({episode, selectedTranslations});
-                });
-            });
+            worker.onmessage = ({data: {translation}}: { data: { translation: anime365.Translation } }) => {
+                worker.onmessage = null;
+                resolve(translation);
+            };
+            worker.postMessage({episode, selectedTranslations: this.selectedTranslations});
+        });
     }
 
 
@@ -380,8 +391,8 @@ export class Player extends VuexModule {
         if (translation) {
             const link = document.createElement('link');
             link.rel = 'preload';
-            link.href = translation.embedUrl;
             link.as = 'document';
+            link.href = translation.embedUrl;
             document.head.appendChild(link);
         }
 

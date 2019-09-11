@@ -80,7 +80,7 @@ export class Shikimori extends VuexModule {
         }
 
         const auth = await profileStore.getValidCredentials();
-        if (!auth || !profileStore.user) {
+        if (!auth || !profileStore.user || !profileStore.user.id) {
             return;
         }
 
@@ -97,12 +97,11 @@ export class Shikimori extends VuexModule {
             UserRate,
         );
 
-        if (userRateForSave.status
-            === 'watching'
+        if (userRateForSave.status === 'watching'
             && userRateForSave.episodes
             && this.anime.episodes
-            && userRateForSave.episodes
-            >= this.anime.episodes) {
+            && userRateForSave.episodes >= this.anime.episodes
+        ) {
             userRateForSave.status = 'completed';
         }
 

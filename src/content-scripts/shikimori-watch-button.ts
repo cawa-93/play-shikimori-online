@@ -1,5 +1,8 @@
 import {BackgroundRequestProvider} from '@/helpers/API/BackgroundRequestProvider';
+import {sync} from '@/helpers/chrome-storage';
+import {getMostPriorityTranslation, getPriorityTranslationForEpisode} from '@/helpers/get-translation-priority';
 import {pluralize} from '@/helpers/pluralize';
+import {SelectedTranslation} from '../../types/UI';
 
 // Запуск главной функции
 const mainObserver = new MutationObserver(main);
@@ -13,7 +16,9 @@ async function main() {
     /** @type {HTMLDivElement} */
     const infoSection = document.body.querySelector<HTMLDivElement>('#animes_show .c-info-right');
     /** @type {HTMLAnchorElement} */
-    let WatchOnlineButton = document.body.querySelector<HTMLAnchorElement>('#watch-online-button');
+    let WatchOnlineButton = document
+        .body
+        .querySelector<HTMLAnchorElement>(`#${chrome.runtime.id} #watch-online-button`);
 
     if (!infoSection || WatchOnlineButton) {
         return;
@@ -61,14 +66,62 @@ async function main() {
             playerURL.hash += `/${episodeInt + 1}`;
         }
 
+
         WatchOnlineButton.href = playerURL.toString();
+        WatchOnlineButton.classList.remove('b-ajax');
         WatchOnlineButton.style.cursor = 'pointer';
+
+        /**
+         * Загрузка информации про перевод для следующей серии
+         */
+
+            // @ts-ignore
+        const nextEpisode = episodes.find((e) => parseFloat(e.episodeInt) === episodeInt + 1);
+        if (nextEpisode) {
+            const promise = getPriorityTranslation(nextEpisode.id);
+            const helpText = infoSection.querySelector('.help-text');
+            const {translation} = await promise;
+            if (translation && helpText) {
+                let newHelpText = '';
+
+                newHelpText += `${episodeInt + 1} серия `;
+
+                switch (translation.type) {
+                    case 'voiceRu':
+                        newHelpText += 'Озвучка';
+                        break;
+                    case 'voiceEn':
+                        newHelpText += 'Английская Озвучка';
+                        break;
+                    case 'subRu':
+                        newHelpText += 'Русские Субтитры';
+                        break;
+                    case 'subEn':
+                        newHelpText += 'Английские Субтитры';
+                        break;
+                    case 'subJa':
+                        newHelpText += 'Японские Субтитры';
+                        break;
+                    case 'raw':
+                        newHelpText += 'Оригинал';
+                        break;
+                    default:
+                        newHelpText += 'Перевод';
+                        break;
+                }
+
+                newHelpText += ` от ${translation.authorsSummary}`;
+                helpText.textContent = newHelpText;
+            }
+        }
+
+
     } else {
         WatchOnlineButton.textContent = 'Пока нет серий';
         WatchOnlineButton.style.cursor = 'not-allowed';
+        WatchOnlineButton.classList.remove('b-ajax');
     }
 
-    WatchOnlineButton.classList.remove('b-ajax');
 
 }
 
@@ -83,13 +136,19 @@ function createButton(infoSection: HTMLElement): HTMLAnchorElement {
     const WatchButtonSection = document.createElement('section');
     WatchButtonSection.classList.add('block');
     WatchButtonSection.classList.add('watch-online-block');
+    WatchButtonSection.id = chrome.runtime.id;
     WatchButtonSection.innerHTML = `
         <div class="subheadline m10">Онлайн просмотр</div>
         <a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;">
             <!-- Неразрывный пробел--> <!-- /Неразрывный пробел-->
         </a>
+        <small class="help-text" style="
+            text-align: center;
+            opacity: 0.8;
+            display: block;
+        "><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></small>
         <p style="color:#7b8084;text-align:center">
-            <strong><a href="${chrome.runtime.getManifest().homepage_url}">Обратная связь</a></strong>
+            <strong><a href="https://github.com/cawa-93/play-shikimori-online/wiki/FAQ">Обратная связь</a></strong>
         </p>
     `;
 
@@ -155,4 +214,58 @@ function getEpisodeInt() {
     const episodeItn = parseInt(episodeElement.textContent || '', 10);
 
     return isNaN(episodeItn) ? 0 : episodeItn;
+}
+
+async function getPriorityTranslation(episodeId: number): Promise<{ translation: anime365.Translation | null }> {
+    const [
+        {selectedTranslations},
+        {data: episode},
+    ] = await Promise.all([
+        sync.get<{ selectedTranslations: SelectedTranslation[] }>({selectedTranslations: []}),
+        BackgroundRequestProvider
+            .fetch<anime365.api.EpisodeSelf>(
+                `https://smotret-anime-365.ru/api/episodes/${episodeId}`,
+                {
+                    errorMessage: 'Невозможно загрузить список переводов',
+                },
+            ),
+    ]);
+
+    if (!episode || !episode.translations || !episode.translations.length) {
+        return {translation: null};
+    }
+
+    const history = new Map<number, SelectedTranslation>();
+
+    selectedTranslations.forEach((translation) => {
+        history.set(translation.id, translation);
+    });
+
+    const previousSelectedTranslation = history.get(episode.seriesId);
+
+    // Если предыдущий перевод принадлежит текущей серии — его и возвращаем
+    if (previousSelectedTranslation && previousSelectedTranslation.eId === episode.id) {
+        const previousSelectedTranslationInEpisode = episode.translations.find(
+            (t) => t.id === previousSelectedTranslation.id);
+        if (previousSelectedTranslationInEpisode) {
+            return {translation: previousSelectedTranslationInEpisode};
+        }
+    }
+
+    const primaryTranslations = getPriorityTranslationForEpisode(history, episode);
+    const primaryActiveTranslations = filterActiveTranslations(primaryTranslations);
+
+    if (primaryActiveTranslations.length) {
+        return {translation: getMostPriorityTranslation(primaryActiveTranslations)};
+    }
+
+    if (primaryTranslations.length) {
+        return {translation: getMostPriorityTranslation(primaryTranslations)};
+    }
+
+    return {translation: getMostPriorityTranslation(episode.translations)};
+}
+
+function filterActiveTranslations(translations: anime365.Translation[]) {
+    return translations.filter((t) => t.isActive);
 }

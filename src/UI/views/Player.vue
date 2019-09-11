@@ -42,7 +42,6 @@
     import TranslationList from '@/UI/components/translation-list.vue';
     import VideoControls from '@/UI/components/video-controls.vue';
     import playerStore from '@/UI/store/player';
-    import profileStore from '@/UI/store/profile';
     import shikimoriStore from '@/UI/store/shikimori';
     import {Component, Vue} from 'vue-property-decorator';
 
@@ -69,6 +68,7 @@
 
 
         public async mounted() {
+
             const anime = parseInt(this.$route.params.anime, 10);
             const episode = parseFloat(this.$route.params.episode);
 
@@ -83,33 +83,23 @@
                 playerStore.clear();
             }
 
-            const {installAt, leaveReview, userAuth, isAlreadyShare} = await sync.get<{
+            const {installAt, leaveReview, isAlreadyShare} = await sync.get<{
                 installAt?: number,
                 leaveReview?: 1 | 0,
-                userAuth?: shikimori.Oauth,
                 isAlreadyShare?: 1 | 0,
             }>(
                 [
                     'installAt',      // Timestamp когда пользоватеь установил расширение
                     'leaveReview',    // Оставлял ли пользователь отзыв
-                    'userAuth',       // Данные для авторизации пользователя
                     'isAlreadyShare', // Получал ли пользователь предложение поделиться в ВК
                 ],
             );
-
-            if (userAuth) {
-                profileStore.loadCredentialsFromServer(userAuth);
-            }
 
             // Очередь асинхронных операций
             const promises = [];
 
             if (needReloadEpisodes) {
                 promises.push(playerStore.loadEpisodes({anime, episode})); // Загрузка списка серий и запуск видео
-            }
-
-            if (userAuth && !profileStore.user) {
-                promises.push(profileStore.loadUser()); // Загрузка информации про пользователя если тот авторизован
             }
 
             if (!shikimoriStore.anime || shikimoriStore.anime.id !== anime) {

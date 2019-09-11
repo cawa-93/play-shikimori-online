@@ -10,6 +10,7 @@
         :vertical="snackbar.message.mode === 'vertical'"
         close-text="Закрыть сообщение"
         role="alert"
+        style="contain: content;padding: 8px 0 20px 0;top: 0;"
         v-if="snackbar.message"
         v-model="snackbar.show"
     >
