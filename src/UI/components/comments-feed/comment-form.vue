@@ -14,7 +14,9 @@
                 required
             >
                 <v-avatar slot="prepend">
-                    <img :alt="user.nickname" :src="user.image.x80"/>
+                    <img :alt="user.nickname" :src="user.avatar" v-if="user.avatar"/>
+                    <v-icon v-else>mdi-account-circle</v-icon>
+
                 </v-avatar>
 
                 <v-btn

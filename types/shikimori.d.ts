@@ -113,8 +113,8 @@ declare namespace shikimori {
     interface User {
         id: number;
         nickname: string;
-        avatar: string;
-        image: Avatar;
+        avatar?: string;
+        image?: Avatar;
         last_online_at: Date;
         name?: string;
         sex?: string;

@@ -14,7 +14,8 @@
             <!-- Виджет пользователя когда он авторизован -->
             <v-list-item key="user-logged-in" v-if="user">
                 <v-list-item-avatar>
-                    <img :alt="user.nickname" :src="user.image.x80"/>
+                    <img :alt="user.nickname" :src="user.avatar" v-if="user.avatar"/>
+                    <v-icon v-else>mdi-account-circle</v-icon>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
