@@ -9,13 +9,13 @@ export async function loadRuntimeMessages(minTimestamp: number, broadcastType = 
         while (minTimestamp <= lastCommentTimestamp && commentWithMessages.length < maxLoadedMessages) {
             const comments =
                 await ShikimoriProvider
-                    .fetch<shikimori.Comment[]>(
+                    .fetch<shikimori.Comment[] | undefined>(
                         // tslint:disable-next-line:max-line-length
                         `/api/comments/?desc=1&commentable_id=285393&commentable_type=Topic&limit=100&page=${page++}`,
                         {errorMessage: 'Невозможно загрузить уведомления'},
                     );
 
-            if (!comments.length) {
+            if (!comments || !comments.length) {
                 break;
             }
 

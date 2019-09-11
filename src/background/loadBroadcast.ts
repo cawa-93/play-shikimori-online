@@ -17,5 +17,5 @@ export async function loadBroadcast() {
     return loadRuntimeMessages(runtimeMessagesLastCheck, 'broadcast');
 }
 
-
-setInterval(loadBroadcast, /* каждые 15 минут */1000 * 60 * 15);
+// Нет возможности загружать сообщения так как клуб был удален
+// setInterval(loadBroadcast, /* каждые 15 минут */1000 * 60 * 15);
