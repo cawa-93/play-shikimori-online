@@ -62,8 +62,8 @@
         public links = [
             {
                 icon: 'mdi-account-question',
-                label: 'Обсудить расширение или задать вопрос автору',
-                url: 'https://t.me/playshikionline_chat',
+                label: 'FAQ',
+                url: 'https://github.com/cawa-93/play-shikimori-online/wiki/FAQ',
             },
             {
                 icon: 'mdi-telegram',

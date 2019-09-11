@@ -148,7 +148,7 @@ function createButton(infoSection: HTMLElement): HTMLAnchorElement {
             display: block;
         "><!-- Неразрывный пробел--> <!-- /Неразрывный пробел--></small>
         <p style="color:#7b8084;text-align:center">
-            <strong><a href="${chrome.runtime.getManifest().homepage_url}">Обратная связь</a></strong>
+            <strong><a href="https://github.com/cawa-93/play-shikimori-online/wiki/FAQ">Обратная связь</a></strong>
         </p>
     `;
 
