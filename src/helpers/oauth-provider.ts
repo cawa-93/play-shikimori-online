@@ -14,7 +14,7 @@ export async function updateAuth() {
     if (!oldAuth || !oldAuth.refresh_token) {
         const code = await getNewCode();
         const newAuth = await ShikimoriProvider.fetch<shikimori.Oauth>('/oauth/token', {
-            errorMessage: 'Невозможно получить ключ доступа',
+            errorMessage: 'Невозможно получить access_token',
             method: 'POST',
             body: JSON.stringify({
                 code,
@@ -33,7 +33,7 @@ export async function updateAuth() {
         }
     } else {
         const newAuth = await ShikimoriProvider.fetch<shikimori.Oauth>('/oauth/token', {
-            errorMessage: 'Невозможно получить ключ доступа',
+            errorMessage: 'Невозможно обновить access_token',
             method: 'POST',
             body: JSON.stringify({
                 grant_type: 'refresh_token',
@@ -75,12 +75,9 @@ export function getNewCode() {
                     }
 
                     const tabUrl = new URL(changeInfo.url);
-                    if (tabUrl.hostname
-                        !== 'shikimori.one'
-                        || tabUrl.pathname
-                        !== '/tests/oauth'
-                        || tabUrl.searchParams.get('app')
-                        !== 'play-shikimori-online') {
+                    if (tabUrl.hostname !== 'shikimori.one'
+                        || tabUrl.pathname !== '/tests/oauth'
+                        || tabUrl.searchParams.get('app') !== 'play-shikimori-online') {
                         return;
                     }
 

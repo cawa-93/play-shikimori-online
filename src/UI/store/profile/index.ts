@@ -67,36 +67,42 @@ export class Profile extends VuexModule {
 
     @Action
     public async getValidCredentials(force: boolean = false) {
+
+        let auth = this.credentials;
+        const isLoggedIn = (auth && auth.access_token);
+        const isFresh = (
+            isLoggedIn
+            && auth
+            && auth.created_at
+            && auth.expires_in
+            && (
+                1000 * (auth.created_at + auth.expires_in) > Date.now()
+            )
+        );
+
+        if (!isLoggedIn && !force) {
+            return null;
+        }
+
+
+        if (isFresh) {
+            return auth;
+        }
+
         try {
-            let auth = this.credentials;
-            const isLoggedIn = (auth && auth.access_token);
-            const isFresh = (
-                isLoggedIn
-                && auth
-                && auth.created_at
-                && auth.expires_in
-                && (
-                    1000 * (auth.created_at + auth.expires_in) > Date.now()
-                )
-            );
-
-            if (!isLoggedIn && !force) {
-                return null;
-            }
-
-
-            if (isFresh) {
-                return auth;
-            }
-
             auth = await updateAuth();
             this.saveCredentials(auth);
             return auth;
-
         } catch (e) {
             console.error(e);
             e.alert().track();
+
+            // Если сервер ответил ошибкой 401 — принудительно розлогинить пользователя
+            if (e.response && e.response.status && e.response.status === 401) {
+                this.logout();
+            }
         }
+
     }
 }
 
