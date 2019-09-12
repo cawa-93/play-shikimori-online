@@ -26,6 +26,7 @@ import videojs from 'video.js';
             const EPISODE_ID = config.get('play-shikimori[episodeId]');
             const NEXT_EPISODE = config.get('play-shikimori[nextEpisode]') === '1';
             const IS_AUTO_PLAY = config.get('play-shikimori[isAutoPlay]') === '1';
+            const IS_FULL_SCREEN = config.get('play-shikimori[fullScreen]') === '1';
 
 
             /**
@@ -40,7 +41,6 @@ import videojs from 'video.js';
 
 
                 setCurrentTime();
-                initSaveFullScreenState();
                 let nextEpisodeButton: HTMLButtonElement | null;
                 if (NEXT_EPISODE) {
                     nextEpisodeButton = createNextEpisodeButton();
@@ -67,6 +67,30 @@ import videojs from 'video.js';
                         toggleNextEpisodeButtonThrottled({currentTime, duration, nextEpisodeButton});
                     }
                 });
+
+
+                /**
+                 * Если фрейм с видео развернут на весь екран
+                 * выполнить .requestFullscreen()
+                 * чтобы переключить встроенный интерфейс плеера в полноекранный режим
+                 */
+                if (IS_FULL_SCREEN) {
+                    /**
+                     * Операция возможна только если пользователь самостоятельно переключил серию
+                     * Если серия переключилась автоматически, то браузер не позволит развернуть плеер
+                     * и requestFullscreen() приведет к ошибке
+                     *
+                     * @see https://stackoverflow.com/a/29282049/4543826
+                     */
+                    player.requestFullscreen();
+                }
+
+                /**
+                 * Ранее состояние плеера сохранялось в хранилище с ключем "play-fullscreen-state"
+                 * Теперь механизм сохранения состояния плеера отличается.
+                 * Больше нет необходимости хранить состояние в хранилище и данные можно удалить
+                 */
+                storage.delete('play-fullscreen-state');
             }
 
 
@@ -175,13 +199,6 @@ import videojs from 'video.js';
             }
 
 
-            function initSaveFullScreenState() {
-                player.on('fullscreenchange', () => {
-                    storage.set(`play-fullscreen-state`, player.isFullscreen());
-                });
-            }
-
-
             /**
              * Функция автоматически запускает воспроизведение, если нет рекламной вставки
              */
@@ -190,9 +207,6 @@ import videojs from 'video.js';
                     return;
                 }
 
-                if (await storage.get(`play-fullscreen-state`) === true) {
-                    player.requestFullscreen();
-                }
                 player.play();
             }
 
