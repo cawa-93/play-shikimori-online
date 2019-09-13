@@ -6,6 +6,8 @@ import {findEpisode} from '@/helpers/find-episode';
 import router from '@/UI/router';
 import store, {worker} from '@/UI/store';
 import shikimoriStore from '@/UI/store/shikimori';
+// @ts-ignore
+import storage from 'kv-storage-polyfill';
 import Vue from 'vue';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 import {SelectedTranslation, WatchingHistoryItem} from '../../../../types/UI';
@@ -312,13 +314,24 @@ export class Player extends VuexModule {
      */
     @Action
     public async loadEpisodesTitle() {
-        if (!this.currentEpisode) {
+        if (!this.currentEpisode || !this.currentEpisode.myAnimelist) {
             return;
         }
         const myAnimelist = this.currentEpisode.myAnimelist;
+        let cache: Map<number, { maxAge: number, episodes: myanimelist.Episode[] }>
+            = await storage.get('EpisodeTitlesCache') || new Map();
+
+        if (cache.has(myAnimelist)) {
+            const cached = cache.get(myAnimelist);
+            if (cached && cached.maxAge && cached.maxAge > Date.now()) {
+                return this.setEpisodesTitle(cached.episodes);
+            }
+        }
+
         let promise: Promise<myanimelist.api.EpisodeCollection>;
         let currentPage = 1;
         let episodesToCommit: myanimelist.Episode[] = [];
+        const episodesToCache: myanimelist.Episode[] = [];
 
 
         try {
@@ -330,6 +343,7 @@ export class Player extends VuexModule {
 
                 if (episodesToCommit.length) {
                     this.setEpisodesTitle(episodesToCommit);
+                    episodesToCache.push(...episodesToCommit);
                     episodesToCommit = [];
                 }
 
@@ -354,7 +368,17 @@ export class Player extends VuexModule {
 
         if (episodesToCommit.length) {
             this.setEpisodesTitle(episodesToCommit);
+            episodesToCache.push(...episodesToCommit);
         }
+
+        if (episodesToCache.length) {
+            cache.set(myAnimelist, {episodes: episodesToCache, maxAge: Date.now() + 345600000}); // кэшируем на 4 суток
+        }
+
+        if (cache.size > 5) {
+            cache = new Map([...cache.entries()].splice(-5));
+        }
+        storage.set('EpisodeTitlesCache', cache);
 
     }
 
