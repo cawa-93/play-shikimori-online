@@ -42,6 +42,7 @@
             config.append('play-shikimori[episodeId]', `${this.translation.episodeId}`);
             config.append('play-shikimori[id]', `${this.translation.id}`);
             config.append('play-shikimori[isAutoPlay]', '1');
+            config.append('play-shikimori[fullScreen]', document.fullscreenElement ? '1' : '0');
 
             if (playerStore.currentEpisode) {
                 config.set(
