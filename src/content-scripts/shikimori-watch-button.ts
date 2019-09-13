@@ -18,7 +18,7 @@ async function main() {
     /** @type {HTMLAnchorElement} */
     let WatchOnlineButton = document
         .body
-        .querySelector<HTMLAnchorElement>(`#${chrome.runtime.id} #watch-online-button`);
+        .querySelector<HTMLAnchorElement>(`#play-shiki-online #watch-online-button`);
 
     if (!infoSection || WatchOnlineButton) {
         return;
@@ -136,7 +136,7 @@ function createButton(infoSection: HTMLElement): HTMLAnchorElement {
     const WatchButtonSection = document.createElement('section');
     WatchButtonSection.classList.add('block');
     WatchButtonSection.classList.add('watch-online-block');
-    WatchButtonSection.id = chrome.runtime.id;
+    WatchButtonSection.id = 'play-shiki-online';
     WatchButtonSection.innerHTML = `
         <div class="subheadline m10">Онлайн просмотр</div>
         <a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;">
