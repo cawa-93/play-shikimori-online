@@ -8,6 +8,7 @@
                     <v-img
                         :aspect-ratio="225/314"
                         :src="'https://shikimori.one' + anime.image"
+                        :transition="false"
                         gradient="to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 68%,rgba(0,0,0,0.8) 100%"
                     >
                         <v-container class="fill-height" fill-height fluid>
@@ -21,6 +22,7 @@
                 </v-card>
             </div>
         </div>
+
 
         <div class="text-center py-12" v-else>
             <p class="headline">Здесь будет отображаться ваша история просмотров</p>
@@ -90,35 +92,7 @@
 
     .d-grid {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));;
         grid-gap: 20px;
-    }
-
-
-    @media (min-width: 428px) {
-        .d-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-
-    @media (min-width: 663px) {
-        .d-grid {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-    }
-
-
-    @media (min-width: 1264px) {
-        .d-grid {
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-        }
-    }
-
-
-    @media (min-width: 1904px) {
-        .d-grid {
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-        }
     }
 </style>
