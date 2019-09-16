@@ -7,7 +7,7 @@
             id="player"
             loading="eager"
             ref="player"
-            style="border: none;"
+            style="border: none;border-radius: 4px;"
             width="100%"
         ></iframe>
     </v-card>
@@ -41,7 +41,7 @@
             config.append('play-shikimori[seriesId]', `${this.translation.seriesId}`);
             config.append('play-shikimori[episodeId]', `${this.translation.episodeId}`);
             config.append('play-shikimori[id]', `${this.translation.id}`);
-            config.append('play-shikimori[isAutoPlay]', '1');
+            config.append('play-shikimori[isAutoPlay]', process.env.NODE_ENV === 'production' ? '1' : '0');
             config.append('play-shikimori[fullScreen]', document.fullscreenElement ? '1' : '0');
 
             if (playerStore.currentEpisode) {
