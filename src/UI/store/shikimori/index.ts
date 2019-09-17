@@ -1,12 +1,12 @@
 import {Anime365Provider} from '@/helpers/API/Anime365Provider';
 import {ShikimoriProvider} from '@/helpers/API/ShikimoriProvider';
 import {sync} from '@/helpers/chrome-storage';
+import router from '@/UI/router';
 import store from '@/UI/store';
 import playerStore from '@/UI/store/player';
 import profileStore from '@/UI/store/profile';
 import Vue from 'vue';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
-
 
 @Module({
     dynamic: true,
@@ -166,14 +166,27 @@ export class Shikimori extends VuexModule {
      */
     @Action
     public async loadNextSeason() {
-        if (!this.anime) {
+        let animeID: number = 0;
+
+        if (this.anime && this.anime.id) {
+            animeID = this.anime.id;
+        } else if (
+            router.currentRoute.name === 'player'
+            && router.currentRoute.params
+            && router.currentRoute.params.anime
+        ) {
+            animeID = parseInt(router.currentRoute.params.anime, 10);
+        }
+
+        if (!animeID) {
             return;
         }
+
 
         let franchise: shikimori.Franchise;
         try {
             franchise =
-                await ShikimoriProvider.fetch<shikimori.Franchise>(`/api/animes/${this.anime.id}/franchise`, {
+                await ShikimoriProvider.fetch<shikimori.Franchise>(`/api/animes/${animeID}/franchise`, {
                     errorMessage: 'Невозможно выполнить поиск следующего сезона',
                 });
         } catch (e) {
@@ -183,7 +196,7 @@ export class Shikimori extends VuexModule {
         }
 
         const sequelLink = franchise.links.find((link) => {
-            return link.source_id === this.anime!.id && link.relation === 'sequel';
+            return link.source_id === animeID && link.relation === 'sequel';
         });
 
         if (!sequelLink) {

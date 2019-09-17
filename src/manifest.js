@@ -38,6 +38,11 @@ const manifest = {
         persistent: true,
     },
 
+    'options_ui': {
+        'page': 'player.html#/options',
+        'open_in_tab': false,
+    },
+
     content_security_policy: `script-src 'self' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com https://tagmanager.google.com; object-src 'self'`,
 
     web_accessible_resources: [

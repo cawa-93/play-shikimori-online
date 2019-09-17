@@ -1,26 +1,16 @@
 <template>
     <section class="comments-container" v-if="allowComments">
-        <div class="display-1 my-2 d-flex topic-title">
-            <h2 @click="scrollTo($refs['comments-feed'])"
+        <div class="display-1 mb-2 d-flex topic-title">
+            <h2
                 class="display-1">
-                Обсуждение {{currentEpisode.episodeInt}} серии
+                <a
+                    :href="
+                        topic
+                        ? `https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`
+                        : ''
+                    "
+                >Обсуждение {{currentEpisode.episodeInt}} серии</a>
             </h2>
-            <v-tooltip right transition="slide-x-transition">
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
-                        aria-label="Открыть обсуждение на Шикимори"
-                        class="ml-3"
-                        icon
-                        v-bind="attrs"
-                        v-if="topic"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-link</v-icon>
-                    </v-btn>
-                </template>
-                <span>Открыть обсуждение на Шикимори</span>
-            </v-tooltip>
         </div>
 
         <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
@@ -446,6 +436,11 @@
 <style>
     .comments-container {
         contain: content;
+    }
+
+    h2 > a:not(:hover) {
+        color: inherit;
+        text-decoration: none;
     }
 
     @keyframes shake {
