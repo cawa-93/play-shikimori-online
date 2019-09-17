@@ -60,8 +60,8 @@ export class Anime365Provider extends RequestProvider {
                     && SeriesCollection.data[0].episodes
                     && SeriesCollection.data[0].episodes.length > 0
                 ) {
-                    // По умолчанию кэшируем ответ на 24 часа
-                    let maxAge = Date.now() + DAY;
+                    // По умолчанию не кэшируем ответ
+                    let maxAge = 0;
 
                     // Определяем дату последней добавленной серии
                     const newestEpisodeDateTime = Math.max(
@@ -70,9 +70,9 @@ export class Anime365Provider extends RequestProvider {
 
                     // Если последняя серия была добавлена более двух недель назад
                     // увеличить срок кэширования до 7 дней
-                    if (newestEpisodeDateTime && newestEpisodeDateTime < (Date.now() - DAY * 14)) {
-                        maxAge = Date.now() + DAY * 7;
-                    }
+                    // if (newestEpisodeDateTime && newestEpisodeDateTime < (Date.now() - DAY * 14)) {
+                    //     maxAge = Date.now() + DAY * 7;
+                    // }
 
                     // Если последняя серия была добавлена более 30 дней назад
                     // увеличить срок кэширования до 30 дней
