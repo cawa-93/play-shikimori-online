@@ -101,6 +101,17 @@ declare namespace anime365 {
         genres: Genre[];
     }
 
+    interface DownloadItem {
+        height: number;
+        url: string;
+    }
+
+
+    interface StreamItem {
+        height: number;
+        urls: string[];
+    }
+
     namespace api {
         interface SeriesCollection {
             data: Series[];
@@ -112,6 +123,18 @@ declare namespace anime365 {
 
         interface EpisodeSelf {
             data: Episode;
+        }
+
+        interface TranslationEmbed {
+            data?: {
+                embedUrl: string;
+                download: DownloadItem[];
+                stream: StreamItem[];
+            };
+            error?: {
+                code: number,
+                message: string;
+            };
         }
     }
 }

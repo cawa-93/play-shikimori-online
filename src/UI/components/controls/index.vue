@@ -2,16 +2,16 @@
     <section class="d-flex justify-center w-100" id="controls">
         <div class="w-100  v-item-group v-btn-toggle" id="toolbar">
             <previous :compact="true"></previous>
-
+            <download-video :compact="compact"></download-video>
             <preference :compact="compact"></preference>
             <open-on-shikimori :compact="compact"></open-on-shikimori>
-
             <next :compact="compact"></next>
         </div>
     </section>
 </template>
 
 <script lang="ts">
+    import DownloadVideo from '@/UI/components/controls/download.vue';
     import Next from '@/UI/components/controls/next.vue';
     import OpenOnShikimori from '@/UI/components/controls/open-on-shikimori.vue';
     import Preference from '@/UI/components/controls/preference.vue';
@@ -20,7 +20,7 @@
 
     @Component({
         components: {
-            Previous, OpenOnShikimori, Preference, Next,
+            Previous, OpenOnShikimori, Preference, Next, DownloadVideo,
         },
     })
     export default class Controls extends Vue {
