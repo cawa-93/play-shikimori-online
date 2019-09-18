@@ -30,6 +30,7 @@
     "kv-storage-polyfill": "^2.0.0",
     "lodash.throttle": "^4.1.1",
     "roboto-fontface": "*",
+    "sticky-events": "^3.1.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.2.2",

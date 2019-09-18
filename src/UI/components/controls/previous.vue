@@ -1,0 +1,37 @@
+<template>
+    <v-btn
+        :icon="compact"
+        :text="!compact"
+        @click.prevent="selectPreviousEpisode"
+        aria-label="Предыдущая серия"
+        class="flex-parent previous-episode"
+        target="_self"
+        v-if="previous"
+    >
+        <v-icon :left="!compact">mdi-skip-previous</v-icon>
+        <span class="long-and-truncated"
+              v-if="!compact">Предыдущая серия</span>
+    </v-btn>
+</template>
+
+<script lang="ts">
+    import playerStore from '@/UI/store/player';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
+
+    @Component
+    export default class Previous extends Vue {
+        @Prop() public readonly compact!: boolean;
+
+        get previous() {
+            return playerStore.currentEpisode ? playerStore.currentEpisode.previous : null;
+        }
+
+        public selectPreviousEpisode() {
+            return playerStore.selectPreviousEpisode();
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>

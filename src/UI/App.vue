@@ -1,26 +1,15 @@
 <template>
-    <v-app id="app">
-        <v-container class="flex">
-            <router-view></router-view>
-        </v-container>
-        <app-footer></app-footer>
 
-        <messages></messages>
-    </v-app>
+    <router-view></router-view>
+
 </template>
 
 
 <script lang="ts">
-    import AppFooter from '@/UI/components/app-footer.vue';
-    import Messages from '@/UI/components/messages.vue';
+
     import {Component, Vue} from 'vue-property-decorator';
 
-    @Component({
-        components: {
-            AppFooter,
-            Messages,
-        },
-    })
+    @Component({})
     export default class App extends Vue {
     }
 </script>

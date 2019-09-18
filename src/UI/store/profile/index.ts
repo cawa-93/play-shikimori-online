@@ -28,6 +28,10 @@ export class Profile extends VuexModule {
     @Mutation
     public loadCredentialsFromServer(credentials: shikimori.Oauth) {
         this.credentials = credentials;
+
+        if (!this.credentials || !this.credentials.access_token) {
+            this.user = null;
+        }
     }
 
     @Mutation
