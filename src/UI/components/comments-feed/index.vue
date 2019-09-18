@@ -4,13 +4,19 @@
             <h2
                 class="display-1">
                 <a
-                    :href="
-                        topic
-                        ? `https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`
-                        : ''
-                    "
+                    :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
+                    v-if="topic"
                 >Обсуждение {{currentEpisode.episodeInt}} серии</a>
+                <span v-else>Обсуждение {{currentEpisode.episodeInt}} серии</span>
             </h2>
+
+            <v-btn @click="() => topic && topic.comments_count ? scrollTo($el) : commentField.focus()"
+                   class="ml-auto"
+                   text
+                   v-if="!layout.loading">
+                <span>{{topic ? topic.comments_count : 0}}</span>
+                <v-icon right>mdi-forum</v-icon>
+            </v-btn>
         </div>
 
         <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
@@ -465,16 +471,6 @@
             transform: translate3d(4px, 0, 0);
         }
     }
-
-    .topic-title .v-btn,
-    .topic-title > h2 {
-        flex-grow: 0 !important;
-    }
-
-    .topic-title:not(:hover) .v-btn:not(:focus) {
-        opacity: 0;
-    }
-
 
     .create-comment-form .v-text-field.v-text-field--enclosed .v-input__prepend-outer {
         margin: 4px 15px 0 0;
