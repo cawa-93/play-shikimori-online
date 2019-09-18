@@ -77,7 +77,7 @@ const manifest = {
             css: [
                 'css/anime-365-player.css',
             ],
-            run_at: 'document_end',
+            run_at: 'document_start',
             all_frames: true,
         },
         // 	{

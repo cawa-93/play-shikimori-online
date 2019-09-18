@@ -5,226 +5,172 @@ import throttle from 'lodash.throttle';
 import videojs from 'video.js';
 
 
-(
-    () => {
-        try {
-            const config = new URLSearchParams(location.hash.slice(1));
+declare const playerGlobal: videojs.Player | undefined;
+declare const site: {
+    isPremiumUser?: boolean,
+} | undefined;
 
-            // @ts-ignore
-            const player = window.playerGlobal as videojs.Player & { concatenate: { activated: boolean } };
-            if (!player) {
-                const addUploadRequestForm = document.body.querySelector<HTMLFormElement>(
-                    'form[action*="/translations/embedAddUploadRequest"]');
 
-                if (addUploadRequestForm) {
-                    addUploadRequestForm.submit();
+(() => {
+    const params = new URLSearchParams(location.hash.slice(1));
+
+    const SERIES_ID = params.get('play-shikimori[seriesId]');
+    const EPISODE_ID = params.get('play-shikimori[episodeId]');
+    const NEXT_EPISODE = params.get('play-shikimori[nextEpisode]') === '1';
+    const IS_AUTO_PLAY = params.get('play-shikimori[isAutoPlay]') === '1';
+    const IS_FULL_SCREEN = params.get('play-shikimori[fullScreen]') === '1';
+
+    const savedTimePromise: Promise<{ episodeId: string, time: number } | undefined>
+        = storage.get(`play-${SERIES_ID}-time`);
+
+    async function main(player: videojs.Player) {
+
+        // Перематываем видео
+        restoreCurrentTime(player)
+            .then(() => {
+                // Если нет рекламы — запускаем видео
+                if (IS_AUTO_PLAY && site && site.isPremiumUser) {
+                    player.play();
                 }
+            });
 
-                return;
-            }
-            const SERIES_ID = config.get('play-shikimori[seriesId]');
-            const EPISODE_ID = config.get('play-shikimori[episodeId]');
-            const NEXT_EPISODE = config.get('play-shikimori[nextEpisode]') === '1';
-            const IS_AUTO_PLAY = config.get('play-shikimori[isAutoPlay]') === '1';
-            const IS_FULL_SCREEN = config.get('play-shikimori[fullScreen]') === '1';
+        // Инициализируем полноэкранный режим
+        if (IS_FULL_SCREEN) {
+            player.requestFullscreen();
+        }
+
+        // Проксируем события родителю
+        proxyEventToParent(player, ['public-play', 'public-pause', 'public-ended']);
+
+        // Начинаем сохранять прогресс просмотра
+        if (SERIES_ID && EPISODE_ID) {
+            saveCurrentTime(player);
+        }
 
 
-            /**
-             * Главная функция
-             * Запускается один раз, при первом запуске видео после рекламы
-             */
-            function init() {
-                if (!player || !player.concatenate || !player.concatenate.activated) {
-                    return;
+        // Создаём кнопку следующей серии
+        if (NEXT_EPISODE) {
+            createNextEpisodeButton(player);
+        }
+
+
+    }
+
+
+    /**
+     * Создаёт кнопку для переключения серии,
+     * и подписывается на сотытия
+     * click — для отправки события родителю
+     * timeupdate — для изменения прозрачности
+     */
+    function createNextEpisodeButton(player: videojs.Player) {
+        // Обязательно нужно добавлять кнопку в контейнер #main-video
+        // Иначе она будет невидимой в полноэкранном режиме
+        const mainVideo = document.querySelector('#main-video');
+        if (!mainVideo) {
+            return null;
+        }
+
+        /**
+         * Создание кнопки
+         */
+        const nextEpisodeButton = document.createElement('button');
+        nextEpisodeButton.innerText = 'Следующая серия';
+        nextEpisodeButton.classList.add('next-episode');
+        mainVideo.appendChild(nextEpisodeButton);
+
+
+        /**
+         * По клику отправляем событие родителю для переключения сериии
+         */
+        nextEpisodeButton.addEventListener('click', () => {
+            window.parent.postMessage('mark-as-watched', '*');
+        });
+
+
+        /**
+         * Отслеживаем прогресс просмотра и показываем/скрываем кнопку
+         */
+        const onTimeUpdateThrottled = throttle(() => {
+            const currentTime = player.currentTime();
+            const duration = player.duration();
+
+            const endingTime = duration > 600 ? 120 : duration * 0.1;
+            if (player.isFullscreen() && duration - currentTime <= endingTime) {
+                if (!nextEpisodeButton.classList.contains('show')) {
+                    nextEpisodeButton.classList.add('show');
                 }
-                player.off('play', init);
-
-
-                setCurrentTime();
-                let nextEpisodeButton: HTMLButtonElement | null;
-                if (NEXT_EPISODE) {
-                    nextEpisodeButton = createNextEpisodeButton();
-                }
-
-                /**
-                 * Инициализирует отправку событий плеера к родительскому окну
-                 */
-                player.on(['play', 'pause', 'ended'], proxyEventToParent);
-
-                const saveCurrentTimeThrottled = throttle(saveCurrentTime, 10000);
-                const toggleNextEpisodeButtonThrottled = throttle(toggleNextEpisodeButton, 1000);
-
-                player.on('timeupdate', () => {
-                    if (!SERIES_ID || !EPISODE_ID) {
-                        return;
-                    }
-
-                    const currentTime = player.currentTime();
-                    const duration = player.duration();
-
-                    saveCurrentTimeThrottled({seriesId: SERIES_ID, episodeId: EPISODE_ID, currentTime});
-                    if (NEXT_EPISODE && nextEpisodeButton) {
-                        toggleNextEpisodeButtonThrottled({currentTime, duration, nextEpisodeButton});
-                    }
-                });
-
-
-                /**
-                 * Если фрейм с видео развернут на весь екран
-                 * выполнить .requestFullscreen()
-                 * чтобы переключить встроенный интерфейс плеера в полноекранный режим
-                 */
-                if (IS_FULL_SCREEN) {
-                    /**
-                     * Операция возможна только если пользователь самостоятельно переключил серию
-                     * Если серия переключилась автоматически, то браузер не позволит развернуть плеер
-                     * и requestFullscreen() приведет к ошибке
-                     *
-                     * @see https://stackoverflow.com/a/29282049/4543826
-                     */
-                    player.requestFullscreen();
-                }
-
-                /**
-                 * Ранее состояние плеера сохранялось в хранилище с ключем "play-fullscreen-state"
-                 * Теперь механизм сохранения состояния плеера отличается.
-                 * Больше нет необходимости хранить состояние в хранилище и данные можно удалить
-                 */
-                storage.delete('play-fullscreen-state');
-            }
-
-
-            player.on('play', init);
-
-
-            function proxyEventToParent(event: WindowEventMap['play' | 'pause' | 'ended']) {
-                const name = event.type;
-                const currentTime = player.currentTime();
-                const duration = player.duration();
-
-                if (name === 'ended' && duration - currentTime >= 10) {
-                    return;
-                }
-
-                const message = {
-                    name,
-                    currentTime,
-                    duration,
-                };
-                window.parent.postMessage(message, '*');
-            }
-
-
-            /**
-             * Создаёт кнопку переключения серии и инизиализурует обработчик собитий на ней
-             */
-            function createNextEpisodeButton() {
-                const nextEpisodeButton = document.createElement('button');
-                nextEpisodeButton.innerText = 'Следующая серия';
-                nextEpisodeButton.classList.add('next-episode');
-                nextEpisodeButton.hidden = true;
-                const mainVideo = document.querySelector('#main-video');
-                if (!mainVideo) {
-                    return null;
-                }
-                mainVideo.appendChild(nextEpisodeButton);
-                nextEpisodeButton.addEventListener('click', () => {
-                    const message = {
-                        name: 'mark-as-watched',
-                        currentTime: player.currentTime(),
-                        duration: player.duration(),
-                    };
-                    window.parent.postMessage(message, '*');
-                });
-
-                return nextEpisodeButton;
-            }
-
-
-            /**
-             * Следим за временем и показываем/скрываем кнопку следующей серии
-             */
-            function toggleNextEpisodeButton({nextEpisodeButton, duration, currentTime}: {
-                nextEpisodeButton: HTMLButtonElement,
-                duration: number,
-                currentTime: number,
-            }) {
-
-                if (!nextEpisodeButton || !duration || !currentTime) {
-                    return;
-                }
-
-                const endingTime = duration > 600 ? 120 : duration * 0.1;
-                if (player.isFullscreen() && duration - currentTime <= endingTime) {
-                    nextEpisodeButton.style.display = 'block';
-                } else {
-                    nextEpisodeButton.style.display = 'none';
+            } else {
+                if (nextEpisodeButton.classList.contains('show')) {
+                    nextEpisodeButton.classList.remove('show');
                 }
             }
+        }, 1000);
 
 
-            /**
-             * Загружаем сохранённое время и устанавливаем значение в плеере
-             */
-            async function setCurrentTime() {
-                const savedTime = await storage.get(`play-${SERIES_ID}-time`);
-                if (!SERIES_ID || !EPISODE_ID || !savedTime) {
-                    return;
-                }
+        player.on('timeupdate', onTimeUpdateThrottled);
 
-                if (savedTime.episodeId === EPISODE_ID) {
-                    player.currentTime(Math.max(0, savedTime.time));
-                }
-            }
+        return nextEpisodeButton;
+    }
 
 
-            /**
-             * Сохранение текущей временной метки
-             */
-            async function saveCurrentTime({seriesId, episodeId, currentTime}: {
-                seriesId: string,
-                episodeId: string,
-                currentTime: number,
-            }) {
+    /**
+     * Перематывает видео до последнего сохраненного момента
+     * @param player
+     */
+    async function restoreCurrentTime(player: videojs.Player) {
+        const savedTime = await savedTimePromise;
+        if (!savedTime) {
+            return;
+        }
 
-                if (!seriesId || !episodeId || !currentTime) {
-                    return;
-                }
-
-                const savedTime = {
-                    episodeId,
-                    time: currentTime,
-                };
-                storage.set(`play-${seriesId}-time`, savedTime);
-            }
-
-
-            /**
-             * Функция автоматически запускает воспроизведение, если нет рекламной вставки
-             */
-            async function autoPlay() {
-                if (!player || !player.concatenate || !player.concatenate.activated) {
-                    return;
-                }
-
-                player.play();
-            }
-
-
-            if (IS_AUTO_PLAY) {
-                autoPlay();
-            }
-
-
-        } catch (error) {
-            window.parent.postMessage({
-                name: 'error',
-                error: {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack,
-                },
-            }, '*');
+        if (savedTime.episodeId === EPISODE_ID) {
+            player.currentTime(Math.max(0, savedTime.time));
         }
     }
-)();
+
+
+    /**
+     * Подписывается на переданный список событий и проксирует их родителю
+     * @param player
+     * @param events Список событий
+     */
+    function proxyEventToParent(player: videojs.Player, events: string[]) {
+        player.on(events, (event) => {
+            const message = event.type;
+            window.parent.postMessage(message, '*');
+        });
+    }
+
+
+    /**
+     * Подписывается на событие timeupdate и сохраняет в памяти currentTime
+     * @param player
+     */
+    function saveCurrentTime(player: videojs.Player) {
+        const saveTimeThrottled = throttle(() => {
+            return storage.set(`play-${SERIES_ID}-time`, {
+                episodeId: EPISODE_ID,
+                time: player.currentTime(),
+            });
+        }, 10000);
+
+        player.on('timeupdate', saveTimeThrottled);
+    }
+
+
+    /**
+     * Проверяем наличие playerGlobal и запускаем главную функцию
+     */
+    if (playerGlobal) {
+        playerGlobal.one('public-ready', () => main(playerGlobal));
+    } else {
+        const addUploadRequestForm = document.body.querySelector<HTMLFormElement>(
+            'form[action*="/translations/embedAddUploadRequest"]');
+
+        if (addUploadRequestForm) {
+            addUploadRequestForm.submit();
+        }
+    }
+
+})();

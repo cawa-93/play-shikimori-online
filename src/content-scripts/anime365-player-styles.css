@@ -6,7 +6,6 @@
     font-size: 16px;
     color: rgba(255, 255, 255, 0.73) !important;
     text-decoration: none !important;
-    /* margin: 20px 0 0 20px; */
     box-sizing: border-box;
     position: fixed;
     z-index: 3;
@@ -14,14 +13,18 @@
     background: rgba(0, 0, 0, 0.71);
     cursor: pointer;
     right: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s;
+    will-change: opacity;
+}
+
+.next-episode.show {
     opacity: 0.3;
+    pointer-events: auto;
 }
 
-.next-episode:hover, .next-episode:focus {
+
+.next-episode.show:hover, .next-episode.show:focus {
     opacity: 1;
-}
-
-
-.next-episode[hidden] {
-    display: none;
 }
