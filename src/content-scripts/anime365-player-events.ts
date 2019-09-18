@@ -5,7 +5,7 @@ import throttle from 'lodash.throttle';
 import videojs from 'video.js';
 
 
-declare const playerGlobal: videojs.Player | undefined;
+declare const playerGlobal: (videojs.Player & { publicReady: boolean }) | undefined;
 declare const site: {
     isPremiumUser?: boolean,
 } | undefined;
@@ -163,7 +163,11 @@ declare const site: {
      * Проверяем наличие playerGlobal и запускаем главную функцию
      */
     if (playerGlobal) {
-        playerGlobal.one('public-ready', () => main(playerGlobal));
+        if (playerGlobal.publicReady) {
+            main(playerGlobal);
+        } else {
+            playerGlobal.one('public-ready', () => main(playerGlobal));
+        }
     } else {
         const addUploadRequestForm = document.body.querySelector<HTMLFormElement>(
             'form[action*="/translations/embedAddUploadRequest"]');
