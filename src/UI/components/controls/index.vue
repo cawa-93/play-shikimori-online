@@ -1,12 +1,12 @@
 <template>
     <section class="d-flex justify-center w-100" id="controls">
-        <div class="w-100  v-item-group v-btn-toggle" id="toolbar">
+        <v-btn-toggle class="w-100" id="toolbar">
             <previous :compact="true"></previous>
             <preference :compact="compact"></preference>
             <download-video :compact="compact"></download-video>
             <open-on-shikimori :compact="compact"></open-on-shikimori>
             <next :compact="compact"></next>
-        </div>
+        </v-btn-toggle>
     </section>
 </template>
 
@@ -29,19 +29,22 @@
         get compact() {
             return this.$vuetify.breakpoint.smAndDown;
         }
-
-        // reCalculateCompact() {
-        //     this.compact =;
-        // }
-        //
-        // created() {
-        //     window.addEventListener('resize', () => this.reCalculateCompact());
-        // }
     }
 </script>
 
 
 <style>
+    #toolbar {
+        background: none;
+    }
+
+    #toolbar .v-btn.v-btn--active::before {
+        opacity: 0;
+    }
+
+    #toolbar .v-btn.v-btn--active:hover::before {
+        opacity: 0.04;
+    }
 
     #toolbar.v-btn-toggle > .v-btn.v-btn {
         border: none;
