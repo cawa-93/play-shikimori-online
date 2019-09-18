@@ -10,7 +10,7 @@
                 <span v-else>Обсуждение {{currentEpisode.episodeInt}} серии</span>
             </h2>
 
-            <v-btn @click="() => topic && topic.comments_count ? scrollTo($el) : commentField.focus()"
+            <v-btn @click="() => topic && topic.comments_count ? scrollTo($refs['comments-feed']) : commentField.focus()"
                    class="ml-auto"
                    text
                    v-if="!layout.loading">
@@ -376,7 +376,10 @@
 
         public scrollTo(top: number | HTMLElement) {
             if (typeof top !== 'number') {
-                top = top.offsetTop;
+                const box = top.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+                const clientTop = document.documentElement.clientTop || document.body.clientTop || 0;
+                top = Math.round(box.top + scrollTop - clientTop);
             }
 
             scroll({top, behavior: 'smooth'});
