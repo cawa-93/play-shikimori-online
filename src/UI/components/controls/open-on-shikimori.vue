@@ -9,9 +9,7 @@
         v-if="shikiID"
     >
         <img height="24px" id="shikimori-logo-light" src="/shikimori-logo.svg" width="24px">
-        <span class="long-and-truncated"
-              style="margin-left: 8px;"
-              v-if="!compact">Открыть на Шикимори</span>
+        <span class="long-and-truncated ml-2" v-if="!compact">Открыть на Шикимори</span>
     </v-btn>
 </template>
 

@@ -42,25 +42,9 @@
 
 
 <style>
-    #controls {
-        /*position: sticky;*/
-        bottom: 20px;
-        z-index: 10;
-        /*background-color: #000;*/
-    }
-
-    #controls #toolbar {
-        border: none;
-        /*background-color: rgba(7, 20, 30, .7);*/
-    }
-
-    .theme--light #toolbar {
-        background-color: #fafafa;
-    }
 
     #toolbar.v-btn-toggle > .v-btn.v-btn {
         border: none;
-        /*color: #fff;*/
     }
 
     #toolbar.v-btn-toggle > .v-btn.v-btn .v-icon {
@@ -71,7 +55,6 @@
     #toolbar.v-btn-toggle .download-video {
         flex-shrink: 1;
         flex-grow: 1;
-
     }
 
     #toolbar.v-btn-toggle .open-on-shikimori,

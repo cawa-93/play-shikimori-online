@@ -8,9 +8,8 @@
         target="_self"
         v-if="next"
     >
-            <span class="long-and-truncated"
-                  v-if="!compact">Следующая серия</span>
-        <v-icon :right="!compact">mdi-skip-next</v-icon>
+        <span class="long-and-truncated mr-2" v-if="!compact">Следующая серия</span>
+        <v-icon>mdi-skip-next</v-icon>
     </v-btn>
 </template>
 

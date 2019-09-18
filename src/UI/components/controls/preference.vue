@@ -6,11 +6,8 @@
         aria-label="Настройки"
         class="flex-parent preference"
     >
-        <v-icon :left="!compact">
-            mdi-settings
-        </v-icon>
-        <span class="long-and-truncated"
-              v-if="!compact">Настройки</span>
+        <v-icon>mdi-settings</v-icon>
+        <span class="long-and-truncated ml-2" v-if="!compact">Настройки</span>
     </v-btn>
 </template>
 

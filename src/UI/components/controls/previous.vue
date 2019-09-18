@@ -8,9 +8,8 @@
         target="_self"
         v-if="previous"
     >
-        <v-icon :left="!compact">mdi-skip-previous</v-icon>
-        <span class="long-and-truncated"
-              v-if="!compact">Предыдущая серия</span>
+        <v-icon>mdi-skip-previous</v-icon>
+        <span class="long-and-truncated ml-2" v-if="!compact">Предыдущая серия</span>
     </v-btn>
 </template>
 

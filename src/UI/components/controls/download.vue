@@ -9,7 +9,7 @@
                 v-on="on"
             >
                 <v-icon>mdi-download</v-icon>
-                <span class="long-and-truncated" v-if="!compact">Скачать</span>
+                <span class="long-and-truncated  ml-2" v-if="!compact">Скачать</span>
             </v-btn>
         </template>
 
