@@ -10,7 +10,7 @@ Vue.use(Router);
 export default new Router({
     routes: [
         {
-            name: 'footer-template', path: '/', component: FooterTemplate,
+            path: '/', component: FooterTemplate,
             children: [
                 {name: 'player', path: 'player/anime/:anime/:episode?', component: Player},
                 {name: 'history', path: 'history', component: History},

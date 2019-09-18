@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-app id="app">
 
         <v-list
             flat
@@ -72,7 +72,7 @@
             </v-list-item-group>
         </v-list>
 
-    </div>
+    </v-app>
 </template>
 
 <script lang="ts">

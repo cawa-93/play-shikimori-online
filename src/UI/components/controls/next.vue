@@ -3,6 +3,7 @@
         :icon="compact"
         :text="!compact"
         @click.prevent="nextEpisode"
+        aria-label="Следующая серия"
         class="next-episode"
         target="_self"
         v-if="next"
@@ -14,23 +15,23 @@
 </template>
 
 <script lang="ts">
-import playerStore from '@/UI/store/player';
-import shikimoriStore from '@/UI/store/shikimori';
-import {Component, Prop, Vue} from 'vue-property-decorator';
+    import playerStore from '@/UI/store/player';
+    import shikimoriStore from '@/UI/store/shikimori';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
 
-@Component
-export default class Next extends Vue {
-    @Prop() public readonly compact!: boolean;
+    @Component
+    export default class Next extends Vue {
+        @Prop() public readonly compact!: boolean;
 
-    get next() {
-        return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
+        get next() {
+            return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
+        }
+
+        public nextEpisode() {
+            shikimoriStore.markAsWatched();
+            return playerStore.selectNextEpisode();
+        }
     }
-
-    public nextEpisode() {
-        shikimoriStore.markAsWatched();
-        return playerStore.selectNextEpisode();
-    }
-}
 </script>
 
 <style scoped>

@@ -4,6 +4,7 @@
         :icon="compact"
         :text="!compact"
         @click.stop
+        aria-label="Открыть на Шикимори"
         class="flex-parent open-on-shikimori"
         v-if="shikiID"
     >
@@ -15,27 +16,27 @@
 </template>
 
 <script lang="ts">
-import playerStore from '@/UI/store/player';
-import {Component, Prop, Vue} from 'vue-property-decorator';
+    import playerStore from '@/UI/store/player';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
 
-@Component({
-    name: 'open-on-shikimori',
-})
-export default class OpenOnShikimori extends Vue {
-    @Prop() public readonly compact!: boolean;
+    @Component({
+        name: 'open-on-shikimori',
+    })
+    export default class OpenOnShikimori extends Vue {
+        @Prop() public readonly compact!: boolean;
 
-    get shikiID() {
-        if (playerStore.currentEpisode) {
-            return playerStore.currentEpisode.myAnimelist;
+        get shikiID() {
+            if (playerStore.currentEpisode) {
+                return playerStore.currentEpisode.myAnimelist;
+            }
+
+            return this.$route.params.anime;
         }
-
-        return this.$route.params.anime;
     }
-}
 </script>
 
 <style scoped>
-    #shikimori-logo-light {
+    .open-on-shikimori.theme--dark #shikimori-logo-light {
         filter: invert(1);
     }
 </style>

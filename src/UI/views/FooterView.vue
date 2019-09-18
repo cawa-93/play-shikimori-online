@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <v-app id="app">
         <v-container class="flex" id="page-content">
             <router-view></router-view>
         </v-container>
         <app-footer></app-footer>
 
         <messages></messages>
-    </div>
+    </v-app>
 
 </template>
 

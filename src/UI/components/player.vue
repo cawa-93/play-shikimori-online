@@ -7,16 +7,14 @@
             id="player"
             loading="eager"
             ref="player"
-            style="border: none;border-radius: 4px;"
+            style="border: none"
             width="100%"
         ></iframe>
-        <controls></controls>
     </v-card>
 </template>
 
 
 <script lang="ts">
-    import Controls from '@/UI/components/controls/index.vue';
     import playerStore from '@/UI/store/player';
     import shikimoriStore from '@/UI/store/shikimori';
     import {Component, Vue, Watch} from 'vue-property-decorator';
@@ -25,7 +23,6 @@
     const iconLink: HTMLLinkElement | null = document.head.querySelector('link[rel="icon"]');
     @Component({
         name: 'player',
-        components: {Controls},
     })
     export default class Player extends Vue {
         get translation() {

@@ -2,6 +2,8 @@
     <v-btn
         :icon="compact"
         :text="!compact"
+        @click="openOptionsPage"
+        aria-label="Настройки"
         class="flex-parent profile"
     >
         <v-icon :left="!compact">
@@ -16,13 +18,13 @@
 import {Component, Prop, Vue} from 'vue-property-decorator';
 
 @Component({
-    name: 'profile',
+    name: 'preference',
 })
-export default class Profile extends Vue {
+export default class Preference extends Vue {
     @Prop() public readonly compact!: boolean;
+
+    public openOptionsPage() {
+        return chrome.runtime.openOptionsPage();
+    }
 }
 </script>
-
-<style scoped>
-
-</style>
