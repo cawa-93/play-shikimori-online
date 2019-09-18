@@ -4,7 +4,7 @@
         :text="!compact"
         @click="openOptionsPage"
         aria-label="Настройки"
-        class="flex-parent profile"
+        class="flex-parent preference"
     >
         <v-icon :left="!compact">
             mdi-settings
@@ -15,16 +15,16 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
 
-@Component({
-    name: 'preference',
-})
-export default class Preference extends Vue {
-    @Prop() public readonly compact!: boolean;
+    @Component({
+        name: 'preference',
+    })
+    export default class Preference extends Vue {
+        @Prop() public readonly compact!: boolean;
 
-    public openOptionsPage() {
-        return chrome.runtime.openOptionsPage();
+        public openOptionsPage() {
+            return chrome.runtime.openOptionsPage();
+        }
     }
-}
 </script>

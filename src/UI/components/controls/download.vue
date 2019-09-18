@@ -5,7 +5,7 @@
                 :icon="compact"
                 :text="!compact"
                 aria-label="Скачать"
-                class="flex-parent open-on-shikimori"
+                class="flex-parent download-video"
                 v-on="on"
             >
                 <v-icon>mdi-download</v-icon>

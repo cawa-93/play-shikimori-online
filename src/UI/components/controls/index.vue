@@ -2,8 +2,8 @@
     <section class="d-flex justify-center w-100" id="controls">
         <div class="w-100  v-item-group v-btn-toggle" id="toolbar">
             <previous :compact="true"></previous>
-            <download-video :compact="compact"></download-video>
             <preference :compact="compact"></preference>
+            <download-video :compact="compact"></download-video>
             <open-on-shikimori :compact="compact"></open-on-shikimori>
             <next :compact="compact"></next>
         </div>
@@ -67,9 +67,16 @@
         color: inherit;
     }
 
+    #toolbar.v-btn-toggle .preference,
+    #toolbar.v-btn-toggle .download-video {
+        flex-shrink: 1;
+        flex-grow: 1;
+
+    }
+
     #toolbar.v-btn-toggle .open-on-shikimori,
-    #toolbar.v-btn-toggle .profile,
     #toolbar.v-btn-toggle .next-episode {
-        flex: 1;
+        flex-shrink: 2;
+        flex-grow: 1;
     }
 </style>
