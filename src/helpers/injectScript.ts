@@ -9,9 +9,26 @@ export function injectScript(src: string, async = true, parent = document.head) 
         const script = document.createElement('script');
         script.async = async;
         script.src = src;
-        script.addEventListener('load', resolve);
-        script.addEventListener('error', () => reject('Error loading script.'));
-        script.addEventListener('abort', () => reject('Script loading aborted.'));
+
+        const res = () => {
+            resolve();
+            clear();
+        };
+
+        const rej = () => {
+            reject('Error loading script');
+            clear();
+        };
+
+        const clear = () => {
+            script.removeEventListener('load', res);
+            script.removeEventListener('error', rej);
+            script.removeEventListener('abort', rej);
+        };
+
+        script.addEventListener('load', res, {once: true});
+        script.addEventListener('error', rej, {once: true});
+        script.addEventListener('abort', rej, {once: true});
         parent.appendChild(script);
     });
 }
