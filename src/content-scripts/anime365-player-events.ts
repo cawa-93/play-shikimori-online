@@ -4,8 +4,12 @@ import storage from 'kv-storage-polyfill';
 import throttle from 'lodash.throttle';
 import videojs from 'video.js';
 
+declare global {
+    interface Window {
+        playerGlobal: (videojs.Player & { isPublicReady: boolean }) | undefined;
+    }
+}
 
-declare const playerGlobal: (videojs.Player & { publicReady: boolean }) | undefined;
 declare const site: {
     isPremiumUser?: boolean,
 } | undefined;
@@ -158,23 +162,42 @@ declare const site: {
         player.on('timeupdate', saveTimeThrottled);
     }
 
-
-    /**
-     * Проверяем наличие playerGlobal и запускаем главную функцию
-     */
-    if (playerGlobal) {
-        if (playerGlobal.publicReady) {
-            main(playerGlobal);
-        } else {
-            playerGlobal.one('public-ready', () => main(playerGlobal));
-        }
-    } else {
+    function sendUploadRequest() {
         const addUploadRequestForm = document.body.querySelector<HTMLFormElement>(
             'form[action*="/translations/embedAddUploadRequest"]');
 
         if (addUploadRequestForm) {
             addUploadRequestForm.submit();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Проверяем наличие playerGlobal и запускаем главную функцию
+     */
+    function runOnReady() {
+        if (window.playerGlobal) {
+            if (window.playerGlobal.isPublicReady) {
+                main(window.playerGlobal)
+                    .catch((e) => {
+                        console.error(e);
+                    });
+            } else {
+                window.playerGlobal.one('public-ready', () =>
+                    main(window.playerGlobal!)
+                        .catch((e) => {
+                            console.error(e);
+                        }),
+                );
+            }
+        } else if (document.readyState === 'complete') {
+            sendUploadRequest();
+        } else {
+            window.addEventListener('load', runOnReady, {once: true});
         }
     }
 
+    runOnReady();
 })();

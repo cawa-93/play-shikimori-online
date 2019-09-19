@@ -7,6 +7,7 @@
 export function injectScript(src: string, async = true, parent = document.head) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
+        script.defer = async;
         script.async = async;
         script.src = src;
 
