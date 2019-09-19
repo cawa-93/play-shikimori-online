@@ -1,26 +1,22 @@
 <template>
     <section class="comments-container" v-if="allowComments">
-        <div class="display-1 my-2 d-flex topic-title">
-            <h2 @click="scrollTo($refs['comments-feed'])"
+        <div class="display-1 mb-2 d-flex topic-title">
+            <h2
                 class="display-1">
-                Обсуждение {{currentEpisode.episodeInt}} серии
+                <a
+                    :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
+                    v-if="topic"
+                >Обсуждение {{currentEpisode.episodeInt}} серии</a>
+                <span v-else>Обсуждение {{currentEpisode.episodeInt}} серии</span>
             </h2>
-            <v-tooltip right transition="slide-x-transition">
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
-                        aria-label="Открыть обсуждение на Шикимори"
-                        class="ml-3"
-                        icon
-                        v-bind="attrs"
-                        v-if="topic"
-                        v-on="on"
-                    >
-                        <v-icon>mdi-link</v-icon>
-                    </v-btn>
-                </template>
-                <span>Открыть обсуждение на Шикимори</span>
-            </v-tooltip>
+
+            <v-btn @click="() => topic && topic.comments_count ? scrollTo($refs['comments-feed']) : commentField.focus()"
+                   class="ml-auto"
+                   text
+                   v-if="!layout.loading">
+                <span>{{topic ? topic.comments_count : 0}}</span>
+                <v-icon right>mdi-forum</v-icon>
+            </v-btn>
         </div>
 
         <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
@@ -380,15 +376,20 @@
 
         public scrollTo(top: number | HTMLElement) {
             if (typeof top !== 'number') {
-                top = top.offsetTop;
+                const box = top.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+                const clientTop = document.documentElement.clientTop || document.body.clientTop || 0;
+                top = Math.round(box.top + scrollTop - clientTop);
             }
 
             scroll({top, behavior: 'smooth'});
         }
 
+        public created() {
+            this.init();
+        }
 
         public mounted() {
-            this.init();
             this.$el.addEventListener('click', (event) => {
                 const target = event.target as HTMLAnchorElement | null;
                 if (target
@@ -444,8 +445,9 @@
 
 
 <style>
-    .comments-container {
-        contain: content;
+    h2 > a:not(:hover) {
+        color: inherit;
+        text-decoration: none;
     }
 
     @keyframes shake {
@@ -470,16 +472,6 @@
             transform: translate3d(4px, 0, 0);
         }
     }
-
-    .topic-title .v-btn,
-    .topic-title > h2 {
-        flex-grow: 0 !important;
-    }
-
-    .topic-title:not(:hover) .v-btn:not(:focus) {
-        opacity: 0;
-    }
-
 
     .create-comment-form .v-text-field.v-text-field--enclosed .v-input__prepend-outer {
         margin: 4px 15px 0 0;

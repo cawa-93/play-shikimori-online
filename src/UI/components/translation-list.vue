@@ -5,7 +5,8 @@
             :label="label"
             :loading="translations.length === 0"
             :menu-props="{
-                maxHeight: 585
+                maxHeight: 585,
+                transition: 'slide-y-transition'
             }"
             filled
             hide-details

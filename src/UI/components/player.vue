@@ -1,5 +1,5 @@
 <template>
-    <v-card class="player-container d-flex w-100 h-100" v-if="translation">
+    <v-card class="player-container d-flex flex-column w-100 h-100" v-if="translation">
         <iframe
             :src="src"
             allowfullscreen
@@ -7,7 +7,7 @@
             id="player"
             loading="eager"
             ref="player"
-            style="border: none;"
+            style="border: none"
             width="100%"
         ></iframe>
     </v-card>
@@ -41,7 +41,7 @@
             config.append('play-shikimori[seriesId]', `${this.translation.seriesId}`);
             config.append('play-shikimori[episodeId]', `${this.translation.episodeId}`);
             config.append('play-shikimori[id]', `${this.translation.id}`);
-            config.append('play-shikimori[isAutoPlay]', '1');
+            config.append('play-shikimori[isAutoPlay]', process.env.NODE_ENV === 'production' ? '1' : '1');
             config.append('play-shikimori[fullScreen]', document.fullscreenElement ? '1' : '0');
 
             if (playerStore.currentEpisode) {
@@ -78,31 +78,22 @@
         public created() {
             this.setTitle();
 
-            listener = ({data: event}) => {
-
+            listener = ({data: event}: { data: string }) => {
                 // Просмотрена большая часть серии
                 if (event === 'watched') {
                     shikimoriStore.markAsWatched();
                     playerStore.preloadNextEpisode();
 
                     // Серия закончилась или пользователь нажал кнопку "Слежующая серия
-                } else if (event.name === 'ended' || event.name === 'mark-as-watched') {
+                } else if (event === 'public-ended' || event === 'mark-as-watched') {
                     shikimoriStore.markAsWatched();
                     playerStore.selectNextEpisode();
 
                     // Плей или пауза
-                } else if (event.name === 'play' || event.name === 'pause') {
+                } else if (event === 'public-play' || event === 'public-pause') {
                     if (iconLink) {
-                        iconLink.href = `/${event.name}.png`;
+                        iconLink.href = `/${event === 'public-play' ? 'play' : 'pause'}.png`;
                     }
-
-                    // Ошибка
-                } else if (event.name === 'error') {
-                    const error = new Error(event.error.message);
-                    error.name = event.error.name;
-                    error.stack = event.error.stack;
-                    console.error(error);
-                    error.track();
                 }
             };
             window.addEventListener('message', listener);
