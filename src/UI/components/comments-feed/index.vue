@@ -385,9 +385,11 @@
             scroll({top, behavior: 'smooth'});
         }
 
+        public created() {
+            this.init();
+        }
 
         public mounted() {
-            this.init();
             this.$el.addEventListener('click', (event) => {
                 const target = event.target as HTMLAnchorElement | null;
                 if (target
