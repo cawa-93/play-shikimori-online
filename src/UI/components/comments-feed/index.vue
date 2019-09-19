@@ -443,10 +443,6 @@
 
 
 <style>
-    .comments-container {
-        contain: content;
-    }
-
     h2 > a:not(:hover) {
         color: inherit;
         text-decoration: none;
