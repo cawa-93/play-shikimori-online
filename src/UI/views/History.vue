@@ -1,7 +1,5 @@
 <template>
     <main>
-        <v-progress-linear :indeterminate="true" class="ma-0" v-if="loading"></v-progress-linear>
-
         <div class="d-grid" v-if="history.length">
             <div :key="anime.id" class="grid-item" v-for="anime of history">
                 <v-card :to="'/player/anime/' + anime.id + '/' + (anime.episodes + 1)" hover>
@@ -44,38 +42,47 @@
     import {WatchingHistoryItem} from '../../../types/UI';
 
     const iconLink: HTMLLinkElement | null = document.head.querySelector('link[rel="icon"]');
+    let chromeOnChangeListener: ((changes: { [key: string]: chrome.storage.StorageChange }) => void) | null = null;
+    const historyLoadPromise = sync.get<{ watching_history: WatchingHistoryItem[] }>({watching_history: []});
 
     @Component
     export default class History extends Vue {
         public history: WatchingHistoryItem[] = [];
-        public loading: boolean = true;
 
-
-        public created() {
+        public beforeCreate() {
             document.title = 'История просмотров';
             if (iconLink) {
                 iconLink.href = `/play.png`;
             }
         }
 
-        public async mounted() {
-            const {watching_history} = await sync.get<{ watching_history: WatchingHistoryItem[] }>({watching_history: []});
+        public async created() {
+            const {watching_history} = await historyLoadPromise;
             this.history = watching_history;
-            this.loading = false;
-
-            chrome.storage.onChanged.addListener((changes) => {
-                if (!changes.watching_history) {
-                    return;
-                }
-
-                this.history = changes.watching_history.newValue || [];
-            });
 
             if (this.history && this.history[0] && this.history[0]) {
                 await playerStore.loadEpisodes({
                     anime: this.history[0].id,
                     episode: this.history[0].episodes || 0,
                 });
+            }
+
+            chromeOnChangeListener = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+                if (!changes.watching_history) {
+                    return;
+                }
+
+                this.history = changes.watching_history.newValue || [];
+            };
+
+
+            chrome.storage.onChanged.addListener(chromeOnChangeListener);
+        }
+
+        public destroyed() {
+            if (chromeOnChangeListener) {
+                chrome.storage.onChanged.removeListener(chromeOnChangeListener);
+                chromeOnChangeListener = null;
             }
         }
     }
@@ -85,7 +92,6 @@
 <style scoped>
 
     .v-card--hover:focus {
-        -webkit-box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
         box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
     }
 
