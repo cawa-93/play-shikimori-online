@@ -1,11 +1,10 @@
 <template>
     <v-btn
         :href="`https://shikimori.one/animes/${shikiID}`"
-        :icon="compact"
-        :text="!compact"
         @click.stop
         aria-label="Открыть на Шикимори"
         class="flex-parent open-on-shikimori"
+        text
         v-if="shikiID"
     >
         <img height="24px" id="shikimori-logo-light" src="/shikimori-logo.svg" width="24px">

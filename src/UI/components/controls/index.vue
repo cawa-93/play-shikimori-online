@@ -1,12 +1,12 @@
 <template>
     <section class="d-flex justify-center w-100" id="controls">
-        <v-btn-toggle class="w-100" id="toolbar">
+        <div class="w-100 d-flex" id="toolbar">
             <previous :compact="true"></previous>
             <preference :compact="compact"></preference>
             <download-video :compact="compact"></download-video>
             <open-on-shikimori :compact="compact"></open-on-shikimori>
             <next :compact="compact"></next>
-        </v-btn-toggle>
+        </div>
     </section>
 </template>
 
@@ -46,22 +46,22 @@
         opacity: 0.04;
     }
 
-    #toolbar.v-btn-toggle > .v-btn.v-btn {
+    #toolbar .v-btn.v-btn {
         border: none;
     }
 
-    #toolbar.v-btn-toggle > .v-btn.v-btn .v-icon {
+    #toolbar .v-btn.v-btn .v-icon {
         color: inherit;
     }
 
-    #toolbar.v-btn-toggle .preference,
-    #toolbar.v-btn-toggle .download-video {
+    #toolbar .preference,
+    #toolbar .download-video {
         flex-shrink: 1;
         flex-grow: 1;
     }
 
-    #toolbar.v-btn-toggle .open-on-shikimori,
-    #toolbar.v-btn-toggle .next-episode {
+    #toolbar .open-on-shikimori,
+    #toolbar .next-episode {
         flex-shrink: 2;
         flex-grow: 1;
     }

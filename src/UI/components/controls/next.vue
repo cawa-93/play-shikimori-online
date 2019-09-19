@@ -1,11 +1,10 @@
 <template>
     <v-btn
-        :icon="compact"
-        :text="!compact"
         @click.prevent="nextEpisode"
         aria-label="Следующая серия"
         class="next-episode"
         target="_self"
+        text
         v-if="next"
     >
         <span class="long-and-truncated mr-2" v-if="!compact">Следующая серия</span>

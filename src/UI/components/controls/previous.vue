@@ -1,11 +1,10 @@
 <template>
     <v-btn
-        :icon="compact"
-        :text="!compact"
         @click.prevent="selectPreviousEpisode"
         aria-label="Предыдущая серия"
         class="flex-parent previous-episode"
         target="_self"
+        text
         v-if="previous"
     >
         <v-icon>mdi-skip-previous</v-icon>

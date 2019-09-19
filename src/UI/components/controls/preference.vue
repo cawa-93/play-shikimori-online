@@ -1,10 +1,9 @@
 <template>
     <v-btn
-        :icon="compact"
-        :text="!compact"
         @click="openOptionsPage"
         aria-label="Настройки"
         class="flex-parent preference"
+        text
     >
         <v-icon>mdi-settings</v-icon>
         <span class="long-and-truncated ml-2" v-if="!compact">Настройки</span>
