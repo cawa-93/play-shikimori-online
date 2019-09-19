@@ -1,13 +1,13 @@
 <template>
     <v-btn
-        @click.prevent="nextEpisode"
-        aria-label="Следующая серия"
+        :aria-label="label"
+        @click.prevent="gotoNext"
         class="next-episode"
         target="_self"
         text
-        v-if="next"
+        v-if="label"
     >
-        <span class="long-and-truncated mr-2" v-if="!compact">Следующая серия</span>
+        <span class="long-and-truncated mr-2" v-if="!compact">{{label}}</span>
         <v-icon>mdi-skip-next</v-icon>
     </v-btn>
 </template>
@@ -21,13 +21,53 @@
     export default class Next extends Vue {
         @Prop() public readonly compact!: boolean;
 
-        get next() {
+
+        get nextEpisode() {
             return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
         }
 
-        public nextEpisode() {
+        get nextSeason() {
+            return shikimoriStore.nextSeason;
+        }
+
+
+        get label() {
+            if (this.nextEpisode) {
+                return 'Следующая серия';
+            }
+
+            if (this.nextSeason) {
+                return 'Следующий сезон';
+            }
+
+            return null;
+        }
+
+        public gotoNext() {
             shikimoriStore.markAsWatched();
-            return playerStore.selectNextEpisode();
+
+            if (this.nextEpisode) {
+                return playerStore.selectNextEpisode();
+            }
+
+            if (this.nextSeason) {
+                playerStore.clear();
+
+                return Promise.all([
+                    // Загрузка списка серий и запуск видео
+                    playerStore.loadEpisodes({
+                        anime: this.nextSeason.id,
+                        episode: this.nextSeason.episodeInt || 0,
+                    }),
+
+                    // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+                    shikimoriStore.loadAnime(this.nextSeason.id),
+                ]);
+
+
+            }
+
+
         }
     }
 </script>
