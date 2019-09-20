@@ -7,7 +7,6 @@
             id="player"
             loading="eager"
             ref="player"
-            style="border: none"
             width="100%"
         ></iframe>
     </v-card>
@@ -107,3 +106,12 @@
         }
     }
 </script>
+
+<style scoped>
+    #player {
+        border: none;
+        border-radius: 4px;
+        width: 100%;
+        height: 100%;
+    }
+</style>
