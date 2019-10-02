@@ -30,6 +30,9 @@
 
 ## [Ответы на возникающие вопросы](https://github.com/cawa-93/play-shikimori-online/wiki/FAQ)
 
+
+## [Дорожная карта](https://github.com/cawa-93/play-shikimori-online/projects/1)
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
