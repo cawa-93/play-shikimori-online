@@ -1,7 +1,7 @@
 <template>
     <v-app id="app">
         <v-container class="flex" id="page-content">
-            <transition appear name="fade-transition">
+            <transition appear mode="out-in" name="fade-transition">
                 <router-view></router-view>
             </transition>
         </v-container>
