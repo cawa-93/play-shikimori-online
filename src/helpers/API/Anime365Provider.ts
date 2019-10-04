@@ -9,11 +9,8 @@ declare interface CachedSeries {
 
 const DAY = 1000 * 60 * 60 * 24;
 
-
 export class Anime365Provider extends RequestProvider {
     public static baseURL = 'https://smotret-anime-365.ru/api';
-    public static cachePrefix = 'anime-365-cache-v';
-    public static cacheVersion = 1;
     public static cachedSeries: Map<string, CachedSeries> = new Map();
 
     public static cachedSeriesReady: Promise<void> = storage.get('cachedSeries')
@@ -96,5 +93,3 @@ export class Anime365Provider extends RequestProvider {
     }
 
 }
-
-Anime365Provider.clearLegacyCaches();
