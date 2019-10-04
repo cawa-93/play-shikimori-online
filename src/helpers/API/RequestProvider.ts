@@ -1,6 +1,4 @@
-import {local} from '@/helpers/chrome-storage';
 import {APIError} from '@/helpers/errors/APIError.class';
-import {NetworkError} from '@/helpers/errors/NetworkError.class';
 import {PermissionError} from '@/helpers/errors/PermissionError.class';
 // @ts-ignore
 import {origins, permissions} from '@/manifest.js';
@@ -8,38 +6,6 @@ import retry from 'async-retry';
 
 export class RequestProvider {
     public static baseURL = '';
-    public static cachePrefix = 'requests-cache-v';
-    public static cacheVersion = 1;
-
-    public static get cacheName() {
-        return this.cachePrefix + this.cacheVersion;
-    }
-
-    public static async clearLegacyCaches() {
-        /**
-         * TODO: Удалить очистку Caches хранилища когда все пользователи обновятся на версию выше 1.1.1
-         */
-        const cacheNames = await caches.keys();
-        await Promise.all(
-            cacheNames.map((cacheName) => {
-                return caches.delete(cacheName);
-            }),
-        );
-
-        // Удаление старого кэша в хранилище chrome.storage.local
-        const regExp = new RegExp(`${this.cachePrefix}[0-9]+`, 'i');
-        const localStorageKeys = Object.keys(await local.get(null));
-
-        await Promise.all(
-            localStorageKeys.map((key) => {
-                if (regExp.test(key) && key !== this.cacheName) {
-                    return local.remove(key);
-                }
-                return Promise.resolve(true);
-            }),
-        );
-
-    }
 
 
     public static async fetch<T>(
@@ -80,8 +46,6 @@ export class RequestProvider {
         }, options.headers || {});
 
 
-        const request = new Request(url, options);
-
         return retry(async (bail: (e: Error) => void) => {
             return fetch(url, options)
                 .then(async (resp) => {
@@ -97,25 +61,7 @@ export class RequestProvider {
                             throw apiError;
                         }
                     } else {
-                        const respData = await resp.json();
-                        this.saveCachedResponse(request, respData);
-                        return respData;
-                    }
-                })
-
-                .catch(async (error) => {
-
-                    if (!error) {
-                        error = new NetworkError({
-                            message: options.errorMessage,
-                        });
-                    }
-
-                    const cachedResp = await this.getCachedResponse(request);
-
-                    if (cachedResp) {
-                        console.error('Ответ возвращен из кэша', error);
-                        return cachedResp;
+                        return await resp.json();
                     }
                 });
         }, {
@@ -186,43 +132,4 @@ export class RequestProvider {
             },
         };
     }
-
-    protected static async getCache() {
-        const caches = await local.get<{ [key: string]: any[] }>({[this.cacheName]: []});
-        return caches[this.cacheName];
-    }
-
-    protected static async getCachedResponse(request: Request) {
-        if (!request || request.method !== 'GET') {
-            return null;
-        }
-
-        const cache = await this.getCache();
-
-        if (!cache || !cache.length) {
-            return null;
-        }
-
-        const requestHash = request.url;
-        const {resp} = cache.find(({id}) => requestHash === id);
-
-        return resp;
-    }
-
-    protected static async saveCachedResponse(request: Request, respData: any) {
-        if (!request || request.method !== 'GET') {
-            return null;
-        }
-
-        const requestHash = request.url;
-
-        return local.unshift(this.cacheName, {
-            id: requestHash,
-            resp: respData,
-        });
-
-    }
 }
-
-
-RequestProvider.clearLegacyCaches();

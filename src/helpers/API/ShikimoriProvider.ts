@@ -2,9 +2,6 @@ import {RequestProvider} from '@/helpers/API/RequestProvider';
 
 export class ShikimoriProvider extends RequestProvider {
     public static baseURL = 'https://shikimori.one';
-    public static cachePrefix = 'shikimori-cache-v';
-    public static cacheVersion = 1;
-
 
     protected static async checkResponse(
         resp: Response,
@@ -26,6 +23,3 @@ export class ShikimoriProvider extends RequestProvider {
         return error;
     }
 }
-
-
-ShikimoriProvider.clearLegacyCaches();
