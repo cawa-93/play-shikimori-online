@@ -34,4 +34,5 @@
     .player-container .v-skeleton-loader__image {
         height: 100%;
     }
+
 </style>

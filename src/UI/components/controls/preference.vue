@@ -1,23 +1,31 @@
 <template>
-    <v-btn
-        @click="openOptionsPage"
-        aria-label="Настройки"
-        class="flex-parent preference"
-        text
-    >
-        <v-icon :color="!user ? 'error' : ''">mdi-{{user ? 'settings' : 'sync-off'}}</v-icon>
-        <span class="long-and-truncated ml-2" v-if="!compact">Настройки</span>
-    </v-btn>
+    <div>
+
+        <v-btn
+            @click="openOptionsPage"
+            aria-label="Настройки"
+            class="flex-parent preference"
+            text
+            v-if="readyToShow"
+        >
+            <v-icon :color="!user ? 'error' : ''">mdi-{{user ? 'settings' : 'sync-off'}}</v-icon>
+            <span class="long-and-truncated ml-2" v-if="!compact">Настройки</span>
+        </v-btn>
+        <v-skeleton-loader type="button" v-else></v-skeleton-loader>
+    </div>
+
 </template>
 
 <script lang="ts">
+    import Boilerplate from '@/UI/mixins/boilerplate';
     import profileStore from '@/UI/store/profile';
-    import {Component, Prop, Vue} from 'vue-property-decorator';
+    import {mixins} from 'vue-class-component';
+    import {Component, Prop} from 'vue-property-decorator';
 
     @Component({
         name: 'preference',
     })
-    export default class Preference extends Vue {
+    export default class Preference extends mixins(Boilerplate) {
         @Prop() public readonly compact!: boolean;
 
         get user() {

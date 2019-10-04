@@ -36,6 +36,15 @@
         color: inherit;
     }
 
+    #toolbar > div {
+        flex-shrink: 2;
+        flex-grow: 1;
+    }
+
+    #toolbar > div:not(:first-child) {
+        padding-left: 5px;
+    }
+
     #toolbar .preference,
     #toolbar .download-video {
         flex-shrink: 1;
@@ -46,5 +55,9 @@
     #toolbar .next-episode {
         flex-shrink: 2;
         flex-grow: 1;
+    }
+
+    #toolbar .v-skeleton-loader__button {
+        min-width: 100%;
     }
 </style>

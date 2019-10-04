@@ -1,25 +1,31 @@
 <template>
-    <v-btn
-        :href="`https://shikimori.one/animes/${shikiID}`"
-        @click.stop
-        aria-label="Открыть на Шикимори"
-        class="flex-parent open-on-shikimori"
-        text
-        v-if="shikiID"
-    >
-        <img height="24px" id="shikimori-logo-light" src="/shikimori-logo.svg" width="24px">
-        <span class="long-and-truncated ml-2" v-if="!compact">Открыть на Шикимори</span>
-    </v-btn>
+    <div>
+        <v-btn
+            :disabled="!shikiID"
+            :href="`https://shikimori.one/animes/${shikiID}`"
+            @click.stop
+            aria-label="Открыть на Шикимори"
+            class="flex-parent open-on-shikimori"
+            text
+            v-if="readyToShow"
+        >
+            <img height="24px" id="shikimori-logo-light" src="/shikimori-logo.svg" width="24px">
+            <span class="long-and-truncated ml-2" v-if="!compact">Открыть на Шикимори</span>
+        </v-btn>
+        <v-skeleton-loader min-width="100%" type="button" v-else></v-skeleton-loader>
+    </div>
 </template>
 
 <script lang="ts">
+    import Boilerplate from '@/UI/mixins/boilerplate';
     import playerStore from '@/UI/store/player';
-    import {Component, Prop, Vue} from 'vue-property-decorator';
+    import {mixins} from 'vue-class-component';
+    import {Component, Prop} from 'vue-property-decorator';
 
     @Component({
         name: 'open-on-shikimori',
     })
-    export default class OpenOnShikimori extends Vue {
+    export default class OpenOnShikimori extends mixins(Boilerplate) {
         @Prop() public readonly compact!: boolean;
 
         get shikiID() {

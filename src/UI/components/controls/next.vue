@@ -1,24 +1,30 @@
 <template>
-    <v-btn
-        :aria-label="label"
-        @click.prevent="gotoNext"
-        class="next-episode"
-        target="_self"
-        text
-        v-if="label"
-    >
-        <span class="long-and-truncated mr-2" v-if="!compact">{{label}}</span>
-        <v-icon>mdi-skip-next</v-icon>
-    </v-btn>
+    <div>
+        <v-btn
+            :aria-label="label"
+            :disabled="!label"
+            @click.prevent="gotoNext"
+            class="next-episode"
+            target="_self"
+            text
+            v-if="readyToShow"
+        >
+            <span class="long-and-truncated mr-2" v-if="!compact">{{label}}</span>
+            <v-icon>mdi-skip-next</v-icon>
+        </v-btn>
+        <v-skeleton-loader type="button" v-else></v-skeleton-loader>
+    </div>
 </template>
 
 <script lang="ts">
+    import Boilerplate from '@/UI/mixins/boilerplate';
     import playerStore from '@/UI/store/player';
     import shikimoriStore from '@/UI/store/shikimori';
-    import {Component, Prop, Vue} from 'vue-property-decorator';
+    import {mixins} from 'vue-class-component';
+    import {Component, Prop} from 'vue-property-decorator';
 
     @Component
-    export default class Next extends Vue {
+    export default class Next extends mixins(Boilerplate) {
         @Prop() public readonly compact!: boolean;
 
 

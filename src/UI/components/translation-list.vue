@@ -75,10 +75,12 @@
             },
         };
 
+        get currentEpisode() {
+            return playerStore.currentEpisode || {} as anime365.Episode;
+        }
+
         get translations() {
-            return playerStore.currentEpisode && playerStore.currentEpisode.translations
-                   ? playerStore.currentEpisode.translations
-                   : [];
+            return this.currentEpisode.translations;
         }
 
 
@@ -108,6 +110,10 @@
             ];
 
             groups.forEach(({type, label}) => {
+                if (!this.translations) {
+                    return items;
+                }
+
                 const translations = this.translations
                     .filter((t) => t.type === type)
                     .map((translation) => {
@@ -143,6 +149,10 @@
 
 
         set currentTranslation(id) {
+            if (!this.translations) {
+                return;
+            }
+
             const translation = this.translations.find((t) => t.id === id);
 
             if (translation) {
@@ -165,7 +175,7 @@
 
         get label() {
             if (!playerStore.currentTranslation) {
-                return this.translations.length ? 'Выберите перевод' : 'Загрузка...';
+                return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
             }
             switch (playerStore.currentTranslation.type) {
                 case 'voiceRu':
@@ -184,7 +194,6 @@
                     return 'Перевод';
             }
         }
-
     }
 </script>
 

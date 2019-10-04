@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <section class="episode-list" v-if="readyToShow">
             <template class="mdc-select">
                 <v-select

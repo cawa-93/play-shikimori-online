@@ -1,8 +1,9 @@
 <template>
-    <section class="comments-container" v-if="allowComments">
+    <section class="comments-container">
         <div class="display-1 mb-2 d-flex topic-title">
             <h2
-                class="display-1">
+                class="display-1"
+                v-if="layout.readyToShow">
                 <a
                     :href="`https://shikimori.one${topic.forum.url}/${topic.linked_type.toLowerCase()}-${topic.linked.id}/${topic.id}`"
                     v-if="topic"
@@ -10,18 +11,22 @@
                 <span v-else>Обсуждение {{currentEpisode.episodeInt}} серии</span>
             </h2>
 
+            <v-skeleton-loader min-height="40px" min-width="350px" type="heading" v-else></v-skeleton-loader>
+
+
             <v-btn @click="() => topic && topic.comments_count ? scrollTo($refs['comments-feed']) : commentField.focus()"
                    class="ml-auto"
                    text
-                   v-if="!layout.loading">
+                   v-if="layout.readyToShow">
                 <span>{{topic ? topic.comments_count : 0}}</span>
                 <v-icon right>mdi-forum</v-icon>
             </v-btn>
+
+            <v-skeleton-loader class="ml-auto" type="button" v-else></v-skeleton-loader>
+
         </div>
 
-        <v-progress-linear :indeterminate="true" v-if="layout.loading"></v-progress-linear>
-
-        <template v-else>
+        <template v-if="readyToShowComments">
             <div
                 :aria-busy="layout.moreComments.loading ? 'true' : 'false'"
                 class="mt-6 mb-2"
@@ -54,6 +59,11 @@
                           @submit="createComment"
                           ref="commentField"></comment-form>
         </template>
+        <template v-else>
+            <v-skeleton-loader :key="i" type="list-item-avatar-three-line" v-for="i in 5"></v-skeleton-loader>
+        </template>
+
+
     </section>
 </template>
 
@@ -74,7 +84,8 @@
     })
     export default class Comments extends Vue {
         public layout = {
-            loading: true,
+            readyToShow: false,
+            readyToShowComments: false,
             moreComments: {
                 loading: false,
             },
@@ -125,7 +136,7 @@
             }
 
 
-            this.layout.loading = true;
+            // this.layout.loading = true;
 
 
             try {
@@ -142,9 +153,9 @@
                 e.alert().track();
             }
 
-            await this.loadComments();
+            // await this.loadComments();
 
-            this.layout.loading = false;
+            this.layout.readyToShow = true;
         }
 
 
@@ -479,5 +490,11 @@
 
     .create-comment-form .v-text-field.v-text-field--enclosed .v-input__append-outer {
         margin: 6px 0 0 10px;
+    }
+
+    .comments-container .v-skeleton-loader__heading {
+        height: 100%;
+        width: 100%;
+        border-radius: 1em;
     }
 </style>

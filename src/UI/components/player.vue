@@ -71,8 +71,11 @@
 
         @Watch('translation')
         public onTranslationChange(newTranslation: anime365.Translation, oldTranslation: anime365.Translation) {
+            // this.readyToShow = true;
+
             const n = newTranslation || {};
             const o = oldTranslation || {};
+
             if ((n.title && n.title !== o.title) || !o.title) {
                 this.setTitle();
             }
