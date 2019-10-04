@@ -77,6 +77,18 @@ chrome.runtime.onInstalled.addListener(async ({reason, previousVersion}: chrome.
 
 
         }
+
+
+        // Удаление устаревшего общего кэша
+        setTimeout(() => {
+            local.remove([
+                'anime-365-cache-v1',
+                'cachedSeries',
+                'myanimelist-cache-v1',
+                'requests-cache-v1',
+                'shikimori-cache-v1',
+            ]);
+        }, 0);
     }
 
 });
