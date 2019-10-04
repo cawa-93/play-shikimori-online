@@ -1,5 +1,5 @@
 <template>
-    <section class="translation-list">
+    <section class="translation-list" v-if="readyToShow">
         <v-select
             :items="groupedTranslations"
             :label="label"
@@ -52,6 +52,7 @@
             </template>
         </v-select>
     </section>
+    <v-skeleton-loader max-height="57px" type="image" v-else></v-skeleton-loader>
 </template>
 
 <script lang="ts">
@@ -59,12 +60,14 @@
     import playerStore from '@/UI/store/player';
     // @ts-ignore
     import {SelectedTranslation} from 'types/UI';
-    import {Component, Vue} from 'vue-property-decorator';
+    import {mixins} from 'vue-class-component';
+    import {Component} from 'vue-property-decorator';
+    import Boilerplate from '../mixins/boilerplate';
 
     @Component({
         name: 'translation-list',
     })
-    export default class TranslationList extends Vue {
+    export default class TranslationList extends mixins(Boilerplate) {
         public filters = {
             type: {
                 value: 'voiceRu',

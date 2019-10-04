@@ -1,5 +1,5 @@
 <template>
-    <v-card class="player-container d-flex flex-column w-100 h-100" v-if="translation">
+    <v-card class="player-container d-flex flex-column w-100 h-100">
         <iframe
             :src="src"
             allowfullscreen
@@ -7,23 +7,28 @@
             id="player"
             loading="eager"
             ref="player"
+            v-if="translation && readyToShow"
             width="100%"
         ></iframe>
+
+        <v-skeleton-loader min-height="100%" tile type="image" v-else></v-skeleton-loader>
     </v-card>
 </template>
 
 
 <script lang="ts">
+    import Boilerplate from '@/UI/mixins/boilerplate';
     import playerStore from '@/UI/store/player';
     import shikimoriStore from '@/UI/store/shikimori';
-    import {Component, Vue, Watch} from 'vue-property-decorator';
+    import {mixins} from 'vue-class-component';
+    import {Component, Watch} from 'vue-property-decorator';
 
     let listener: ((this: Window, ev: WindowEventMap['message']) => any) | null = null;
     const iconLink: HTMLLinkElement | null = document.head.querySelector('link[rel="icon"]');
     @Component({
         name: 'player',
     })
-    export default class Player extends Vue {
+    export default class Player extends mixins(Boilerplate) {
         get translation() {
             return playerStore.currentTranslation;
         }
@@ -115,4 +120,6 @@
         height: 100%;
         position: absolute;
     }
+
+
 </style>
