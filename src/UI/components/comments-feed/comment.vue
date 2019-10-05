@@ -6,12 +6,12 @@
         tag="article"
     >
         <v-list-item-avatar>
-            <img :alt="'Аватар пользователя ' + comment.user.nickname"
-                 :src="comment.user.avatar"
-                 height="40px"
-                 loading="lazy"
-                 v-if="comment.user.avatar"
-                 width="40px"/>
+            <v-img :alt="'Аватар пользователя ' + comment.user.nickname"
+                   :src="comment.user.avatar"
+                   height="40px"
+                   loading="lazy"
+                   v-if="comment.user.avatar"
+                   width="40px"/>
             <v-icon v-else>mdi-account-circle</v-icon>
         </v-list-item-avatar>
 
