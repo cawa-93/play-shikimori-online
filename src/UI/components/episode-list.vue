@@ -62,61 +62,66 @@
 
 
 <script lang="ts">
-    import Boilerplate from '@/UI/mixins/boilerplate';
-    import playerStore from '@/UI/store/player';
-    import profileStore from '@/UI/store/profile';
-    import shikimoriStore from '@/UI/store/shikimori';
-    import {mixins} from 'vue-class-component';
-    import {Component} from 'vue-property-decorator';
+import Boilerplate from '@/UI/mixins/boilerplate';
+import playerStore from '@/UI/store/player';
+import profileStore from '@/UI/store/profile';
+import shikimoriStore from '@/UI/store/shikimori';
+import {mixins} from 'vue-class-component';
+import {Component, Watch} from 'vue-property-decorator';
 
-    @Component({
-        name: 'episode-list',
-    })
-    export default class EpisodeList extends mixins(Boilerplate) {
+@Component({
+    name: 'episode-list',
+})
+export default class EpisodeList extends mixins(Boilerplate) {
 
-        get user() {
-            return profileStore.user;
-        }
-
-
-        get episodes() {
-            return playerStore.episodes;
-        }
-
-        get selectedEpisode() {
-            return playerStore.currentEpisode
-                   ? playerStore.currentEpisode.id
-                   : 0;
-        }
-
-        set selectedEpisode(id: number) {
-            const targetEpisode = this.episodes.find((e) => e.id === id);
-            if (targetEpisode) {
-                playerStore.selectEpisode(targetEpisode);
-            }
-        }
-
-        get watchedEpisodes() {
-            return shikimoriStore.anime && shikimoriStore.anime.user_rate
-                   ? shikimoriStore.anime.user_rate.episodes
-                   : 0;
-        }
-
-        get label() {
-            return shikimoriStore.anime && (shikimoriStore.anime.russian || shikimoriStore.anime.name)
-                   ? shikimoriStore.anime.russian || shikimoriStore.anime.name
-                   : 'Серия';
-        }
-
-        public markAsWatched(episode: anime365.Episode) {
-            let episodes = episode.episodeInt;
-
-            if (this.watchedEpisodes !== undefined && episodes <= this.watchedEpisodes) {
-                episodes--;
-            }
-
-            shikimoriStore.saveUserRate({episodes});
-        }
-
+    get user() {
+        return profileStore.user;
     }
+
+
+    get episodes() {
+        return playerStore.episodes;
+    }
+
+    get selectedEpisode() {
+        return playerStore.currentEpisode
+               ? playerStore.currentEpisode.id
+               : 0;
+    }
+
+    set selectedEpisode(id: number) {
+        const targetEpisode = this.episodes.find((e) => e.id === id);
+        if (targetEpisode) {
+            playerStore.selectEpisode(targetEpisode);
+        }
+    }
+
+    get watchedEpisodes() {
+        return shikimoriStore.anime && shikimoriStore.anime.user_rate
+               ? shikimoriStore.anime.user_rate.episodes
+               : 0;
+    }
+
+    get label() {
+        return shikimoriStore.anime && (shikimoriStore.anime.russian || shikimoriStore.anime.name)
+               ? shikimoriStore.anime.russian || shikimoriStore.anime.name
+               : 'Серия';
+    }
+
+    public markAsWatched(episode: anime365.Episode) {
+        let episodes = episode.episodeInt;
+
+        if (this.watchedEpisodes !== undefined && episodes <= this.watchedEpisodes) {
+            episodes--;
+        }
+
+        shikimoriStore.saveUserRate({episodes});
+    }
+
+    @Watch('episodes', {deep: false})
+    public episodesOnChange() {
+        this.readyToShow = true;
+    }
+
+}
 </script>

@@ -1,10 +1,8 @@
 <template>
-    <div>
-
+    <div class="flex-parent preference">
         <v-btn
             @click="openOptionsPage"
             aria-label="Настройки"
-            class="flex-parent preference"
             text
             v-if="readyToShow"
         >
@@ -17,23 +15,28 @@
 </template>
 
 <script lang="ts">
-    import Boilerplate from '@/UI/mixins/boilerplate';
-    import profileStore from '@/UI/store/profile';
-    import {mixins} from 'vue-class-component';
-    import {Component, Prop} from 'vue-property-decorator';
+import Boilerplate from '@/UI/mixins/boilerplate';
+import profileStore from '@/UI/store/profile';
+import {mixins} from 'vue-class-component';
+import {Component, Prop, Watch} from 'vue-property-decorator';
 
-    @Component({
-        name: 'preference',
-    })
-    export default class Preference extends mixins(Boilerplate) {
-        @Prop() public readonly compact!: boolean;
+@Component({
+    name: 'preference',
+})
+export default class Preference extends mixins(Boilerplate) {
+    @Prop() public readonly compact!: boolean;
 
-        get user() {
-            return profileStore.user;
-        }
-
-        public openOptionsPage() {
-            return chrome.runtime.openOptionsPage();
-        }
+    get user() {
+        return profileStore.user;
     }
+
+    public openOptionsPage() {
+        return chrome.runtime.openOptionsPage();
+    }
+
+    @Watch('user', {deep: false})
+    public nextEpisodeOnChange() {
+        this.readyToShow = true;
+    }
+}
 </script>

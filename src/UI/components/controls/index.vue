@@ -36,28 +36,27 @@
         color: inherit;
     }
 
-    #toolbar > div {
-        flex-shrink: 2;
-        flex-grow: 1;
+    /*#toolbar > div {*/
+    /*    flex: 1;*/
+    /*}*/
+
+    #toolbar > div .v-btn,
+    #toolbar > div .v-skeleton-loader,
+    #toolbar > div .v-skeleton-loader .v-skeleton-loader__button {
+        width: 100%;
     }
 
-    #toolbar > div:not(:first-child) {
+    #toolbar > div:not(:first-child) .v-skeleton-loader {
         padding-left: 5px;
     }
 
     #toolbar .preference,
     #toolbar .download-video {
-        flex-shrink: 1;
-        flex-grow: 1;
+        flex: 1;
     }
 
     #toolbar .open-on-shikimori,
     #toolbar .next-episode {
-        flex-shrink: 2;
-        flex-grow: 1;
-    }
-
-    #toolbar .v-skeleton-loader__button {
-        min-width: 100%;
+        flex: 2;
     }
 </style>

@@ -1,11 +1,10 @@
 <template>
-    <div>
+    <div class="flex-parent download-video">
         <v-menu v-if="readyToShow">
             <template v-slot:activator="{ on }">
                 <v-btn
                     :disabled="!download.length"
                     aria-label="Скачать"
-                    class="flex-parent download-video"
                     text
                     v-on="on"
                 >
@@ -70,6 +69,8 @@
             } else {
                 this.download = [];
             }
+
+            this.readyToShow = true;
         }
     }
 </script>

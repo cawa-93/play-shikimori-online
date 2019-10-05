@@ -56,145 +56,150 @@
 </template>
 
 <script lang="ts">
-    import {sync} from '@/helpers/chrome-storage';
-    import playerStore from '@/UI/store/player';
-    // @ts-ignore
-    import {SelectedTranslation} from 'types/UI';
-    import {mixins} from 'vue-class-component';
-    import {Component} from 'vue-property-decorator';
-    import Boilerplate from '../mixins/boilerplate';
+import {sync} from '@/helpers/chrome-storage';
+import playerStore from '@/UI/store/player';
+// @ts-ignore
+import {SelectedTranslation} from 'types/UI';
+import {mixins} from 'vue-class-component';
+import {Component, Watch} from 'vue-property-decorator';
+import Boilerplate from '../mixins/boilerplate';
 
-    @Component({
-        name: 'translation-list',
-    })
-    export default class TranslationList extends mixins(Boilerplate) {
-        public filters = {
-            type: {
-                value: 'voiceRu',
-                options: [],
-            },
-        };
+@Component({
+    name: 'translation-list',
+})
+export default class TranslationList extends mixins(Boilerplate) {
+    public filters = {
+        type: {
+            value: 'voiceRu',
+            options: [],
+        },
+    };
 
-        get currentEpisode() {
-            return playerStore.currentEpisode || {} as anime365.Episode;
+    get currentEpisode() {
+        return playerStore.currentEpisode || {} as anime365.Episode;
+    }
+
+    get translations() {
+        return this.currentEpisode.translations;
+    }
+
+
+    get groupedTranslations() {
+        interface Divider {
+            divider: true;
+            disabled: true;
         }
 
-        get translations() {
-            return this.currentEpisode.translations;
+        interface Label {
+            label: string;
+            disabled: true;
         }
 
+        const items: Array<anime365.Translation | Divider | Label> = [];
 
-        get groupedTranslations() {
-            interface Divider {
-                divider: true;
-                disabled: true;
-            }
-
-            interface Label {
-                label: string;
-                disabled: true;
-            }
-
-            const items: Array<anime365.Translation | Divider | Label> = [];
-
-            if (!this.translations || !this.translations.length) {
-                return items;
-            }
-            const groups = [
-                {type: 'voiceRu', label: 'Озвучка'},
-                {type: 'voiceEn', label: 'Английская Озвучка'},
-                {type: 'subRu', label: 'Русские Субтитры'},
-                {type: 'subEn', label: 'Английские Субтитры'},
-                {type: 'subJa', label: 'Японские Субтитры'},
-                {type: 'raw', label: 'Оригинал'},
-            ];
-
-            groups.forEach(({type, label}) => {
-                if (!this.translations) {
-                    return items;
-                }
-
-                const translations = this.translations
-                    .filter((t) => t.type === type)
-                    .map((translation) => {
-                        if (!translation.authorsSummary) {
-                            translation.authorsSummary = 'Неизвестный';
-                        }
-
-                        return translation;
-                    });
-
-                if (translations.length) {
-                    items.push({
-                        label,
-                        disabled: true,
-                    });
-
-                    items.push(...translations);
-
-                    items.push({
-                        divider: true,
-                        disabled: true,
-                    });
-                }
-            });
-
+        if (!this.translations || !this.translations.length) {
             return items;
         }
+        const groups = [
+            {type: 'voiceRu', label: 'Озвучка'},
+            {type: 'voiceEn', label: 'Английская Озвучка'},
+            {type: 'subRu', label: 'Русские Субтитры'},
+            {type: 'subEn', label: 'Английские Субтитры'},
+            {type: 'subJa', label: 'Японские Субтитры'},
+            {type: 'raw', label: 'Оригинал'},
+        ];
 
-
-        get currentTranslation() {
-            return playerStore.currentTranslation ? playerStore.currentTranslation.id : 0;
-        }
-
-
-        set currentTranslation(id) {
+        groups.forEach(({type, label}) => {
             if (!this.translations) {
-                return;
+                return items;
             }
 
-            const translation = this.translations.find((t) => t.id === id);
+            const translations = this.translations
+                .filter((t) => t.type === type)
+                .map((translation) => {
+                    if (!translation.authorsSummary) {
+                        translation.authorsSummary = 'Неизвестный';
+                    }
 
-            if (translation) {
-                playerStore.setCurrentTranslation(translation);
+                    return translation;
+                });
 
-                this.$nextTick(async () => {
-                    const dataToSave: SelectedTranslation = {
-                        tId: translation.id,
-                        id: translation.seriesId,
-                        eId: translation.episodeId,
-                        type: translation.type,
-                        author: translation.authorsSummary,
-                        priority: translation.priority,
-                    };
+            if (translations.length) {
+                items.push({
+                    label,
+                    disabled: true,
+                });
 
-                    await sync.unshift('selectedTranslations', dataToSave);
+                items.push(...translations);
+
+                items.push({
+                    divider: true,
+                    disabled: true,
                 });
             }
+        });
+
+        return items;
+    }
+
+
+    get currentTranslation() {
+        return playerStore.currentTranslation ? playerStore.currentTranslation.id : 0;
+    }
+
+
+    set currentTranslation(id) {
+        if (!this.translations) {
+            return;
         }
 
-        get label() {
-            if (!playerStore.currentTranslation) {
-                return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
-            }
-            switch (playerStore.currentTranslation.type) {
-                case 'voiceRu':
-                    return 'Озвучка';
-                case 'voiceEn':
-                    return 'Английская Озвучка';
-                case 'subRu':
-                    return 'Русские Субтитры';
-                case 'subEn':
-                    return 'Английские Субтитры';
-                case 'subJa':
-                    return 'Японские Субтитры';
-                case 'raw':
-                    return 'Оригинал';
-                default:
-                    return 'Перевод';
-            }
+        const translation = this.translations.find((t) => t.id === id);
+
+        if (translation) {
+            playerStore.setCurrentTranslation(translation);
+
+            this.$nextTick(async () => {
+                const dataToSave: SelectedTranslation = {
+                    tId: translation.id,
+                    id: translation.seriesId,
+                    eId: translation.episodeId,
+                    type: translation.type,
+                    author: translation.authorsSummary,
+                    priority: translation.priority,
+                };
+
+                await sync.unshift('selectedTranslations', dataToSave);
+            });
         }
     }
+
+    get label() {
+        if (!playerStore.currentTranslation) {
+            return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
+        }
+        switch (playerStore.currentTranslation.type) {
+            case 'voiceRu':
+                return 'Озвучка';
+            case 'voiceEn':
+                return 'Английская Озвучка';
+            case 'subRu':
+                return 'Русские Субтитры';
+            case 'subEn':
+                return 'Английские Субтитры';
+            case 'subJa':
+                return 'Японские Субтитры';
+            case 'raw':
+                return 'Оригинал';
+            default:
+                return 'Перевод';
+        }
+    }
+
+    @Watch('translations', {deep: false})
+    public translationsOnChange() {
+        this.readyToShow = true;
+    }
+}
 </script>
 
 

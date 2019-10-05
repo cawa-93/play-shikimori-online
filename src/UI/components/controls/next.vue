@@ -1,10 +1,9 @@
 <template>
-    <div>
+    <div class="next-episode">
         <v-btn
             :aria-label="label"
-            :disabled="!label"
+            :disabled="disabled"
             @click.prevent="gotoNext"
-            class="next-episode"
             target="_self"
             text
             v-if="readyToShow"
@@ -17,67 +16,67 @@
 </template>
 
 <script lang="ts">
-    import Boilerplate from '@/UI/mixins/boilerplate';
-    import playerStore from '@/UI/store/player';
-    import shikimoriStore from '@/UI/store/shikimori';
-    import {mixins} from 'vue-class-component';
-    import {Component, Prop} from 'vue-property-decorator';
+import Boilerplate from '@/UI/mixins/boilerplate';
+import playerStore from '@/UI/store/player';
+import shikimoriStore from '@/UI/store/shikimori';
+import {mixins} from 'vue-class-component';
+import {Component, Prop, Watch} from 'vue-property-decorator';
 
-    @Component
-    export default class Next extends mixins(Boilerplate) {
-        @Prop() public readonly compact!: boolean;
-
-
-        get nextEpisode() {
-            return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
-        }
-
-        get nextSeason() {
-            return shikimoriStore.nextSeason;
-        }
+@Component
+export default class Next extends mixins(Boilerplate) {
+    @Prop() public readonly compact!: boolean;
 
 
-        get label() {
-            if (this.nextEpisode) {
-                return 'Следующая серия';
-            }
-
-            if (this.nextSeason) {
-                return 'Следующий сезон';
-            }
-
-            return null;
-        }
-
-        public gotoNext() {
-            shikimoriStore.markAsWatched();
-
-            if (this.nextEpisode) {
-                return playerStore.selectNextEpisode();
-            }
-
-            if (this.nextSeason) {
-                playerStore.clear();
-
-                return Promise.all([
-                    // Загрузка списка серий и запуск видео
-                    playerStore.loadEpisodes({
-                        anime: this.nextSeason.id,
-                        episode: this.nextSeason.episodeInt || 0,
-                    }),
-
-                    // Загрузка информации про аниме и оценку от пользователя если тот авторизован
-                    shikimoriStore.loadAnime(this.nextSeason.id),
-                ]);
-
-
-            }
-
-
-        }
+    get nextEpisode() {
+        return playerStore.currentEpisode ? playerStore.currentEpisode.next : null;
     }
+
+    get nextSeason() {
+        return shikimoriStore.nextSeason;
+    }
+
+    get disabled() {
+        return !this.nextEpisode && !this.nextSeason;
+    }
+
+    get label() {
+        if (this.nextSeason && !this.nextEpisode) {
+            return 'Следующий сезон';
+        }
+
+        return 'Следующая серия';
+    }
+
+    public gotoNext() {
+        shikimoriStore.markAsWatched();
+
+        if (this.nextEpisode) {
+            return playerStore.selectNextEpisode();
+        }
+
+        if (this.nextSeason) {
+            playerStore.clear();
+
+            return Promise.all([
+                // Загрузка списка серий и запуск видео
+                playerStore.loadEpisodes({
+                    anime: this.nextSeason.id,
+                    episode: this.nextSeason.episodeInt || 0,
+                }),
+
+                // Загрузка информации про аниме и оценку от пользователя если тот авторизован
+                shikimoriStore.loadAnime(this.nextSeason.id),
+            ]);
+
+
+        }
+
+
+    }
+
+    @Watch('nextEpisode')
+    public nextEpisodeOnChange() {
+        this.readyToShow = true;
+    }
+}
 </script>
-
-<style scoped>
-
-</style>
