@@ -28,6 +28,10 @@
                     <v-list-item-content>
                         <v-list-item-title>{{item.authorsSummary}}</v-list-item-title>
                     </v-list-item-content>
+
+                    <v-list-item-action v-if="item.height >= 1080">
+                        {{item.height}}p
+                    </v-list-item-action>
                 </template>
             </template>
 

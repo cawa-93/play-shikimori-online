@@ -177,7 +177,7 @@ declare const site: {
     /**
      * Проверяем наличие playerGlobal и запускаем главную функцию
      */
-    function runOnReady() {
+    function runOnReady(attempt: number = 0) {
         if (window.playerGlobal) {
             if (window.playerGlobal.isPublicReady) {
                 main(window.playerGlobal)
@@ -193,9 +193,11 @@ declare const site: {
                 );
             }
         } else if (document.readyState === 'complete') {
-            sendUploadRequest();
+            if (attempt < 10 && !sendUploadRequest()) {
+                setTimeout(() => runOnReady(attempt + 1), 100);
+            }
         } else {
-            window.addEventListener('load', runOnReady, {once: true});
+            window.addEventListener('load', () => runOnReady(), {once: true});
         }
     }
 
