@@ -9,20 +9,20 @@ node_js:
   - "12"
 
 stages:
-  - test
+  #  - test
   - name: deploy
     if: (tag IS present) AND (type = push) AND (repo = cawa-93/play-shikimori-online)
 
 jobs:
   include:
-    - stage: test
-      name: "Test"
-      script:
-        - npm run lint
-        # TODO: написать тесты
-        - NODE_ENV=production npm run build
-        # - npm run test:unit
-        # - npm run test:e2e
+    #    - stage: test
+    #      name: "Test"
+    #      script:
+    #        - npm run lint
+    #        # TODO: написать тесты
+    #        - NODE_ENV=production npm run build
+    #        # - npm run test:unit
+    #        # - npm run test:e2e
 
     - stage: deploy
       name: "Deploy"

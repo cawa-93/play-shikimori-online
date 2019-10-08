@@ -1,7 +1,7 @@
 {
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "name": "play-shiki-online",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "private": true,
   "browserslist": [
     "Chrome >= 73",
@@ -39,7 +39,7 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@sentry/cli": "^1.47.1",
+    "@sentry/cli": "^1.47.2",
     "@types/async-retry": "^1.4.1",
     "@types/chai": "^4.2.3",
     "@types/chrome": "0.0.88",
@@ -54,11 +54,11 @@
     "chai": "^4.1.2",
     "copy-webpack-plugin": "^5.0.4",
     "firefox-extension-deploy": "^1.1.1",
-    "lint-staged": "^9.2.5",
-    "sass": "^1.22.12",
+    "lint-staged": "^9.4.2",
+    "sass": "^1.23.0",
     "sass-loader": "^7.3.1",
     "typescript": "^3.6.3",
-    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-cli-plugin-vuetify": "^1.0.0",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.2.2",
     "vuex-module-decorators": "^0.10.1",

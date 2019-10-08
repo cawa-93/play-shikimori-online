@@ -10,7 +10,7 @@ let zipName = `${browser}.zip`
 zipFolder(folder, zipName)
     .then(() => {
         console.log(`Successfully Zipped ${folder} and saved as ${zipName}`)
-        uploadZip() // on successful zipping, call upload
+        // uploadZip() // on successful zipping, call upload
     })
     .catch(err => {
         console.log('Can not create zip:', err)
