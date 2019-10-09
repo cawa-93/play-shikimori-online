@@ -17,34 +17,34 @@
 </template>
 
 <script lang="ts">
-import Boilerplate from '@/UI/mixins/boilerplate';
-import playerStore from '@/UI/store/player';
-import {mixins} from 'vue-class-component';
-import {Component, Prop, Watch} from 'vue-property-decorator';
+    import Boilerplate from '@/UI/mixins/boilerplate';
+    import playerStore from '@/UI/store/player';
+    import {mixins} from 'vue-class-component';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
 
-@Component({
-    name: 'open-on-shikimori',
-})
-export default class OpenOnShikimori extends mixins(Boilerplate) {
-    @Prop() public readonly compact!: boolean;
+    @Component({
+        name: 'open-on-shikimori',
+    })
+    export default class OpenOnShikimori extends mixins(Boilerplate) {
+        @Prop() public readonly compact!: boolean;
 
-    get shikiID() {
-        if (playerStore.currentEpisode) {
-            return playerStore.currentEpisode.myAnimelist;
+        get shikiID() {
+            if (playerStore.currentEpisode) {
+                return playerStore.currentEpisode.myAnimelist;
+            }
+
+            return this.$route.params.anime;
         }
 
-        return this.$route.params.anime;
+        @Watch('shikiID')
+        public nextEpisodeOnChange() {
+            this.readyToShow = true;
+        }
     }
-
-    @Watch('shikiID')
-    public nextEpisodeOnChange() {
-        this.readyToShow = true;
-    }
-}
 </script>
 
 <style scoped>
-    .open-on-shikimori.theme--dark #shikimori-logo-light {
+    .open-on-shikimori .theme--dark #shikimori-logo-light {
         filter: invert(1);
     }
 </style>
