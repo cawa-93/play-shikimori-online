@@ -184,7 +184,7 @@ async function getEpisodes(myAnimeListId: number) {
     try {
         const {data} = await BackgroundRequestProvider
             .fetch<anime365.api.SeriesCollection>(
-                `https://smotret-anime-365.ru/api/series/?myAnimeListId=${myAnimeListId}`,
+                `https://smotret-anime.online/api/series/?myAnimeListId=${myAnimeListId}`,
                 {
                     errorMessage: 'Невозможно проверить наличие серий',
                 },
@@ -224,7 +224,7 @@ async function getPriorityTranslation(episodeId: number): Promise<{ translation:
         sync.get<{ selectedTranslations: SelectedTranslation[] }>({selectedTranslations: []}),
         BackgroundRequestProvider
             .fetch<anime365.api.EpisodeSelf>(
-                `https://smotret-anime-365.ru/api/episodes/${episodeId}`,
+                `https://smotret-anime.online/api/episodes/${episodeId}`,
                 {
                     errorMessage: 'Невозможно загрузить список переводов',
                 },

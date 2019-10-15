@@ -8,6 +8,7 @@ const permissions = [
 const origins = [
     'https://shikimori.one/*',
     'https://smotret-anime-365.ru/*',
+    'https://smotret-anime.online/*',
     'https://api.jikan.moe/*',
 ]
 
@@ -68,6 +69,7 @@ const manifest = {
         },
         {
             matches: [
+                'https://smotret-anime.online/translations/embed/*',
                 'https://smotret-anime-365.ru/translations/embed/*',
                 'https://hentai365.ru/translations/embed/*',
             ],

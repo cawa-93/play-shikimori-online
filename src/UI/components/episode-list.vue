@@ -36,7 +36,7 @@
                 <template v-slot:append-item>
                     <v-divider class="mb-2"></v-divider>
 
-                    <v-list-item href="https://smotret-anime-365.ru/translations/create">
+                    <v-list-item href="https://smotret-anime.online/translations/create">
                         <v-list-item-action>
                             <v-icon>mdi-plus-box</v-icon>
                         </v-list-item-action>
