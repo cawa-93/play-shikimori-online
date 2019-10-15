@@ -1,7 +1,6 @@
 # Play Шикимори Online 
-![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/eopmgkejoplocjnpljjhgbeadjoomcbd?label=%D0%A0%D0%B5%D0%B9%D1%82%D0%B8%D0%BD%D0%B3&style=flat) 
-![Chrome Web Store](https://img.shields.io/chrome-web-store/users/eopmgkejoplocjnpljjhgbeadjoomcbd?label=%D0%9F%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9&style=flat)
-![Chrome Web Store](https://img.shields.io/chrome-web-store/v/eopmgkejoplocjnpljjhgbeadjoomcbd?label=%D0%92%D0%B5%D1%80%D1%81%D0%B8%D1%8F&style=flat)
+![Mozilla Add-on](https://img.shields.io/amo/rating/{dd3b05c4-06cb-4775-b47a-a30f3dfe8532}?label=%D0%A0%D0%B5%D0%B9%D1%82%D0%B8%D0%BD%D0%B3)
+![Mozilla Add-on](https://img.shields.io/amo/v/{dd3b05c4-06cb-4775-b47a-a30f3dfe8532}?label=%D0%92%D0%B5%D1%80%D1%81%D0%B8%D1%8F)
 
 ![Внешний вид кнопки "Смотреть онлайн"](promo/Головний%20екран.png) | ![Внешний вид кнопки "Смотреть онлайн"](promo/Коментарі.png)
 --- | --- 
@@ -10,12 +9,7 @@
 Это браузерное расширение, которое позволяет вам смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори.
 
 
-## Установка
-
-* [Google Chrome](https://chrome.google.com/webstore/detail/play-shikimori-online/eopmgkejoplocjnpljjhgbeadjoomcbd)
-* [Firefox](https://addons.mozilla.org/firefox/addon/play-shikimori/)
-* [Opera](https://addons.opera.com/ru/extensions/details/play-shikimori-beta/)
-* [Другие браузеры](https://chrome.google.com/webstore/detail/play-shikimori-online/eopmgkejoplocjnpljjhgbeadjoomcbd)
+## [Установка](https://github.com/cawa-93/play-shikimori-online/wiki/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D1%8F-%D0%BF%D0%BE-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B5)
 
 ## Возможности
 
@@ -29,6 +23,9 @@
 * Ведётся учет в каком переводе вы смотрите. Благодаря этому, когда вы открываете новый сериал, доступен более интелектуальный выбор переводов на основе всех ваших предпочтений.
 
 ## [Ответы на возникающие вопросы](https://github.com/cawa-93/play-shikimori-online/wiki/FAQ)
+
+
+## [Дорожная карта](https://github.com/cawa-93/play-shikimori-online/projects/1)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

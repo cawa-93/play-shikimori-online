@@ -179,7 +179,7 @@
 
             return {
                 label: 'Сообщить о проблеме с видео',
-                url: `https://smotret-anime-365.ru/translations/report/${this.player.currentTranslation.id}`,
+                url: `https://smotret-anime.online/translations/report/${this.player.currentTranslation.id}`,
             };
         }
 

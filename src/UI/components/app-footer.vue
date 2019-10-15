@@ -58,7 +58,7 @@
     })
     export default class AppFooter extends Vue {
 
-        public copyright = ['shikimori.one', 'smotret-anime-365.ru', 'myanimelist.net'];
+        public copyright = ['shikimori.one', 'smotret-anime.online', 'myanimelist.net'];
         public links = [
             {
                 icon: 'mdi-account-question',
