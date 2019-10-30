@@ -1,9 +1,9 @@
 <template>
-    <section class="translation-list" v-if="readyToShow">
+    <section class="translation-list">
         <v-select
             :items="groupedTranslations"
             :label="label"
-            :loading="translations.length === 0"
+            :loading="loading"
             :menu-props="{
                 maxHeight: 585,
                 transition: 'slide-y-transition'
@@ -52,154 +52,148 @@
             </template>
         </v-select>
     </section>
-    <v-skeleton-loader max-height="57px" type="image" v-else></v-skeleton-loader>
 </template>
 
 <script lang="ts">
-import {sync} from '@/helpers/chrome-storage';
-import playerStore from '@/UI/store/player';
-// @ts-ignore
-import {SelectedTranslation} from 'types/UI';
-import {mixins} from 'vue-class-component';
-import {Component, Watch} from 'vue-property-decorator';
-import Boilerplate from '../mixins/boilerplate';
+    import {sync} from '@/helpers/chrome-storage';
+    import playerStore from '@/UI/store/player';
+    import {SelectedTranslation} from 'types/UI';
+    import {Component, Vue} from 'vue-property-decorator';
 
-@Component({
-    name: 'translation-list',
-})
-export default class TranslationList extends mixins(Boilerplate) {
-    public filters = {
-        type: {
-            value: 'voiceRu',
-            options: [],
-        },
-    };
+    @Component({
+        name: 'translation-list',
+    })
+    export default class TranslationList extends Vue {
+        public filters = {
+            type: {
+                value: 'voiceRu',
+                options: [],
+            },
+        };
 
-    get currentEpisode() {
-        return playerStore.currentEpisode || {} as anime365.Episode;
-    }
-
-    get translations() {
-        return this.currentEpisode.translations;
-    }
-
-
-    get groupedTranslations() {
-        interface Divider {
-            divider: true;
-            disabled: true;
+        get currentEpisode() {
+            return playerStore.currentEpisode || {} as anime365.Episode;
         }
 
-        interface Label {
-            label: string;
-            disabled: true;
+        get translations() {
+            return this.currentEpisode.translations;
         }
 
-        const items: Array<anime365.Translation | Divider | Label> = [];
-
-        if (!this.translations || !this.translations.length) {
-            return items;
+        get loading() {
+            return !Array.isArray(this.translations) || !this.translations.length;
         }
-        const groups = [
-            {type: 'voiceRu', label: 'Озвучка'},
-            {type: 'voiceEn', label: 'Английская Озвучка'},
-            {type: 'subRu', label: 'Русские Субтитры'},
-            {type: 'subEn', label: 'Английские Субтитры'},
-            {type: 'subJa', label: 'Японские Субтитры'},
-            {type: 'raw', label: 'Оригинал'},
-        ];
 
-        groups.forEach(({type, label}) => {
-            if (!this.translations) {
+        get groupedTranslations() {
+            interface Divider {
+                divider: true;
+                disabled: true;
+            }
+
+            interface Label {
+                label: string;
+                disabled: true;
+            }
+
+            const items: Array<anime365.Translation | Divider | Label> = [];
+
+            if (!this.translations || !this.translations.length) {
                 return items;
             }
+            const groups = [
+                {type: 'voiceRu', label: 'Озвучка'},
+                {type: 'voiceEn', label: 'Английская Озвучка'},
+                {type: 'subRu', label: 'Русские Субтитры'},
+                {type: 'subEn', label: 'Английские Субтитры'},
+                {type: 'subJa', label: 'Японские Субтитры'},
+                {type: 'raw', label: 'Оригинал'},
+            ];
 
-            const translations = this.translations
-                .filter((t) => t.type === type)
-                .map((translation) => {
-                    if (!translation.authorsSummary) {
-                        translation.authorsSummary = 'Неизвестный';
-                    }
+            groups.forEach(({type, label}) => {
+                if (!this.translations) {
+                    return items;
+                }
 
-                    return translation;
-                });
+                const translations = this.translations
+                    .filter((t) => t.type === type)
+                    .map((translation) => {
+                        if (!translation.authorsSummary) {
+                            translation.authorsSummary = 'Неизвестный';
+                        }
 
-            if (translations.length) {
-                items.push({
-                    label,
-                    disabled: true,
-                });
+                        return translation;
+                    });
 
-                items.push(...translations);
+                if (translations.length) {
+                    items.push({
+                        label,
+                        disabled: true,
+                    });
 
-                items.push({
-                    divider: true,
-                    disabled: true,
+                    items.push(...translations);
+
+                    items.push({
+                        divider: true,
+                        disabled: true,
+                    });
+                }
+            });
+
+            return items;
+        }
+
+
+        get currentTranslation() {
+            return playerStore.currentTranslation ? playerStore.currentTranslation.id : 0;
+        }
+
+
+        set currentTranslation(id) {
+            if (!this.translations) {
+                return;
+            }
+
+            const translation = this.translations.find((t) => t.id === id);
+
+            if (translation) {
+                playerStore.setCurrentTranslation(translation);
+
+                this.$nextTick(async () => {
+                    const dataToSave: SelectedTranslation = {
+                        tId: translation.id,
+                        id: translation.seriesId,
+                        eId: translation.episodeId,
+                        type: translation.type,
+                        author: translation.authorsSummary,
+                        priority: translation.priority,
+                    };
+
+                    await sync.unshift('selectedTranslations', dataToSave);
                 });
             }
-        });
-
-        return items;
-    }
-
-
-    get currentTranslation() {
-        return playerStore.currentTranslation ? playerStore.currentTranslation.id : 0;
-    }
-
-
-    set currentTranslation(id) {
-        if (!this.translations) {
-            return;
         }
 
-        const translation = this.translations.find((t) => t.id === id);
-
-        if (translation) {
-            playerStore.setCurrentTranslation(translation);
-
-            this.$nextTick(async () => {
-                const dataToSave: SelectedTranslation = {
-                    tId: translation.id,
-                    id: translation.seriesId,
-                    eId: translation.episodeId,
-                    type: translation.type,
-                    author: translation.authorsSummary,
-                    priority: translation.priority,
-                };
-
-                await sync.unshift('selectedTranslations', dataToSave);
-            });
+        get label() {
+            if (!playerStore.currentTranslation) {
+                return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
+            }
+            switch (playerStore.currentTranslation.type) {
+                case 'voiceRu':
+                    return 'Озвучка';
+                case 'voiceEn':
+                    return 'Английская Озвучка';
+                case 'subRu':
+                    return 'Русские Субтитры';
+                case 'subEn':
+                    return 'Английские Субтитры';
+                case 'subJa':
+                    return 'Японские Субтитры';
+                case 'raw':
+                    return 'Оригинал';
+                default:
+                    return 'Перевод';
+            }
         }
     }
-
-    get label() {
-        if (!playerStore.currentTranslation) {
-            return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
-        }
-        switch (playerStore.currentTranslation.type) {
-            case 'voiceRu':
-                return 'Озвучка';
-            case 'voiceEn':
-                return 'Английская Озвучка';
-            case 'subRu':
-                return 'Русские Субтитры';
-            case 'subEn':
-                return 'Английские Субтитры';
-            case 'subJa':
-                return 'Японские Субтитры';
-            case 'raw':
-                return 'Оригинал';
-            default:
-                return 'Перевод';
-        }
-    }
-
-    @Watch('translations', {deep: false})
-    public translationsOnChange() {
-        this.readyToShow = true;
-    }
-}
 </script>
 
 
