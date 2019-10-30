@@ -14,18 +14,8 @@ Error.prototype.alert = DOMException.prototype.alert = function() {
  * Отправить ошибку в систему трекинга
  */
 Error.prototype.track = DOMException.prototype.track = function() {
-    // @ts-ignore
-    if (self.Sentry) {
-        // @ts-ignore
-        self.Sentry.captureException(this);
-    } else if (process.env.NODE_ENV === 'production') {
-        // @ts-ignore
-        console.warn('Невозможно отправить отчет об ошибке', {Sentry: self.Sentry});
-    }
-
     return this;
 };
-
 
 Error.prototype.toJSON = DOMException.prototype.toJSON = function() {
     const error = {

@@ -57,11 +57,11 @@ jobs:
             tags: true
 
 
-        - provider: script
-          script: bash deploy/sentry.sh
-          skip_cleanup: true
-          on:
-            repo: cawa-93/play-shikimori-online
-            tags: true
+#        - provider: script
+#          script: bash deploy/sentry.sh
+#          skip_cleanup: true
+#          on:
+#            repo: cawa-93/play-shikimori-online
+#            tags: true
 
 
