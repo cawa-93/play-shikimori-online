@@ -1,5 +1,5 @@
 <template>
-    <v-card class="player-container d-flex flex-column w-100 h-100" v-if="translation">
+    <v-card class="player-container d-flex flex-column w-100 h-100">
         <iframe
             :src="src"
             allowfullscreen
@@ -7,8 +7,11 @@
             id="player"
             loading="eager"
             ref="player"
+            v-if="translation"
             width="100%"
         ></iframe>
+
+        <v-skeleton-loader min-height="100%" tile type="image"></v-skeleton-loader>
     </v-card>
 </template>
 
@@ -68,6 +71,7 @@
         public onTranslationChange(newTranslation: anime365.Translation, oldTranslation: anime365.Translation) {
             const n = newTranslation || {};
             const o = oldTranslation || {};
+
             if ((n.title && n.title !== o.title) || !o.title) {
                 this.setTitle();
             }
@@ -114,5 +118,6 @@
         width: 100%;
         height: 100%;
         position: absolute;
+        z-index: 2;
     }
 </style>

@@ -1,11 +1,11 @@
 <template>
     <v-btn
         :aria-label="label"
+        :disabled="disabled"
         @click.prevent="gotoNext"
         class="next-episode"
         target="_self"
         text
-        v-if="label"
     >
         <span class="long-and-truncated mr-2" v-if="!compact">{{label}}</span>
         <v-icon>mdi-skip-next</v-icon>
@@ -30,17 +30,16 @@
             return shikimoriStore.nextSeason;
         }
 
+        get disabled() {
+            return !this.nextEpisode && !this.nextSeason;
+        }
 
         get label() {
-            if (this.nextEpisode) {
-                return 'Следующая серия';
-            }
-
-            if (this.nextSeason) {
+            if (this.nextSeason && !this.nextEpisode) {
                 return 'Следующий сезон';
             }
 
-            return null;
+            return 'Следующая серия';
         }
 
         public gotoNext() {
@@ -66,12 +65,6 @@
 
 
             }
-
-
         }
     }
 </script>
-
-<style scoped>
-
-</style>

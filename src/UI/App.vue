@@ -30,4 +30,9 @@
     .color-inherit {
         color: inherit !important;
     }
+
+    .player-container .v-skeleton-loader__image {
+        height: 100%;
+    }
+
 </style>
