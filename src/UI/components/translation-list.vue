@@ -3,7 +3,7 @@
         <v-select
             :items="groupedTranslations"
             :label="label"
-            :loading="translations.length === 0"
+            :loading="loading"
             :menu-props="{
                 maxHeight: 585,
                 transition: 'slide-y-transition'
@@ -57,7 +57,6 @@
 <script lang="ts">
     import {sync} from '@/helpers/chrome-storage';
     import playerStore from '@/UI/store/player';
-    // @ts-ignore
     import {SelectedTranslation} from 'types/UI';
     import {Component, Vue} from 'vue-property-decorator';
 
@@ -72,12 +71,17 @@
             },
         };
 
-        get translations() {
-            return playerStore.currentEpisode && playerStore.currentEpisode.translations
-                   ? playerStore.currentEpisode.translations
-                   : [];
+        get currentEpisode() {
+            return playerStore.currentEpisode || {} as anime365.Episode;
         }
 
+        get translations() {
+            return this.currentEpisode.translations;
+        }
+
+        get loading() {
+            return !Array.isArray(this.translations) || !this.translations.length;
+        }
 
         get groupedTranslations() {
             interface Divider {
@@ -105,6 +109,10 @@
             ];
 
             groups.forEach(({type, label}) => {
+                if (!this.translations) {
+                    return items;
+                }
+
                 const translations = this.translations
                     .filter((t) => t.type === type)
                     .map((translation) => {
@@ -140,6 +148,10 @@
 
 
         set currentTranslation(id) {
+            if (!this.translations) {
+                return;
+            }
+
             const translation = this.translations.find((t) => t.id === id);
 
             if (translation) {
@@ -162,7 +174,7 @@
 
         get label() {
             if (!playerStore.currentTranslation) {
-                return this.translations.length ? 'Выберите перевод' : 'Загрузка...';
+                return this.translations && this.translations.length ? 'Выберите перевод' : 'Загрузка...';
             }
             switch (playerStore.currentTranslation.type) {
                 case 'voiceRu':
@@ -181,7 +193,6 @@
                     return 'Перевод';
             }
         }
-
     }
 </script>
 

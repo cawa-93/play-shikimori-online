@@ -21,7 +21,7 @@
             <controls class="mt-2"></controls>
         </v-layout>
 
-        <comments-feed class="mt-2" v-if="anime && currentEpisode"></comments-feed>
+        <comments-feed class="mt-2"></comments-feed>
     </main>
 </template>
 

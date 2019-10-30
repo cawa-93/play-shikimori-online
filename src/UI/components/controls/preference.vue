@@ -2,7 +2,7 @@
     <v-btn
         @click="openOptionsPage"
         aria-label="Настройки"
-        class="flex-parent preference"
+        class="preference"
         text
     >
         <v-icon :color="!user ? 'error' : ''">mdi-{{user ? 'settings' : 'sync-off'}}</v-icon>

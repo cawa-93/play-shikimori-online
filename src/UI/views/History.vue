@@ -97,7 +97,11 @@
 
     .d-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         grid-gap: 20px;
+    }
+
+    .grid-item {
+        max-width: 360px;
     }
 </style>

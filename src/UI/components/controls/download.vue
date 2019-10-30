@@ -1,10 +1,12 @@
 <template>
-    <v-menu v-if="download.length">
-        <template v-slot:activator="{ on }">
+    <v-menu>
+        <template v-slot:activator="{ on, attr }">
             <v-btn
+                :disabled="!download.length"
                 aria-label="Скачать"
-                class="flex-parent download-video"
+                class="download-video"
                 text
+                v-bind="attr"
                 v-on="on"
             >
                 <v-icon>mdi-download</v-icon>

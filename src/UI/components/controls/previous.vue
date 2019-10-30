@@ -1,11 +1,11 @@
 <template>
     <v-btn
+        :disabled="!previous"
         @click.prevent="selectPreviousEpisode"
         aria-label="Предыдущая серия"
-        class="flex-parent previous-episode"
+        class="previous-episode"
         target="_self"
         text
-        v-if="previous"
     >
         <v-icon>mdi-skip-previous</v-icon>
         <span class="long-and-truncated ml-2" v-if="!compact">Предыдущая серия</span>
@@ -20,8 +20,12 @@
     export default class Previous extends Vue {
         @Prop() public readonly compact!: boolean;
 
+        get currentEpisode() {
+            return playerStore.currentEpisode;
+        }
+
         get previous() {
-            return playerStore.currentEpisode ? playerStore.currentEpisode.previous : null;
+            return this.currentEpisode && this.currentEpisode.previous;
         }
 
         public selectPreviousEpisode() {
@@ -29,7 +33,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>
