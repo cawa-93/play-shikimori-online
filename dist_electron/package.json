@@ -1,5 +1,5 @@
 {
-  "name": "play-shikimori-app",
+  "name": "anime-util",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -41,7 +41,7 @@
     }
   },
   "browserslist": [
-    "Chrome = 76"
+    "Chrome >= 73"
   ],
   "gitHooks": {
     "pre-commit": "lint-staged"
