@@ -209,51 +209,55 @@ export class Shikimori extends VuexModule {
             return;
         }
 
-
+        /**
+         * FIXME Promise.all не верно вычисляет типы в typescript@3.7.2
+         * @see https://github.com/microsoft/TypeScript/issues/34937
+         */
+            // @ts-ignore
         const [{data: [series]}, anime] = await Promise.all([
-            await Anime365Provider.fetch<anime365.api.SeriesCollection>(`/series/?myAnimeListId=${sequelNode.id}`, {
-                errorMessage: 'Невозможно загрузить следующий сезон',
-            })
-                .catch((e: Error) => {
-                    console.error(e);
-                    e.track();
-                    return {data: []};
-                }),
+                await Anime365Provider.fetch<anime365.api.SeriesCollection>(`/series/?myAnimeListId=${sequelNode.id}`, {
+                    errorMessage: 'Невозможно загрузить следующий сезон',
+                })
+                    .catch((e: Error) => {
+                        console.error(e);
+                        e.track();
+                        return {data: []};
+                    }),
 
-            (
-                async () => {
-                    const headers: Record<string, string> = {};
+                (
+                    async () => {
+                        const headers: Record<string, string> = {};
 
-                    const auth = await profileStore.getValidCredentials();
-                    if (!auth) {
-                        return null; // Если пользователь не авторизован, нет смысла загружать его оценку
+                        const auth = await profileStore.getValidCredentials();
+                        if (!auth) {
+                            return null; // Если пользователь не авторизован, нет смысла загружать его оценку
+                        }
+
+                        headers.Authorization = `${auth.token_type} ${auth.access_token}`;
+
+                        return ShikimoriProvider.fetch<shikimori.Anime>(`/api/animes/${sequelNode.id}`, {
+                            headers,
+                            errorMessage: 'Невозможно загрузить ваш список',
+                        })
+                            .catch((e) => {
+                                console.error(e);
+                                e.track();
+                                return null;
+                            });
                     }
-
-                    headers.Authorization = `${auth.token_type} ${auth.access_token}`;
-
-                    return ShikimoriProvider.fetch<shikimori.Anime>(`/api/animes/${sequelNode.id}`, {
-                        headers,
-                        errorMessage: 'Невозможно загрузить ваш список',
-                    })
-                        .catch((e) => {
-                            console.error(e);
-                            e.track();
-                            return null;
-                        });
-                }
-            )(),
-        ]);
+                )(),
+            ]);
 
         if (!series || !series.episodes || !series.episodes.length) {
             return;
         }
 
         const episodeType = series.episodes[0].episodeType;
-        if (series.episodes.every((e) => e.episodeType === episodeType)) {
+        if (series.episodes.every((e: anime365.Episode) => e.episodeType === episodeType)) {
             series.type = episodeType;
         } else {
             series.episodes = series.episodes
-                .filter((e) =>
+                .filter((e: anime365.Episode) =>
                     e.isActive
                     // @ts-ignore
                     // episodeInt может быть строкой
