@@ -17,8 +17,10 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 10.16
-      - name: see directory
-        run: ls
+      - name: Install dependencies
+        run: npm install
+      - name: Build on MacOS
+        run: npm run build
 
   build_on_win:
     runs-on: windows-2016
@@ -29,5 +31,9 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 10.16
-      - name: see directory
-        run: ls
+      - name: install node tools
+        run: npm install --global --production windows-build-tools@4.0.0
+      - name: Install dependencies
+        run: npm install
+      - name: Build on Windows
+        run: npm run build
