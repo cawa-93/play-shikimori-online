@@ -1,4 +1,4 @@
-# anime-util
+# anime-util electron
 
 ## Project setup
 ```
