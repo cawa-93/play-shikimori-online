@@ -1,6 +1,13 @@
 # История изменения
 Все заметные изменения в этом проекте будут документированы в этом файле
 
+## [1.3.1] — 13.11.2019
+### Изменения
+- Множество исправлений и улучшений в зависимых библиотеках.
+- [Vuetify обновлен до версии 2.1.10](https://github.com/vuetifyjs/vuetify/releases/tag/v2.1.10)
+- [Vuex обновлен до версии 3.1.2](https://github.com/vuejs/vuex/releases/tag/v3.1.2)
+- [TypeScript обновлен до версиии 3.7.2](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html)
+
 ## [1.3.0] — 30.10.2019
 ### Изменения
 - Часть компонентов загружаются не сразу, а только при попадании в область видимости. Это увеличивает скорость отображениея и уменьшиет количество потребляемого трафика на ранних этапах отображения, что позволяет загружаться видео быстрее.
@@ -141,6 +148,7 @@
 - **Приоритетная** помощь в решении проблем
 
 
+[1.3.1]: https://github.com/cawa-93/play-shikimori-online/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/cawa-93/play-shikimori-online/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/cawa-93/play-shikimori-online/compare/v1.1.6...v1.2.0
 [1.1.6]: https://github.com/cawa-93/play-shikimori-online/compare/v1.1.5...v1.1.6
