@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build on MacOS
-        run: npm run build
+        run: npm run electron:build
   build_on_win:
     runs-on: windows-2016
     steps:
@@ -35,4 +35,4 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build on Windows
-        run: npm run build
+        run: npm run electron:build
