@@ -44,7 +44,7 @@
     }
   },
   "browserslist": [
-    "Chrome >= 76"
+    "Chrome >= 78"
   ],
   "gitHooks": {
     "pre-commit": "lint-staged"
