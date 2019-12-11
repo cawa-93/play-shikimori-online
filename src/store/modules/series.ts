@@ -1,68 +1,88 @@
 import store from '@/store';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 import Vue from 'vue';
-import {anime365} from '@/plugins/anime365';
-import {Anime365Response, Series} from '@/types/anime365';
+import {Series} from '@/types/anime365';
+import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
-const fields = [
-    'id',
-    'myAnimeListId',
-    'numberOfEpisodes',
-    'posterUrl',
-    'posterUrlSmall',
-    'titles',
-    'url',
-    'type',
-] as const;
+type Fields = 'id' | 'myAnimeListId' | 'numberOfEpisodes' | 'posterUrl' | 'posterUrlSmall' | 'titles' | 'url' | 'type';
+type S = Pick<Series, Fields>;
 
-type S = Pick<Series, typeof fields[number]>;
+
 
 @Module({
-    dynamic: true,
-    namespaced: true,
-    name: 'series',
-    store,
+  dynamic: true,
+  namespaced: true,
+  name: 'series',
+  store,
 })
 
 export class SeriesStore extends VuexModule {
-    public items: {
-        [key: number]: S,
-    } = {};
+  public items: {
+    [key: number]: S,
+  } = {};
 
-    @Mutation
-    public set(series: S) {
-        return Vue.set(this.items, series.myAnimeListId, series);
+  public malMap: {
+    [key: number]: number,
+  } = {};
+
+
+
+  @Mutation
+  public set(series: S) {
+    Vue.set(this.items, series.id, series);
+    Vue.set(this.malMap, series.myAnimeListId, series.id);
+  }
+
+
+
+  @Action
+  public async load(id: number) {
+
+    if (this.items[id]) {
+      return this.items[id];
     }
 
-    @Action
-    public async load(myAnimeListIds: number | number[], force = false) {
-        if (!Array.isArray(myAnimeListIds)) {
-            myAnimeListIds = [myAnimeListIds];
-        }
 
-        if (!force) {
-            myAnimeListIds = myAnimeListIds.filter((id) => !this.items[id]);
-        }
+    // @ts-ignore
+    const s = await anime365Client.getSeriesSingle<Fields>(id, {
+      fields: [
+        'numberOfEpisodes',
+        'posterUrl',
+        'posterUrlSmall',
+        'titles',
+        'url',
+        'type',
+      ]
+    });
 
-        if (!myAnimeListIds.length) {
-            return;
-        }
-
-
-        const {data: {data: series}} = await anime365
-            .get<Anime365Response<S[]>>(
-                '/series',
-                {
-                    params: {
-                        fields: fields.join(','),
-                        myAnimeListId: myAnimeListIds,
-                    },
-                });
-
-        series.forEach((s) => this.set(s));
+    if (s) {
+      this.set(s);
     }
+
+
+    return this.items[id];
+  }
+
+
+
+  // @Action
+  // public async requestSeries(myAnimeListIds: number[]) {
+  //   const {data: {data: series}} = await anime365
+  //     .get<Anime365Response<S[]>>(
+  //       '/series',
+  //       {
+  //         params: {
+  //           fields: fields.join(','),
+  //           myAnimeListId: myAnimeListIds,
+  //         },
+  //       });
+  //
+  //   return series;
+  // }
 
 }
+
+
 
 export const seriesStore = getModule(SeriesStore);

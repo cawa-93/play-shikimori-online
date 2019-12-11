@@ -1,95 +1,123 @@
 import Vue from 'vue';
 import store from '@/store';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
-import {anime365} from '@/plugins/anime365';
-import {Anime365Response, Translation} from '@/types/anime365';
+import {Translation} from '@/types/anime365';
+import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
-const fields = [
-    'id',
-    'isActive',
-    'priority',
-    'qualityType',
-    'type',
-    'seriesId',
-    'episodeId',
-    'embedUrl',
-    'authorsSummary',
-    'height',
-] as const;
+type Fields =
+  'id'
+  | 'activeDateTime'
+  | 'isActive'
+  | 'priority'
+  | 'qualityType'
+  | 'type'
+  | 'title'
+  | 'seriesId'
+  | 'episodeId'
+  | 'authorsSummary'
+  | 'embedUrl';
+type E = Pick<Translation, Fields>;
 
-type T = Pick<Translation, typeof fields[number]>;
 
 
 @Module({
-    dynamic: true,
-    namespaced: true,
-    name: 'translations',
-    store,
+  dynamic: true,
+  namespaced: true,
+  name: 'translations',
+  store,
 })
 
 export class TranslationsStore extends VuexModule {
-    public items: T[] = [];
+  public items: {
+    [key: number]: E,
+  } = {};
 
 
-    @Mutation
-    public set(translations: T[]) {
-        Vue.set(this, 'items', translations);
+
+  get getForEpisode() {
+    const map = new Map();
+    this.items; // Необходимо чтобы геттер пересчитывался при изменении this.items
+
+    return (episodeId: number) => {
+      if (map.has(episodeId)) {
+        return map.get(episodeId);
+      }
+
+      let translations = [];
+
+      for (const translationId in this.items) {
+        if (this.items[translationId].episodeId === episodeId) {
+          translations.push(this.items[translationId]);
+        }
+      }
+
+      if (translations.length) {
+        translations = translations.sort((t1, t2) => t1.priority - t2.priority);
+        map.set(episodeId, translations);
+      }
+
+      return translations;
+    };
+  }
+
+
+
+  @Mutation
+  public set(translation: E) {
+    Vue.set(this.items, translation.id, translation);
+  }
+
+
+
+  @Mutation
+  public remove(ids: number | number[]) {
+    if (!Array.isArray(ids)) {
+      ids = [ids];
     }
 
-    @Mutation
-    public push(translation: T | T[]) {
-        if (Array.isArray(translation)) {
-            this.items.push(...translation);
-        } else {
-            this.items.push(translation);
-        }
+    ids.forEach((id) => Vue.delete(this.items, id));
+  }
+
+
+
+  @Action
+  public async loadTranslations(episodeId: number) {
+
+
+    if (this.getForEpisode(episodeId).length) {
+      return;
     }
 
-    @Mutation
-    public remove(seriesOrEpisodeIds: number | number[]) {
-        const ids = Array.isArray(seriesOrEpisodeIds) ? seriesOrEpisodeIds : [seriesOrEpisodeIds];
+    const promise = anime365Client.getTranslationsCollection({episodeId}, [
+      'activeDateTime',
+      'isActive',
+      'priority',
+      'qualityType',
+      'type',
+      'title',
+      'seriesId',
+      'episodeId',
+      'authorsSummary',
+      'embedUrl',
+    ]);
 
-        Vue.set(this, 'items', this.items.filter(
-            (e) => !ids.includes(e.seriesId) && !ids.includes(e.episodeId),
-        ));
+    const translations = await promise;
+
+    if (translations.length) {
+      translations.forEach((t) => this.set(t));
     }
-
-    @Action
-    public async loadTranslationsForEpisodes(episodeIds: number | number[], force = false) {
-        if (!Array.isArray(episodeIds)) {
-            episodeIds = [episodeIds];
-        }
-
-        if (!force) {
-            episodeIds = episodeIds.filter((id) => !this.items.some((e) => e.episodeId === id));
-        }
-
-        if (!episodeIds.length) {
-            return;
-        }
-
-
-        const promise = anime365.get<Anime365Response<T[]>>('/translations', {
-            params: {
-                limit: 0,
-                feed: 'all',
-                fields: fields.join(','),
-                episodeId: episodeIds,
-            },
-        });
-
-        if (force) {
-            this.remove(episodeIds);
-        }
-
-        const {data: {data: translations}} = await promise;
-
-        if (translations.length) {
-            this.push(translations);
-        }
-    }
+  }
 
 }
 
+
+
 export const translationsStore = getModule(TranslationsStore);
+
+
+// TODO: DELETE AFTER DEBUG
+if (process.env.NODE_ENV !== 'production') {
+// @ts-ignore
+  window.transactionsStore = translationsStore;
+}
