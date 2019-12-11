@@ -1,6 +1,9 @@
 <template>
-  <v-app-bar app flat>
+  <v-app-bar app clipped-left clipped-right flat>
     <v-spacer></v-spacer>
+    <v-btn icon to="/">
+      <v-icon>mdi-history</v-icon>
+    </v-btn>
     <v-btn icon>
       <v-icon>mdi-bell</v-icon>
     </v-btn>
@@ -11,11 +14,11 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import {Component, Vue} from 'vue-property-decorator';
+
 
   @Component
   export default class AppHeader extends Vue {
-
 
 
   }

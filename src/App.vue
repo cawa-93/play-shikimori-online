@@ -1,29 +1,32 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+  <v-app id="app">
+    <app-header></app-header>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
+  </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+  import {Component, Vue} from 'vue-property-decorator';
+  import AppHeader from '@/components/AppHeader.vue';
+  import {shikimori} from '@/plugins/shikimori.axios.ts';
+  // import {episodesStore} from '@/store/modules/episodes';
+  // import {translationsStore} from '@/store/modules/translations';
+  // import {seriesStore} from '@/store/modules/series';
 
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+
+
+
+  @Component({
+    components: {AppHeader}
+  })
+  export default class App extends Vue {
+  }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  .cursor-wait {
+    cursor: wait;
+  }
 </style>
