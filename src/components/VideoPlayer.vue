@@ -1,5 +1,6 @@
 <template>
   <section>
+    {{selectedTranslation}}
     <video :src="streamUrl" autoplay controls v-if="streamUrl"/>
 
     <div class="stretchy-wrapper" v-else-if="loading">
@@ -66,6 +67,38 @@
       if (to) {
         document.title = to.split('/')[0];
       }
+    }
+
+
+
+    @Watch('selectedTranslation.id', {immediate: true})
+    setUp(to: string) {
+
+      if (!this.selectedTranslation) {
+        return;
+      }
+
+      // @ts-ignore
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: this.selectedTranslation.title,
+        artist: this.selectedTranslation.authorsSummary,
+        album: 'Whenever You Need Somebody',
+        artwork: [
+          {src: 'https://dummyimage.com/96x96', sizes: '96x96', type: 'image/png'},
+          {src: 'https://dummyimage.com/128x128', sizes: '128x128', type: 'image/png'},
+          {src: 'https://dummyimage.com/192x192', sizes: '192x192', type: 'image/png'},
+          {src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png'},
+          {src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png'},
+          {src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png'},
+        ]
+      });
+
+      navigator.mediaSession.setActionHandler('previoustrack', function() {
+        console.log('previoustrack — click');
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', function() {
+        console.log('nexttrack — click');
+      });
     }
 
 
