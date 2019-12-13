@@ -8,12 +8,12 @@ on:
       - v2.0.x
 # this is where the magic happens, each job happens in parallel btw
 jobs:
-  job_id:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
       matrix:
-        os: [macOS-latest, windows-latest, ubuntu-latest]
+        os: [macOS-latest, windows-latest]
     steps:
       - uses: actions/checkout@master
         with:
@@ -29,14 +29,8 @@ jobs:
       - name: Build on ${{ matrix.os }}
         run: npm run electron:build
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: true
+          name: ${{ matrix.os }}
+          path: dist_electron
 
