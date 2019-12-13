@@ -1,41 +1,38 @@
 <template>
   <v-card
     :class="{
-      'cursor-wait': !!loading
-    }"
+        'cursor-wait': !!loading
+      }"
+    :img="series.posterUrl"
     :to="route"
-    class="anime-item anime-poster" height="314" hover
+    class="anime-item anime-poster"
+    height="314"
+    v-if="!loading"
     width="225"
   >
-    <v-img
-      :aspect-ratio="225/314"
-      :lazy-src="series.posterUrlSmall"
-      :src="series.posterUrl"
-
-      d-flex
-      height="314"
-      v-if="!loading"
-    >
-      <v-container class="anime-title bottom-gradient" fluid>
-        <span class="white--text body-1">{{title}}</span>
-      </v-container>
-    </v-img>
+    <v-container class="anime-title bottom-gradient" fluid>
+      <span class="white--text body-1">{{title}}</span>
+    </v-container>
   </v-card>
 </template>
 
 <script lang="ts">
   import {seriesStore} from '@/store/modules/series';
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
   @Component
   export default class Anime extends Vue {
-    @Prop() public readonly series!: typeof seriesStore.items[number];
+    @Prop(Number) public readonly malId!: number;
+
+    loading = true;
 
 
 
-    get loading() {
-      return !this.series;
+    get series() {
+      const seriesId = seriesStore.malMap[this.malId];
+      return seriesStore.items[seriesId];
     }
 
 
@@ -63,12 +60,32 @@
       };
     }
 
+
+
+    async created() {
+      if (this.series) {
+        this.loading = false;
+        return;
+      }
+
+      if (!this.malId) {
+        return;
+      }
+
+      try {
+        const series = await anime365Client.getSeriesCollection({myAnimeListId: this.malId});
+        series.forEach((s) => seriesStore.set(s));
+      } finally {
+        this.loading = false;
+      }
+    }
+
   }
 </script>
 
 <style scoped>
-  .v-card.anime-item.anime-poster .v-responsive.v-image {
-    background-color: rgba(0, 0, 0, 0.12);
+  .v-card.anime-item.anime-poster {
+    overflow: hidden;
   }
 
   .v-card.anime-item.anime-poster .anime-title {
@@ -86,6 +103,5 @@
   .v-card.anime-item.anime-poster:focus .anime-title {
     transform: translate(0, 0);
   }
-
 
 </style>

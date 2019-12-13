@@ -28,4 +28,8 @@
   .cursor-wait {
     cursor: wait;
   }
+
+  .v-skeleton-loader__image {
+    height: 100% !important;
+  }
 </style>

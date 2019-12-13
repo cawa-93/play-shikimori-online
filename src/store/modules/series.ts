@@ -23,7 +23,7 @@ export class SeriesStore extends VuexModule {
   } = {};
 
   public malMap: {
-    [key: number]: number,
+    [key: number]: S['id'],
   } = {};
 
 

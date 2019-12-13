@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app clipped-left clipped-right flat>
+  <v-app-bar absolute app clipped-left clipped-right dense flat>
     <v-spacer></v-spacer>
     <v-btn icon to="/">
       <v-icon>mdi-history</v-icon>

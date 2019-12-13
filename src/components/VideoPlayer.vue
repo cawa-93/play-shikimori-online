@@ -1,7 +1,6 @@
 <template>
   <section>
-    {{selectedTranslation}}
-    <video :src="streamUrl" autoplay controls v-if="streamUrl"/>
+    <video :src="streamUrl" controls v-if="streamUrl"/>
 
     <div class="stretchy-wrapper" v-else-if="loading">
       <v-skeleton-loader class="video-loader" type="image"/>
@@ -128,7 +127,7 @@
 
   .stretchy-wrapper {
     width: 100%;
-    padding-bottom: 56.25%;
+    padding-bottom: calc(100% / (16 / 9)); /* Соотношение сторон 16:9 */
     position: relative;
 
   }
@@ -139,9 +138,5 @@
     bottom: 0;
     left: 0;
     right: 0;
-  }
-
-  .video-loader .v-skeleton-loader__image {
-    height: 100%;
   }
 </style>
