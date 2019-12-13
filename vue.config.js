@@ -22,7 +22,6 @@ module.exports = {
 
         linux: {
           target: [
-            {target: 'snap'},
             {target: 'apk'},
           ],
         },
