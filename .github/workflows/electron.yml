@@ -15,8 +15,8 @@ jobs:
       matrix:
         os: [macOS-latest]
     env:
-      ELECTRON_CACHE: '~/electron'
-      ELECTRON_BUILDER_CACHE: '~/electron-builder'
+      ELECTRON_CACHE: '~/.cache/electron'
+      ELECTRON_BUILDER_CACHE: '~/.cache/electron-builder'
 
     steps:
       - uses: actions/checkout@master
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/cache@v1
         id: electron-cache
         with:
-          path: '~/electron'
+          path: '~/.cache/electron'
           key: ${{ runner.os }}-electron
           restore-keys: |
             ${{ runner.os }}-electron
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/cache@v1
         id: electron-builder-cache
         with:
-          path: '~/electron-builder'
+          path: '~/.cache/electron-builder'
           key: ${{ runner.os }}-electron-builder
           restore-keys: |
             ${{ runner.os }}-electron-builder
