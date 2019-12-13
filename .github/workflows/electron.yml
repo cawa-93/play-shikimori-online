@@ -37,6 +37,7 @@ jobs:
       - name: Build on Windows
         run: npm run electron:build
   release:
+    runs-on: macOS-latest
     needs: [build_on_mac, build_on_win]
     steps:
       - name: Checkout code
