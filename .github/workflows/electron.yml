@@ -24,18 +24,14 @@ jobs:
           node-version: 12.13
 
 
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
       - uses: actions/cache@v1
-        if: matrix.os == 'windows-latest'
+        id: cache
         with:
-          path: ~\AppData\Roaming\npm-cache
-          key: ${{ runner.os }}-node-${{ hashFiles('**\package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - uses: actions/cache@v1
-        if: matrix.os == 'macOS-latest'
-        with:
-          path: ~/.npm
+          path: ${{ steps.npm-cache.outputs.dir }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -46,6 +42,7 @@ jobs:
         run: npm install --global --production windows-build-tools@4.0.0
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
 
       - name: Build on ${{ matrix.os }}
