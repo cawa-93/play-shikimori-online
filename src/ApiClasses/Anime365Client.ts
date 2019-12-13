@@ -19,6 +19,22 @@ class Anime365Client extends ApiClass {
 
 
     /**
+     * Добавляет anime365 access_token в режиме разработки
+     */
+    if (process.env.VUE_APP_ANIME365_ACCESS_TOKEN) {
+      this.client.interceptors.request.use((config) => {
+        if (!config.params) {
+          config.params = {};
+        }
+
+        config.params.access_token = process.env.VUE_APP_ANIME365_ACCESS_TOKEN;
+
+        return config;
+      });
+    }
+
+
+    /**
      * Форматирование параметра fields
      */
     this.client.interceptors.request.use((config) => {
