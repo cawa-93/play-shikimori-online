@@ -1,5 +1,13 @@
 {
-  "name": "play-shikimori-app",
+  "name": "anime-center",
+  "description": "Ваш аниме-центр",
+  "author": {
+    "name": "Alex Kozack",
+    "email": "kozackunisoft@gmail.com",
+    "url": "https://t.me/kozack"
+  },
+  "homepage": "https://t.me/playshikionline",
+  "repository": "github:cawa-93/play-shikimori-online",
   "version": "0.1.0",
   "private": true,
   "scripts": {

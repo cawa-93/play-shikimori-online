@@ -1,5 +1,13 @@
 module.exports = {
-  "transpileDependencies": [
-    "vuetify"
-  ]
-}
+  'transpileDependencies': [
+    'vuetify',
+  ],
+
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        productName: 'Аниме Центр',
+      },
+    },
+  },
+};
