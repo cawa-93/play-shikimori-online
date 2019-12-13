@@ -8,6 +8,22 @@ module.exports = {
       builderOptions: {
         productName: 'Аниме Центр',
 
+        win: {
+          target: [
+            {
+              target: 'nsis',
+              arch: [
+                'x64',
+                'ia32',
+              ],
+            },
+          ],
+        },
+
+        nsis: {
+          deleteAppDataOnUninstall: true,
+        },
+
         mac: {
           target: 'dmg',
           darkModeSupport: true,
@@ -21,8 +37,10 @@ module.exports = {
         },
 
         linux: {
+          category: 'Video',
           target: [
-            {target: 'apk'},
+            {target: 'AppImage'},
+            {target: 'apk', arch: ['arm64', 'armv7l', 'ia32', 'x64']},
           ],
         },
       },
