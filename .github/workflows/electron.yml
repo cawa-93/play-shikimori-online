@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 12.13
       - name: install node tools
-        if: ${{ matrix.os }} == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         run: npm install --global --production windows-build-tools@4.0.0
       - name: Install dependencies
         run: npm install
