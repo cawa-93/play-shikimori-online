@@ -30,11 +30,26 @@ function createWindow() {
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
+
+
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+    // win.loadURL('https://smotret-anime.online/api/translations/embed/2378923');
     if (!process.env.IS_TEST) {
       win.webContents.openDevTools();
     }
+
+    if (isDevelopment) {
+      console.warn('Network Throttling is Enabled');
+      win.webContents.session.enableNetworkEmulation({
+        offline: true,
+        latency: 6400,
+        downloadThroughput: 1,
+        uploadThroughput: 1,
+      });
+    }
+
+
   } else {
     createProtocol('app');
     // Load the index.html when not in development
