@@ -38,10 +38,6 @@ module.exports = {
 
         linux: {
           category: 'Video',
-          target: [
-            {target: 'AppImage'},
-            {target: 'apk', arch: ['arm64', 'armv7l', 'ia32', 'x64']},
-          ],
         },
       },
     },
