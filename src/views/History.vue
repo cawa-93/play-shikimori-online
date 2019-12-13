@@ -1,14 +1,11 @@
 <template>
   <div role="feed">
-    <anime-slider :ids="[38691,39468,20899,37105,37924,35015,30240,3702,14719,34612,33255,37141,28891,31240,28977,11061,37521,32935,34933,39198,38000,36882,38524]"
-                  title="История просмотров"></anime-slider>
-    <anime-slider :ids="ids" title="Популярно в текущем сезоне" v-if="ids.length"></anime-slider>
+    <anime-slider :ids="[39468,20899,37105,37924,35015,30240,3702,14719,34612,38000]" title="История просмотров"/>
+    <anime-slider :ids="ids" title="Популярно в текущем сезоне" v-if="ids.length"/>
   </div>
 </template>
 
 <script lang="ts">
-
-
   import {Component, Vue} from 'vue-property-decorator';
   import AnimeSlider from '@/components/AnimeSlider.vue';
   import {shikimori} from '@/plugins/shikimori.axios';
@@ -24,27 +21,30 @@
     params: {
       limit: 20,
       order: 'popularity',
-      season: `${season}_${year}`
-    }
+      season: `${season}_${year}`,
+    },
   });
 
 
   @Component({
     components: {
-      AnimeSlider
-    }
+      AnimeSlider,
+    },
   })
   export default class History extends Vue {
 
-    ids: number[] = [];
-    season = season;
+    public ids: number[] = [];
+    public season = season;
 
 
 
-    async created() {
+    public async created() {
       const {data} = await animesPromise;
       this.ids = data.map((a: any) => a.id);
+      document.title = 'Медиа центр';
     }
+
+
 
   }
 </script>

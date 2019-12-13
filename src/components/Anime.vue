@@ -24,14 +24,13 @@
 </template>
 
 <script lang="ts">
-
   import {seriesStore} from '@/store/modules/series';
   import {Component, Prop, Vue} from 'vue-property-decorator';
 
 
   @Component
   export default class Anime extends Vue {
-    @Prop() readonly series!: typeof seriesStore.items[number];
+    @Prop() public readonly series!: typeof seriesStore.items[number];
 
 
 
@@ -59,8 +58,8 @@
       return {
         name: 'player',
         params: {
-          seriesId: this.series.id
-        }
+          seriesId: this.series.id,
+        },
       };
     }
 

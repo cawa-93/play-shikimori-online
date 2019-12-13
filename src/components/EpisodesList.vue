@@ -32,8 +32,8 @@
 
   @Component
   export default class EpisodesList extends Vue {
-    drawer = null;
-    loading = true;
+    public drawer = null;
+    public loading = true;
 
 
 
@@ -44,7 +44,7 @@
 
 
 
-    async created() {
+    public async created() {
       if (this.episodes.length) {
         this.loading = false;
         return;

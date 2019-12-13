@@ -3,7 +3,7 @@ import Vue, {VNode} from 'vue';
 
 declare global {
   interface Navigator {
-    mediaSession: any
+    mediaSession: any;
   }
 
 

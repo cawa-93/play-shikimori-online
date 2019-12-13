@@ -29,8 +29,8 @@
 
   @Component
   export default class VideoPlayer extends Vue {
-    embed: Embed | null = null;
-    loading = true;
+    public embed: Embed | null = null;
+    public loading = true;
 
 
 
@@ -63,7 +63,7 @@
 
 
     @Watch('selectedTranslation.title')
-    onTitleChange(to: string) {
+    public onTitleChange(to: string) {
       if (to) {
         document.title = to.split('/')[0];
       }
@@ -72,7 +72,7 @@
 
 
     @Watch('selectedTranslation.id', {immediate: true})
-    setUp(to: string) {
+    public setUp(to: string) {
 
       if (!this.selectedTranslation) {
         return;
@@ -90,7 +90,7 @@
           {src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png'},
           {src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png'},
           {src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png'},
-        ]
+        ],
       });
 
       navigator.mediaSession.setActionHandler('previoustrack', function() {
@@ -104,14 +104,14 @@
 
 
     @Watch('selectedTranslation.id', {immediate: true})
-    onIdChange(to: string) {
+    public onIdChange(to: string) {
       if (to) {
         this.loading = true;
         this.embed = null;
 
         anime365Client.request({
           method: 'get',
-          url: '/translations/embed/' + to
+          url: '/translations/embed/' + to,
         })
           .then(({data: {data}}) => this.embed = data)
           .catch(console.error)

@@ -21,20 +21,20 @@
 
 
   @Component({
-    components: {Anime}
+    components: {Anime},
   })
   export default class extends Vue {
-    @Prop(String) readonly title!: string;
-    @Prop(Array) readonly ids!: number[];
+    @Prop(String) public readonly title!: string;
+    @Prop(Array) public readonly ids!: number[];
 
-    loading = true;
+    public loading = true;
 
 
 
     get series() {
-      const series: (typeof seriesStore.items[number])[] = [];
+      const series: Array<typeof seriesStore.items[number]> = [];
 
-      this.ids.forEach(id => {
+      this.ids.forEach((id) => {
         if (seriesStore.malMap[id] && seriesStore.items[seriesStore.malMap[id]]) {
           series.push(seriesStore.items[seriesStore.malMap[id]]);
         }
@@ -45,19 +45,16 @@
 
 
 
-    async created() {
+    public async created() {
       try {
 
-        const ids = this.ids.filter(id => !seriesStore.malMap[id]);
-
+        const ids = this.ids.filter((id) => !seriesStore.malMap[id]);
 
         const series = await anime365Client.getSeriesCollection({
           myAnimeListId: ids,
         });
 
-        series.forEach(s => seriesStore.set(s));
-      } catch (e) {
-
+        series.forEach((s) => seriesStore.set(s));
       } finally {
         this.loading = false;
       }

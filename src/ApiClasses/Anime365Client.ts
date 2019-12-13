@@ -3,7 +3,7 @@ import {
   Anime365Response,
   Episode as EpisodeFull,
   Series as SeriesFull,
-  Translation as TranslationFull
+  Translation as TranslationFull,
 } from '@/types/anime365';
 import {ApiClass} from '@/ApiClasses/ApiClass';
 

@@ -1,7 +1,7 @@
 import axios, {AxiosInstance, AxiosPromise, AxiosRequestConfig} from 'axios';
 import axiosRetry from 'axios-retry';
 //
-export type requestConfig = AxiosRequestConfig & { args?: { [p: string]: any } }
+export type requestConfig = AxiosRequestConfig & { args?: { [p: string]: any } };
 //
 // declare interface Endpoint {
 //   method: AxiosRequestConfig['method'];

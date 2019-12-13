@@ -42,8 +42,8 @@
 
   @Component
   export default class TranslationsList extends Vue {
-    drawer = null;
-    loading = true;
+    public drawer = null;
+    public loading = true;
 
 
 
@@ -54,7 +54,7 @@
 
 
 
-    async created() {
+    public async created() {
       if (this.translations.length) {
         this.loading = false;
         return;

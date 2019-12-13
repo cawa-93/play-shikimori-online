@@ -53,7 +53,7 @@ export class SeriesStore extends VuexModule {
         'titles',
         'url',
         'type',
-      ]
+      ],
     });
 
     if (s) {
