@@ -21,6 +21,7 @@ function createWindow() {
     height: 600,
     backgroundColor: '#fafafa',
     // titleBarStyle: 'hiddenInset',
+    title: 'Медиа центр',
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,

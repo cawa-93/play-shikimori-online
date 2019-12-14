@@ -14,6 +14,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "test": "mocha ./test/**/*.spec.js",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve --remote-debugging-port=9222 --inspect=9223",
     "postinstall": "electron-builder install-app-deps",
@@ -37,9 +38,10 @@
     "@vue/cli-plugin-typescript": "^4.1.1",
     "@vue/cli-service": "^4.1.1",
     "electron": "^7.1.5",
-    "lint-staged": "^9.5.0",
+    "mocha": "^6.2.2",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
+    "spectron": "^9.0.0",
     "typescript": "^3.7.3",
     "vue-cli-plugin-electron-builder": "^1.4.3",
     "vue-cli-plugin-vuetify": "^2.0.2",
@@ -53,18 +55,5 @@
   },
   "browserslist": [
     "Electron 7.0.1"
-  ],
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
-  }
+  ]
 }

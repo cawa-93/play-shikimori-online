@@ -2,8 +2,8 @@
 name: Compile app
 # this will help you specify where to run
 on:
-  push:
-    branches:
+  release:
+    created:
       # this will run on the electron branch
       - v2.0.x
 # this is where the magic happens, each job happens in parallel btw
@@ -29,6 +29,7 @@ jobs:
         id: npm-cache-setup
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
+
       - uses: actions/cache@v1
         id: npm-cache
         with:
@@ -40,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build on ${{ matrix.os }}
+      - name: Build on ${{ runner.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run electron:build -- --publish always
