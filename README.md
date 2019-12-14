@@ -1,4 +1,4 @@
-# anime-util
+# Аниме центр
 
 ## Project setup
 ```
