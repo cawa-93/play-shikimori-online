@@ -52,7 +52,7 @@
   })
   export default class History extends Vue {
 
-    public groups: ({ title: string, ids: number[] })[] = [];
+    public groups: Array<{ title: string, ids: number[] }> = [];
 
 
 
@@ -82,21 +82,19 @@
 
       document.title = 'Медиа центр';
 
-      let user_id;
+      let userId;
       if (process.env.NODE_ENV === 'development') {
-        user_id = 143570;
-      } else {
-
+        userId = 143570;
       }
 
-      if (user_id) {
+      if (userId) {
 
         let {data: rates} = await shikimori.get('/v2/user_rates', {
           params: {
-            user_id,
+            user_id: userId,
             target_type: 'Anime',
-            status: 'watching,planned,rewatching'
-          }
+            status: 'watching,planned,rewatching',
+          },
         });
 
         if (Array.isArray(rates) && rates.length) {
@@ -107,7 +105,7 @@
           const watching = [];
           const planned = [];
 
-          for (let rate of rates) {
+          for (const rate of rates) {
             if (watching.length <= 11 && rate.status === 'watching' || rate.status === 'rewatching') {
               watching.push(rate.target_id);
             } else if (planned.length <= 11 && rate.status === 'planned') {
@@ -167,7 +165,7 @@
 
       this.groups.push({
         title: `Популярно в ${rusSeasonName} сезоне ${year}`,
-        ids
+        ids,
       });
     }
 

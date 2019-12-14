@@ -26,7 +26,7 @@
   export default class Anime extends Vue {
     @Prop(Number) public readonly malId!: number;
 
-    loading = true;
+    public loading = true;
 
 
 
@@ -62,7 +62,7 @@
 
 
 
-    async created() {
+    public async created() {
       if (this.series) {
         this.loading = false;
         return;

@@ -1,6 +1,8 @@
 <template>
   <section>
+    {{episodeMap}}
     <video :src="streamUrl" controls v-if="streamUrl"/>
+
 
     <div class="stretchy-wrapper" v-else-if="loading">
       <v-skeleton-loader class="video-loader" type="image"/>
@@ -24,6 +26,7 @@
   import {translationsStore} from '@/store/modules/translations';
   import {anime365Client} from '@/ApiClasses/Anime365Client';
   import {Embed} from '@/types/anime365';
+  import {episodesStore} from '@/store/modules/episodes';
 
 
   @Component
@@ -33,11 +36,102 @@
 
 
 
+    get episodeMap() {
+      const map
+        : {
+        startEpisode: number,
+        selectedEpisode: number,
+        previousEpisode: number,
+        nextEpisode: number,
+      }
+        = {
+        startEpisode: 0,
+        selectedEpisode: 0,
+        previousEpisode: 0,
+        nextEpisode: 0,
+      };
+
+      if (this.$route.params && this.$route.params.seriesId) {
+
+        const episodes = episodesStore.getForSeries(Number.parseInt(this.$route.params.seriesId, 10));
+
+        if (!episodes.length) {
+          return map;
+        }
+
+        let minimalEpisodeInt = Number.parseFloat(episodes[0].episodeInt);
+        episodes.forEach((episode) => {
+          const episodeInt = Number.parseFloat(episode.episodeInt);
+
+
+          // Стартовая серия
+          if (episodeInt <= minimalEpisodeInt) {
+            minimalEpisodeInt = episodeInt;
+            map.startEpisode = episode.id;
+          }
+
+          // Текущая серия
+          if (this.$route.params && this.$route.params.episodeId) {
+            const episodeId = Number.parseInt(this.$route.params.episodeId, 10);
+            if (episodeId === episode.id) {
+              map.selectedEpisode = episode.id;
+            }
+          }
+        });
+
+
+        if (map.selectedEpisode) {
+          // const selectedEpisodeInt = Number.parseFloat(this.items[map.selectedEpisode].episodeInt)
+          const selectedEpisode = episodesStore.items[map.selectedEpisode];
+          let previousEpisode: any;
+          let nextEpisode: any;
+
+          episodes.forEach((episode) => {
+
+            // Следующая серия
+            if (
+              Number.parseFloat(episode.episodeInt) > Number.parseFloat(selectedEpisode.episodeInt)
+              && (
+                !nextEpisode
+                || Number.parseFloat(episode.episodeInt) < Number.parseFloat(nextEpisode.episodeInt)
+              )
+            ) {
+              nextEpisode = episode;
+            }
+
+            // Предыдущая серия
+            if (
+              Number.parseFloat(episode.episodeInt) < Number.parseFloat(selectedEpisode.episodeInt)
+              && (
+                !previousEpisode
+                || Number.parseFloat(episode.episodeInt) > Number.parseFloat(previousEpisode.episodeInt)
+              )
+            ) {
+              previousEpisode = episode;
+            }
+          });
+
+          if (nextEpisode) {
+            map.nextEpisode = nextEpisode.id;
+          }
+
+          if (previousEpisode) {
+            map.previousEpisode = previousEpisode.id;
+          }
+        }
+      }
+
+      return map;
+
+    }
+
+
+
     get selectedTranslation() {
       if (!this.$route.params.translationId) {
         return;
       }
-      return translationsStore.items[Number.parseInt(this.$route.params.translationId)];
+      return translationsStore.items[Number.parseInt(this.$route.params.translationId, 10)];
     }
 
 
@@ -92,11 +186,11 @@
         ],
       });
 
-      navigator.mediaSession.setActionHandler('previoustrack', function() {
-        console.log('previoustrack — click');
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        // console.log('previoustrack — click');
       });
-      navigator.mediaSession.setActionHandler('nexttrack', function() {
-        console.log('nexttrack — click');
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        // console.log('nexttrack — click');
       });
     }
 

@@ -37,6 +37,8 @@ export class TranslationsStore extends VuexModule {
 
   get getForEpisode() {
     const map = new Map();
+
+    // tslint:disable-next-line:no-unused-expression
     this.items; // Необходимо чтобы геттер пересчитывался при изменении this.items
 
     return (episodeId: number) => {

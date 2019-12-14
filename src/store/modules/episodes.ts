@@ -4,6 +4,7 @@ import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decor
 import {Episode} from '@/types/anime365';
 import {anime365Client} from '@/ApiClasses/Anime365Client';
 import {seriesStore} from '@/store/modules/series';
+import router from '@/router';
 
 
 type Fields = 'id' | 'episodeInt' | 'episodeType' | 'seriesId';
@@ -25,16 +26,18 @@ export class EpisodesStore extends VuexModule {
 
 
 
-  get getForSeries() {
-    const map = new Map();
+  get getForSeries(): (seriesId: number) => E[] {
+    const map = new Map<number, E[]>();
+
+    // tslint:disable-next-line:no-unused-expression
     this.items; // Необходимо чтобы геттер пересчитывался при изменении this.items
 
     return (seriesId: number) => {
       if (map.has(seriesId)) {
-        return map.get(seriesId);
+        return map.get(seriesId)!;
       }
 
-      let episodes = [];
+      let episodes: E[] = [];
 
       for (const episodeId in this.items) {
         if (this.items[episodeId].seriesId === seriesId) {
@@ -51,6 +54,97 @@ export class EpisodesStore extends VuexModule {
 
       return episodes;
     };
+  }
+
+
+
+  get episodeMap() {
+    const map
+      : {
+      startEpisode: E['id'],
+      selectedEpisode: E['id'],
+      previousEpisode: E['id'],
+      nextEpisode: E['id'],
+    }
+      = {
+      startEpisode: 0,
+      selectedEpisode: 0,
+      previousEpisode: 0,
+      nextEpisode: 0,
+    };
+
+    if (router.currentRoute.params && router.currentRoute.params.seriesId) {
+
+      const episodes = this.getForSeries(Number.parseInt(router.currentRoute.params.seriesId, 10));
+
+      if (!episodes.length) {
+        return map;
+      }
+
+      let minimalEpisodeInt = Number.parseFloat(episodes[0].episodeInt);
+      episodes.forEach((episode) => {
+        const episodeInt = Number.parseFloat(episode.episodeInt);
+
+
+        // Стартовая серия
+        if (episodeInt <= minimalEpisodeInt) {
+          minimalEpisodeInt = episodeInt;
+          map.startEpisode = episode.id;
+        }
+
+        // Текущая серия
+        if (router.currentRoute.params && router.currentRoute.params.episodeId) {
+          const episodeId = Number.parseInt(router.currentRoute.params.episodeId, 10);
+          if (episodeId === episode.id) {
+            map.selectedEpisode = episode.id;
+          }
+        }
+      });
+
+
+      if (map.selectedEpisode) {
+        // const selectedEpisodeInt = Number.parseFloat(this.items[map.selectedEpisode].episodeInt)
+        const selectedEpisode = this.items[map.selectedEpisode];
+        let previousEpisode: E | undefined;
+        let nextEpisode: E | undefined;
+
+        episodes.forEach((episode) => {
+
+          // Следующая серия
+          if (
+            Number.parseFloat(episode.episodeInt) > Number.parseFloat(selectedEpisode.episodeInt)
+            && (
+              !nextEpisode
+              || Number.parseFloat(episode.episodeInt) < Number.parseFloat(nextEpisode.episodeInt)
+            )
+          ) {
+            nextEpisode = episode;
+          }
+
+          // Предыдущая серия
+          if (
+            Number.parseFloat(episode.episodeInt) < Number.parseFloat(selectedEpisode.episodeInt)
+            && (
+              !previousEpisode
+              || Number.parseFloat(episode.episodeInt) > Number.parseFloat(previousEpisode.episodeInt)
+            )
+          ) {
+            previousEpisode = episode;
+          }
+        });
+
+        if (nextEpisode) {
+          map.nextEpisode = nextEpisode.id;
+        }
+
+        if (previousEpisode) {
+          map.previousEpisode = previousEpisode.id;
+        }
+      }
+    }
+
+    return map;
+
   }
 
 
