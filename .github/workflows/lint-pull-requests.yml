@@ -76,13 +76,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build on ${{ runner.os }}
+      - name: Build on ${{ matrix.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run electron:build
 
-      - name: Test on ${{ runner.os }}
+      - name: Test on ${{ matrix.os }}
         env:
-          OS: ${{ runner.os }}
+          OS: ${{ matrix.os }}
         run: npm test
 

@@ -3,7 +3,7 @@ const assert = require('assert');
 const path = require('path');
 
 const appPath =
-          process.OS === 'Windows' ? 'dist_electron\\Аниме Центр Setup 0.1.0.exe' :
+          process.env.OS === 'windows-latest' ? 'dist_electron\\Аниме Центр Setup 0.1.0.exe' :
           'dist_electron/mac/Аниме Центр.app/Contents/MacOS/Аниме Центр';
 
 describe('Application launch', function() {
