@@ -95,8 +95,10 @@
       navigator.mediaSession.setActionHandler('previoustrack', function() {
         console.log('previoustrack — click');
       });
+      
+      
       navigator.mediaSession.setActionHandler('nexttrack', function() {
-        console.log('nexttrack — click');
+        console.log('nexttrack — click')
       });
     }
 
