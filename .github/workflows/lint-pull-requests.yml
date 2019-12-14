@@ -81,6 +81,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run electron:build
 
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist_electron
+
       - name: Test on ${{ matrix.os }}
         env:
           OS: ${{ matrix.os }}
