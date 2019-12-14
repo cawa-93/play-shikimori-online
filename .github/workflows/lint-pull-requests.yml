@@ -46,6 +46,7 @@ jobs:
     name: Build and test
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       max-parallel: 3
       matrix:
         os: [macOS-latest, windows-latest]
@@ -81,7 +82,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run electron:build
 
-      - uses: actions/upload-artifact@v1
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v1
         with:
           name: ${{ matrix.os }}-build
           path: dist_electron

@@ -27,7 +27,6 @@
   import {anime365Client} from '@/ApiClasses/Anime365Client';
   import {Embed} from '@/types/anime365';
   import {episodesStore} from '@/store/modules/episodes';
-  import {MediaMetadata} from '@/types/shims-tsx.d.ts';
 
 
   @Component
@@ -172,6 +171,7 @@
         return;
       }
 
+      // @ts-ignore
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.selectedTranslation.title,
         artist: this.selectedTranslation.authorsSummary,

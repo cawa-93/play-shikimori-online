@@ -2,12 +2,6 @@ import Vue, {VNode} from 'vue';
 
 
 
-declare class MediaMetadata {
-  constructor(arg: any);
-}
-
-
-
 declare global {
   interface Navigator {
     mediaSession: any;
