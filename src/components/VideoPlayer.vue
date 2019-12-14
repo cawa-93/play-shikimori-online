@@ -99,6 +99,17 @@
       
       navigator.mediaSession.setActionHandler('nexttrack', function() {
         console.log('nexttrack — click')
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
       });
     }
 
