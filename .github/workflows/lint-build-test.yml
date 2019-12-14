@@ -5,9 +5,17 @@ on:
   push:
     branches:
       - v2.0.x
+    paths-ignore:
+      - '.github/**'
+      - '**/*.md'
+      - '**/*.txt'
   pull_request:
     branches:
       - v2.0.x
+    paths-ignore:
+      - '.github/**'
+      - '**/*.md'
+      - '**/*.txt'
 # this is where the magic happens, each job happens in parallel btw
 jobs:
   lint:
