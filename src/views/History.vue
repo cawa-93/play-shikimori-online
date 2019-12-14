@@ -6,7 +6,11 @@
 
         <template v-for="group in groups">
           <h2 class="mt-3">{{group.title}}</h2>
-          <anime :key="group.title+malId" :malId="malId" v-for="malId in group.ids"/>
+          <anime :key="group.title+malId" :malId="malId" v-for="malId in group.ids" v-if="malMap[malId]"/>
+          <v-skeleton-loader height="314"
+                             type="image"
+                             v-else
+                             width="225"/>
         </template>
       </template>
       <template v-else>
@@ -38,13 +42,6 @@
   const m = now.getMonth();
   const season = m <= 1 ? 'winter' : m <= 4 ? 'spring' : m <= 7 ? 'summer' : m <= 10 ? 'fall' : 'winter';
 
-  const animesPromise = shikimori.get('/animes', {
-    params: {
-      limit: 12,
-      order: 'popularity',
-      season: `${season}_${year}`,
-    },
-  });
 
 
   @Component({
@@ -56,12 +53,17 @@
   export default class History extends Vue {
 
     public groups: ({ title: string, ids: number[] })[] = [];
-    public season = season;
+
+
+
+    get malMap() {
+      return seriesStore.malMap;
+    }
 
 
 
     public async loadSeries(ids: number[]) {
-      const needLoad = ids.filter((id: number) => !seriesStore.malMap[id]);
+      const needLoad = ids.filter((id: number) => !this.malMap[id]);
 
       if (!needLoad.length) {
         return;
@@ -80,37 +82,67 @@
 
       document.title = 'Медиа центр';
 
+      let user_id;
+      if (process.env.NODE_ENV === 'development') {
+        user_id = 143570;
+      } else {
 
+      }
 
+      if (user_id) {
 
-      shikimori.get('/v2/user_rates', {
-        params: {
-          user_id: 143570,
-          target_type: 'Anime',
-          status: 'watching'
-        }
-      })
-        // .then(({data}: {data: any[]}) => data.map(i => i.id))
-        .then(async ({data}: { data: any[] }) => {
-          const ids =
-            data
-              .sort((rate1, rate2) => {
-                return new Date(rate2.updated_at).getTime() - new Date(rate1.updated_at).getTime();
-              })
-              .splice(0, 12)
-              .map(rate => rate.target_id);
-
-          await this.loadSeries(ids);
-          return ids;
-        })
-        .then((ids) => {
-          this.groups.push({
-            title: `Смотрите сейчас`,
-            ids
-          });
+        let {data: rates} = await shikimori.get('/v2/user_rates', {
+          params: {
+            user_id,
+            target_type: 'Anime',
+            status: 'watching,planned,rewatching'
+          }
         });
 
-      const {data} = await animesPromise;
+        if (Array.isArray(rates) && rates.length) {
+          rates = rates.sort((rate1, rate2) => {
+            return new Date(rate2.updated_at).getTime() - new Date(rate1.updated_at).getTime();
+          });
+
+          const watching = [];
+          const planned = [];
+
+          for (let rate of rates) {
+            if (watching.length <= 11 && rate.status === 'watching' || rate.status === 'rewatching') {
+              watching.push(rate.target_id);
+            } else if (planned.length <= 11 && rate.status === 'planned') {
+              planned.push(rate.target_id);
+            }
+
+            if (watching.length > 11 && planned.length > 11) {
+              break;
+            }
+          }
+
+          await this.loadSeries([...watching, ...planned]);
+
+          this.groups.push({
+            title: 'Недавно смотрели',
+            ids: watching,
+          });
+
+          this.groups.push({
+            title: 'Запланировано',
+            ids: planned,
+          });
+        }
+
+      }
+
+
+      const {data} = await shikimori.get('/animes', {
+        params: {
+          limit: 12,
+          order: 'popularity',
+          season: `${season}_${year}`,
+        },
+      });
+
       const ids = data.map((item: any) => item.id);
 
       await this.loadSeries(ids);
@@ -129,6 +161,8 @@
         case 'summer':
           rusSeasonName = 'летнем';
           break;
+        default :
+          rusSeasonName = 'текущем';
       }
 
       this.groups.push({
