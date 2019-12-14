@@ -27,7 +27,7 @@
   import {anime365Client} from '@/ApiClasses/Anime365Client';
   import {Embed} from '@/types/anime365';
   import {episodesStore} from '@/store/modules/episodes';
-  import {MediaMetadata} from '@/types/shims-tsx';
+  import {MediaMetadata} from '@/types/shims-tsx.d.ts';
 
 
   @Component
