@@ -62,7 +62,7 @@
 
 
     @Watch('selectedTranslation.title')
-    public onTitleChange(to: string) {
+    __public onTitleChange(to: string) {
       if (to) {
         document.title = to.split('/')[0];
       }
