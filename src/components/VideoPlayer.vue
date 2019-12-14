@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-sfdf
+sfdf f
 asd
   import {Component, Vue, Watch} from 'vue-property-decorator';
   import {translationsStore} from '@/store/modules/translations';
