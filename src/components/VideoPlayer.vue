@@ -79,7 +79,7 @@ asd
         return;
       }
 
-      // @ts-ignore
+
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.selectedTranslation.title,
         artist: this.selectedTranslation.authorsSummary,
