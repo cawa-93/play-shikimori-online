@@ -20,9 +20,6 @@
 </template>
 
 <script lang="ts"> 
-sfdf f
-asd 
-
   import {Component, Vue, Watch} from 'vue-property-decorator';
   import {translationsStore} from '@/store/modules/translations';
   import {anime365Client} from '@/ApiClasses/Anime365Client';
