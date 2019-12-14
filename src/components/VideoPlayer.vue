@@ -92,7 +92,7 @@
         ],
       });
 
-      navigator.mediaSession.setActionHandler('previoustrack', function() {
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
         console.log('previoustrack — click');
       });
       
