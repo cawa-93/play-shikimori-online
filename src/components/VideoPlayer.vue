@@ -19,7 +19,7 @@
   </section>
 </template>
 
-<script lang="ts">
+<script lang="ts"> 
 sfdf f
 asd
   import {Component, Vue, Watch} from 'vue-property-decorator';
