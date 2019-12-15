@@ -5,7 +5,16 @@ import {Series} from '@/types/anime365';
 import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
-type Fields = 'id' | 'myAnimeListId' | 'numberOfEpisodes' | 'posterUrl' | 'posterUrlSmall' | 'titles' | 'url' | 'type';
+type Fields =
+  'id'
+  | 'myAnimeListId'
+  | 'numberOfEpisodes'
+  | 'posterUrl'
+  | 'posterUrlSmall'
+  | 'titles'
+  | 'url'
+  | 'type'
+  | 'isActive';
 type S = Pick<Series, Fields>;
 
 
@@ -44,16 +53,18 @@ export class SeriesStore extends VuexModule {
     }
 
 
-    // @ts-ignore
-    const s = await anime365Client.getSeriesSingle<Fields>(id, {
-      fields: [
-        'numberOfEpisodes',
-        'posterUrl',
-        'posterUrlSmall',
-        'titles',
-        'url',
-        'type',
-      ],
+    const fields: Fields[] = [
+      'numberOfEpisodes',
+      'posterUrl',
+      'posterUrlSmall',
+      'titles',
+      'url',
+      'type',
+      'myAnimeListId',
+    ];
+
+    const s = await anime365Client.getSeriesSingle(id, {
+      fields,
     });
 
     if (s) {
@@ -66,23 +77,80 @@ export class SeriesStore extends VuexModule {
 
 
 
-  // @Action
-  // public async requestSeries(myAnimeListIds: number[]) {
-  //   const {data: {data: series}} = await anime365
-  //     .get<Anime365Response<S[]>>(
-  //       '/series',
-  //       {
-  //         params: {
-  //           fields: fields.join(','),
-  //           myAnimeListId: myAnimeListIds,
-  //         },
-  //       });
-  //
-  //   return series;
-  // }
+  @Action
+  public async search(params: Partial<Record<keyof Series, any>>) {
+    const copyParams: Partial<Record<keyof Series, any>> = JSON.parse(JSON.stringify(params));
+    if (
+      copyParams.id
+      && !Array.isArray(copyParams.id)
+      && this.items[copyParams.id]
+    ) {
+      return;
+    }
+
+    if (
+      copyParams.id
+      && Array.isArray(copyParams.id)
+    ) {
+      copyParams.id = copyParams.id.filter((id: number) => !this.items[id]);
+
+      if (!copyParams.id.length) {
+        return;
+      }
+    }
+
+    if (
+      copyParams.myAnimeListId
+      && !Array.isArray(copyParams.myAnimeListId)
+      && this.malMap[copyParams.myAnimeListId]
+    ) {
+      return;
+    }
+
+    if (
+      copyParams.myAnimeListId
+      && Array.isArray(copyParams.myAnimeListId)
+    ) {
+      copyParams.myAnimeListId
+        = copyParams.myAnimeListId
+        .filter((myAnimeListId: number) => !this.malMap[myAnimeListId]);
+
+      if (!copyParams.myAnimeListId.length) {
+        return;
+      }
+    }
+
+    if (copyParams.isActive === undefined) {
+      copyParams.isActive = 1;
+    }
+
+    const fields: Fields[] = [
+      'numberOfEpisodes',
+      'posterUrl',
+      'posterUrlSmall',
+      'titles',
+      'url',
+      'type',
+      'myAnimeListId',
+      'isActive',
+    ];
+
+    const series = await anime365Client.getSeriesCollection(copyParams, fields);
+
+    series.forEach((s) => this.set(s));
+
+    return series;
+  }
 
 }
 
 
 
 export const seriesStore = getModule(SeriesStore);
+
+
+// TODO: DELETE AFTER DEBUG
+if (process.env.NODE_ENV !== 'production') {
+// @ts-ignore
+  window.seriesStore = seriesStore;
+}

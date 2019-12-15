@@ -91,7 +91,10 @@ export class TranslationsStore extends VuexModule {
       return;
     }
 
-    const promise = anime365Client.getTranslationsCollection({episodeId}, [
+    const promise = anime365Client.getTranslationsCollection({
+      episodeId,
+      isActive: 1,
+    }, [
       'activeDateTime',
       'isActive',
       'priority',

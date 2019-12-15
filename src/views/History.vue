@@ -33,7 +33,6 @@
   import {shikimori} from '@/plugins/shikimori.axios';
   import Anime from '@/components/Anime.vue';
   import {seriesStore} from '@/store/modules/series';
-  import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
   const WEEK = 604800000;
@@ -62,18 +61,8 @@
 
 
 
-    public async loadSeries(ids: number[]) {
-      const needLoad = ids.filter((id: number) => !this.malMap[id]);
-
-      if (!needLoad.length) {
-        return;
-      }
-
-      const series = await anime365Client.getSeriesCollection({
-        myAnimeListId: needLoad,
-      });
-
-      series.forEach((s) => seriesStore.set(s));
+    public loadSeries(ids: number[]) {
+      return seriesStore.search({myAnimeListId: ids});
     }
 
 
@@ -117,7 +106,7 @@
             }
           }
 
-          await this.loadSeries([...watching, ...planned]);
+          this.loadSeries([...watching, ...planned]);
 
           this.groups.push({
             title: 'Недавно смотрели',

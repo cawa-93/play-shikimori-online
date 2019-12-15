@@ -2,7 +2,9 @@
   <v-app id="app">
     <app-header></app-header>
     <v-content>
-      <router-view></router-view>
+      <keep-alive include="History">
+        <router-view/>
+      </keep-alive>
     </v-content>
   </v-app>
 </template>

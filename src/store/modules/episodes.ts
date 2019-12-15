@@ -196,7 +196,11 @@ export class EpisodesStore extends VuexModule {
     }
 
 
-    const promise = anime365Client.getEpisodesCollection({seriesId, episodeType: seriesStore.items[seriesId].type}, [
+    const promise = anime365Client.getEpisodesCollection({
+      seriesId,
+      episodeType: seriesStore.items[seriesId].type,
+      isActive: 1,
+    }, [
       'episodeInt',
       'episodeType',
       'seriesId',
