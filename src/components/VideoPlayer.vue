@@ -1,7 +1,7 @@
 <template>
   <section>
-    {{episodeMap}}
-    <video :src="streamUrl" controls v-if="streamUrl"/>
+
+    <video :src="streamUrl" autoplay controls key="main-video" preload v-if="streamUrl"/>
 
 
     <div class="stretchy-wrapper" v-else-if="loading">
@@ -27,6 +27,14 @@
   import {anime365Client} from '@/ApiClasses/Anime365Client';
   import {Embed} from '@/types/anime365';
   import {episodesStore} from '@/store/modules/episodes';
+  import {seriesStore} from '@/store/modules/series';
+
+
+  /**
+   * Это временное решение для простого кэширования списка видео файлов
+   * TODO: Заменить на  vuex-модуль
+   */
+  const cache = new Map();
 
 
   @Component
@@ -47,6 +55,15 @@
         return;
       }
       return translationsStore.items[Number.parseInt(this.$route.params.translationId, 10)];
+    }
+
+
+
+    get series() {
+      if (!this.$route.params.seriesId) {
+        return;
+      }
+      return seriesStore.items[Number.parseInt(this.$route.params.seriesId, 10)];
     }
 
 
@@ -90,22 +107,31 @@
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.selectedTranslation.title,
         artist: this.selectedTranslation.authorsSummary,
-        album: 'Whenever You Need Somebody',
+        album: this.series?.titles?.ru || 'Аниме',
         artwork: [
-          {src: 'https://dummyimage.com/96x96', sizes: '96x96', type: 'image/png'},
-          {src: 'https://dummyimage.com/128x128', sizes: '128x128', type: 'image/png'},
-          {src: 'https://dummyimage.com/192x192', sizes: '192x192', type: 'image/png'},
-          {src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png'},
-          {src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png'},
-          {src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png'},
+
+          {src: this.series?.posterUrlSmall, sizes: '200x356', type: 'image/png'},
+          {src: this.series?.posterUrl, sizes: '338x600', type: 'image/png'},
         ],
       });
 
       navigator.mediaSession.setActionHandler('previoustrack', () => {
-        // console.log('previoustrack — click');
+        this.$router.replace({
+          name: 'player',
+          params: {
+            seriesId: this.$route.params.seriesId,
+            episodeId: `${this.episodeMap.previousEpisode ? this.episodeMap.previousEpisode : ''}`
+          }
+        });
       });
       navigator.mediaSession.setActionHandler('nexttrack', () => {
-        // console.log('nexttrack — click');
+        this.$router.replace({
+          name: 'player',
+          params: {
+            seriesId: this.$route.params.seriesId,
+            episodeId: `${this.episodeMap.nextEpisode ? this.episodeMap.nextEpisode : ''}`
+          }
+        });
       });
     }
 
@@ -114,6 +140,11 @@
     @Watch('selectedTranslation.id', {immediate: true})
     public onIdChange(to: string) {
       if (to) {
+
+        if (cache.has(to)) {
+          this.embed = cache.get(to);
+          return;
+        }
         this.loading = true;
         this.embed = null;
 
@@ -121,7 +152,10 @@
           method: 'get',
           url: '/translations/embed/' + to,
         })
-          .then(({data: {data}}) => this.embed = data)
+          .then(({data: {data}}) => {
+            this.embed = data;
+            cache.set(to, data);
+          })
           .catch(console.error)
           .finally(() => this.loading = false);
       }
