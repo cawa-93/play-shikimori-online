@@ -78,7 +78,7 @@ export class EpisodesStore extends VuexModule {
         return cache.get(key);
       }
 
-      const selectedEpisode = this.items[Number.parseInt(route.params.episodeId)];
+      const selectedEpisode = this.items[Number.parseInt(route.params.episodeId, 10)];
 
       const map
         : {

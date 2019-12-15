@@ -23,7 +23,7 @@
     @Prop(String) public readonly title!: string;
     @Prop() public readonly searchParams!: any;
 
-    ids: number[] = [];
+    public ids: number[] = [];
 
 
 
@@ -37,7 +37,7 @@
       if (this.searchParams.myAnimeListId) {
         this.searchParams.myAnimeListId.forEach((id: number) => idsSet.add(seriesStore.malMap[id]));
       }
-      this.ids = [...idsSet].filter(id => !!id);
+      this.ids = [...idsSet].filter((id) => !!id);
 
 
       try {
@@ -45,7 +45,7 @@
 
         if (series) {
           series.forEach(({id}) => idsSet.add(id));
-          this.ids = [...idsSet].filter(id => !!id);
+          this.ids = [...idsSet].filter((id) => !!id);
         }
       } finally {
         // this.loading = false;

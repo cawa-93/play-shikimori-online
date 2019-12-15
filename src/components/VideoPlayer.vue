@@ -120,8 +120,8 @@
           name: 'player',
           params: {
             seriesId: this.$route.params.seriesId,
-            episodeId: `${this.episodeMap.previousEpisode ? this.episodeMap.previousEpisode : ''}`
-          }
+            episodeId: `${this.episodeMap.previousEpisode ? this.episodeMap.previousEpisode : ''}`,
+          },
         });
       });
       navigator.mediaSession.setActionHandler('nexttrack', () => {
@@ -129,8 +129,8 @@
           name: 'player',
           params: {
             seriesId: this.$route.params.seriesId,
-            episodeId: `${this.episodeMap.nextEpisode ? this.episodeMap.nextEpisode : ''}`
-          }
+            episodeId: `${this.episodeMap.nextEpisode ? this.episodeMap.nextEpisode : ''}`,
+          },
         });
       });
     }
