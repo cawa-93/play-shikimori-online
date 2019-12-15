@@ -1,7 +1,6 @@
 import Vue from 'vue';
-import VueRouter, {Route} from 'vue-router';
+import VueRouter from 'vue-router';
 import History from '../views/History.vue';
-import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
 Vue.use(VueRouter);

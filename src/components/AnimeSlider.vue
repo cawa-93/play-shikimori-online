@@ -1,12 +1,9 @@
 <template>
-  <section v-if="series.length || this.loading">
+  <section class="d-grid mt-3">
     <h2>{{title}}</h2>
-
-    <div class="content">
-      <div class="box">
-        <anime :key="index" :series="series[index] || null" v-for="index of series.length -1 || ids.length -1"></anime>
-      </div>
-    </div>
+    {{ids}}
+    <!--    <anime :key="group.title+malId" :malId="malId" v-for="malId in ids" v-if="malMap[malId]"/>-->
+    <!--    <v-skeleton-loader height="314" type="image" v-else width="225"/>-->
   </section>
 </template>
 
@@ -15,7 +12,6 @@
 
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import {seriesStore} from '@/store/modules/series';
-  import {anime365Client} from '@/ApiClasses/Anime365Client';
 
 
 
@@ -25,38 +21,34 @@
   })
   export default class extends Vue {
     @Prop(String) public readonly title!: string;
-    @Prop(Array) public readonly ids!: number[];
+    @Prop() public readonly searchParams!: any;
 
-    public loading = true;
-
-
-
-    get series() {
-      const series: Array<typeof seriesStore.items[number]> = [];
-
-      this.ids.forEach((id) => {
-        if (seriesStore.malMap[id] && seriesStore.items[seriesStore.malMap[id]]) {
-          series.push(seriesStore.items[seriesStore.malMap[id]]);
-        }
-      });
-
-      return series;
-    }
+    ids: number[] = [];
 
 
 
     public async created() {
+      const idsSet = new Set<number>();
+
+      if (this.searchParams.id) {
+        this.searchParams.id.forEach((id: number) => idsSet.add(id));
+      }
+
+      if (this.searchParams.myAnimeListId) {
+        this.searchParams.myAnimeListId.forEach((id: number) => idsSet.add(seriesStore.malMap[id]));
+      }
+      this.ids = [...idsSet].filter(id => !!id);
+
+
       try {
+        const series = await seriesStore.search(this.searchParams);
 
-        const ids = this.ids.filter((id) => !seriesStore.malMap[id]);
-
-        const series = await anime365Client.getSeriesCollection({
-          myAnimeListId: ids,
-        });
-
-        series.forEach((s) => seriesStore.set(s));
+        if (series) {
+          series.forEach(({id}) => idsSet.add(id));
+          this.ids = [...idsSet].filter(id => !!id);
+        }
       } finally {
-        this.loading = false;
+        // this.loading = false;
       }
     }
   }
@@ -64,23 +56,46 @@
 
 
 <style scoped>
-  h2 {
-    margin-left: 10px;
+
+  .d-grid {
+    --columns-count: 6;
+    display: grid;
+    grid-template-columns: [container-start] repeat(var(--columns-count), minmax(225px, 1fr)) [container-end];
+    grid-gap: 20px;
+    justify-items: center;
+    align-items: center;
   }
 
-  .anime-item.anime-poster {
-    margin: 10px
+  @media (max-width: 1474px) {
+    .d-grid {
+      --columns-count: 4;
+    }
   }
 
-  .content {
-    flex: 1;
-    display: flex;
-    overflow: auto;
-    padding-bottom: 20px;
+
+  @media (max-width: 984px) {
+    .d-grid {
+      --columns-count: 3;
+    }
   }
 
-  .box {
-    min-width: min-content; /* needs vendor prefixes */
-    display: flex;
+
+  @media (max-width: 734px) {
+    .d-grid {
+      --columns-count: 2;
+    }
+  }
+
+
+  @media (max-width: 494px) {
+    .d-grid {
+      --columns-count: 1;
+    }
+  }
+
+  .d-grid h2 {
+    width: 100%;
+    grid-column: container;
+    justify-self: start;
   }
 </style>

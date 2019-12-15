@@ -4,7 +4,7 @@ import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decor
 import {Episode} from '@/types/anime365';
 import {anime365Client} from '@/ApiClasses/Anime365Client';
 import {seriesStore} from '@/store/modules/series';
-import router from '@/router';
+import {Route} from 'vue-router';
 
 
 type Fields = 'id' | 'episodeInt' | 'episodeType' | 'seriesId';
@@ -58,30 +58,59 @@ export class EpisodesStore extends VuexModule {
 
 
 
-  get episodeMap() {
-    const map
-      : {
-      startEpisode: E['id'],
-      selectedEpisode: E['id'],
-      previousEpisode: E['id'],
-      nextEpisode: E['id'],
-    }
-      = {
-      startEpisode: 0,
-      selectedEpisode: 0,
-      previousEpisode: 0,
-      nextEpisode: 0,
-    };
+  /**
+   * Возвращает функциию, которая принимает роут и возвращает объект с ИД серий
+   */
+  get episodeMap(): (route: Route) => {
 
-    if (router.currentRoute.params && router.currentRoute.params.seriesId) {
+    startEpisode: E['id'],    // Начальная серия. Обычно это серия под номером 1 или 0
+    selectedEpisode: E['id'], // Текущая выбранная серия
+    previousEpisode: E['id'], // Предыдущая серия относительно выбранной
+    nextEpisode: E['id'],     // Следующая  серия относительно выбранной
+  } {
 
-      const episodes = this.getForSeries(Number.parseInt(router.currentRoute.params.seriesId, 10));
+    const cache = new Map();
+
+    return (route: Route) => {
+      const key = route.params && route.params.episodeId ? route.params.episodeId : null;
+
+      if (key && cache.has(key)) {
+        return cache.get(key);
+      }
+
+      const selectedEpisode = this.items[Number.parseInt(route.params.episodeId)];
+
+      const map
+        : {
+        startEpisode: E['id'],
+        selectedEpisode: E['id'],
+        previousEpisode: E['id'],
+        nextEpisode: E['id'],
+      }
+        = {
+        startEpisode: 0,
+        selectedEpisode: 0,
+        previousEpisode: 0,
+        nextEpisode: 0,
+      };
+
+      if (!selectedEpisode) {
+        return map;
+      }
+
+      map.selectedEpisode = selectedEpisode.id;
+
+      const episodes = this.getForSeries(selectedEpisode.seriesId);
 
       if (!episodes.length) {
         return map;
       }
 
       let minimalEpisodeInt = Number.parseFloat(episodes[0].episodeInt);
+      let previousEpisode: E | undefined;
+      let nextEpisode: E | undefined;
+
+
       episodes.forEach((episode) => {
         const episodeInt = Number.parseFloat(episode.episodeInt);
 
@@ -92,59 +121,39 @@ export class EpisodesStore extends VuexModule {
           map.startEpisode = episode.id;
         }
 
-        // Текущая серия
-        if (router.currentRoute.params && router.currentRoute.params.episodeId) {
-          const episodeId = Number.parseInt(router.currentRoute.params.episodeId, 10);
-          if (episodeId === episode.id) {
-            map.selectedEpisode = episode.id;
-          }
+        // Следующая серия
+        if (
+          episodeInt > Number.parseFloat(selectedEpisode.episodeInt)
+          && (!nextEpisode || episodeInt < Number.parseFloat(nextEpisode.episodeInt))
+        ) {
+          nextEpisode = episode;
+        }
+
+        // Предыдущая серия
+        if (
+          episodeInt < Number.parseFloat(selectedEpisode.episodeInt)
+          && (!previousEpisode || episodeInt > Number.parseFloat(previousEpisode.episodeInt))
+        ) {
+          previousEpisode = episode;
         }
       });
 
-
-      if (map.selectedEpisode) {
-        // const selectedEpisodeInt = Number.parseFloat(this.items[map.selectedEpisode].episodeInt)
-        const selectedEpisode = this.items[map.selectedEpisode];
-        let previousEpisode: E | undefined;
-        let nextEpisode: E | undefined;
-
-        episodes.forEach((episode) => {
-
-          // Следующая серия
-          if (
-            Number.parseFloat(episode.episodeInt) > Number.parseFloat(selectedEpisode.episodeInt)
-            && (
-              !nextEpisode
-              || Number.parseFloat(episode.episodeInt) < Number.parseFloat(nextEpisode.episodeInt)
-            )
-          ) {
-            nextEpisode = episode;
-          }
-
-          // Предыдущая серия
-          if (
-            Number.parseFloat(episode.episodeInt) < Number.parseFloat(selectedEpisode.episodeInt)
-            && (
-              !previousEpisode
-              || Number.parseFloat(episode.episodeInt) > Number.parseFloat(previousEpisode.episodeInt)
-            )
-          ) {
-            previousEpisode = episode;
-          }
-        });
-
-        if (nextEpisode) {
-          map.nextEpisode = nextEpisode.id;
-        }
-
-        if (previousEpisode) {
-          map.previousEpisode = previousEpisode.id;
-        }
+      if (nextEpisode) {
+        map.nextEpisode = nextEpisode.id;
       }
-    }
 
-    return map;
+      if (previousEpisode) {
+        map.previousEpisode = previousEpisode.id;
+      }
 
+      if (key) {
+        cache.set(key, map);
+      }
+
+
+      return map;
+
+    };
   }
 
 
