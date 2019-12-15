@@ -2,11 +2,11 @@
 name: Compile app
 # this will help you specify where to run
 on:
-  release:
-    created:
-      # this will run on the electron branch
-      - v2.0.x
-# this is where the magic happens, each job happens in parallel btw
+  release: 
+    types: # This configuration does not affect the page_build event above
+      - created
+    
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
