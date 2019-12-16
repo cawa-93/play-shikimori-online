@@ -6,6 +6,7 @@
       :loading="loading"
       @keydown="() => errorText = ''"
       label="Найти аниме по ссылке"
+      prepend-inner-icon="mdi-movie-search-outline"
       required
       solo
       type="url"
@@ -17,7 +18,6 @@
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
   import {seriesStore} from '@/store/modules/series';
-  import {episodesStore} from '@/store/modules/episodes';
 
 
   @Component
