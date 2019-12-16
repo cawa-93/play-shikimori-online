@@ -8,7 +8,7 @@
       clipped
       v-model="drawer"
     >
-      <v-list dense subheader v-if="episodes.length">
+      <v-list dense subheader two-line v-if="episodes.length">
         <v-subheader v-if="title">{{title}}
           <v-spacer/>
           <v-tooltip :open-delay="500" right transition="slide-x-transition">
@@ -29,11 +29,12 @@
                      v-for="episode in episodes">
           <v-list-item-content>
             <v-list-item-title>{{episode.episodeInt}} Серия</v-list-item-title>
+            <v-list-item-subtitle>{{episode.episodeType}}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <template v-else-if="loading">
-        <v-skeleton-loader :key="i" type="list-item" v-for="i in 12"/>
+        <v-skeleton-loader :key="i" type="list-item-two-line" v-for="i in 12"/>
       </template>
       <p v-else>Нет серий</p>
     </v-navigation-drawer>

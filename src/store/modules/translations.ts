@@ -16,7 +16,8 @@ type Fields =
   | 'seriesId'
   | 'episodeId'
   | 'authorsSummary'
-  | 'embedUrl';
+  | 'embedUrl'
+  | 'height';
 type E = Pick<Translation, Fields>;
 
 
@@ -91,10 +92,7 @@ export class TranslationsStore extends VuexModule {
       return;
     }
 
-    const promise = anime365Client.getTranslationsCollection({
-      episodeId,
-      isActive: 1,
-    }, [
+    const fields: Fields[] = [
       'activeDateTime',
       'isActive',
       'priority',
@@ -105,7 +103,13 @@ export class TranslationsStore extends VuexModule {
       'episodeId',
       'authorsSummary',
       'embedUrl',
-    ]);
+      'height',
+    ];
+
+    const promise = anime365Client.getTranslationsCollection({
+      episodeId,
+      isActive: 1,
+    }, fields);
 
     const translations = await promise;
 

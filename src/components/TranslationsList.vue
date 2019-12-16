@@ -9,7 +9,7 @@
       right
       v-model="drawer"
     >
-      <v-list dense v-if="translations.length">
+      <v-list dense two-line v-if="translations.length">
         <v-list-item :key="translation.id"
                      :to="{name: 'player', params: {
                        seriesId: $route.params.seriesId,
@@ -20,12 +20,13 @@
         >
           <v-list-item-content>
             <v-list-item-title>{{translation.authorsSummary || 'Неизвестный'}}</v-list-item-title>
+            <v-list-item-subtitle>{{translation.type}}, {{translation.qualityType}}, {{translation.height}}p</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
 
       <template v-else-if="loading">
-        <v-skeleton-loader :key="i" type="list-item" v-for="i in 12"/>
+        <v-skeleton-loader :key="i" type="list-item-two-line" v-for="i in 12"/>
       </template>
 
       <p v-else>Нет серий</p>
