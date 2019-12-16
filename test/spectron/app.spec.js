@@ -9,7 +9,7 @@ const appPath =
 describe('Application launch', function() {
   this.timeout(10000);
 
-  before(async function() {
+  beforeEach(async function() {
     this.app = new Application({
       // Your electron path can be any binary
       // i.e for OSX an example path could be '/Applications/MyApp.app/Contents/MacOS/MyApp'
@@ -40,7 +40,7 @@ describe('Application launch', function() {
     }
   });
 
-  after(function() {
+  afterEach(function() {
     if (this.app && this.app.isRunning()) {
       return this.app.stop();
     }
@@ -53,20 +53,20 @@ describe('Application launch', function() {
     // assert.equal(count, 2);
 
   });
-  //
-  // it('shows has right title', async function() {
-  //   const title = await this.app.client.getTitle();
-  //   return assert.equal(title, 'Медиа центр');
-  // });
-  //
-  // it('does not have the developer tools open', async function() {
-  //   const devToolsAreOpen = await this.app.client.waitUntilWindowLoaded().browserWindow.isDevToolsOpened();
-  //   return assert.equal(devToolsAreOpen, false);
-  // });
-  //
-  // it('should have one <v-app-bar> when it starts up', async function() {
-  //   await this.app.client.waitUntilWindowLoaded();
-  //   const headers = await this.app.client.$$('header.v-app-bar');
-  //   return assert.equal(headers.length, 1);
-  // });
+
+  it('shows has right title', async function() {
+    const title = await this.app.client.getTitle();
+    return assert.equal(title, 'Медиа центр');
+  });
+
+  it('does not have the developer tools open', async function() {
+    const devToolsAreOpen = await this.app.client.waitUntilWindowLoaded().browserWindow.isDevToolsOpened();
+    return assert.equal(devToolsAreOpen, false);
+  });
+
+  it('should have one <v-app-bar> when it starts up', async function() {
+    await this.app.client.waitUntilWindowLoaded();
+    const headers = await this.app.client.$$('header.v-app-bar');
+    return assert.equal(headers.length, 1);
+  });
 });
