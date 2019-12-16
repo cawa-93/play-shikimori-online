@@ -7,7 +7,7 @@
       <template v-if="groups.length">
 
         <template v-for="group in groups">
-          <h2>{{group.title}}</h2>
+          <h2 class="headline">{{group.title}}</h2>
           <anime :key="group.title+malId" :malId="malId" v-for="malId in group.ids" v-if="malMap[malId]"/>
           <v-skeleton-loader height="314"
                              type="image"
@@ -16,8 +16,8 @@
         </template>
       </template>
       <template v-else>
-        <h2 class="mt-3">
-          <v-skeleton-loader height="1.5em" type="heading" width="100%"/>
+        <h2 class="headline">
+          <v-skeleton-loader height="32px" type="heading" width="100%"/>
         </h2>
         <v-skeleton-loader :key="index"
                            height="314"
