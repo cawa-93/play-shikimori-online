@@ -8,7 +8,22 @@
       clipped
       v-model="drawer"
     >
-      <v-list dense v-if="episodes.length">
+      <v-list dense subheader v-if="episodes.length">
+        <v-subheader v-if="title">{{title}}
+          <v-spacer/>
+          <v-tooltip :open-delay="500" right transition="slide-x-transition">
+            <template v-slot:activator="{on, attr}">
+              <v-btn :href="`https://shikimori.one/animes/${series.myAnimeListId}`"
+                     icon
+                     target="_blank"
+                     v-bind="attr"
+                     v-on="on">
+                <v-icon>mdi-link</v-icon>
+              </v-btn>
+            </template>
+            <span>Открыть на Shikimori</span>
+          </v-tooltip>
+        </v-subheader>
         <v-list-item :key="episode.id"
                      :to="{name: 'player', params: {seriesId: $route.params.seriesId, episodeId: episode.id}}"
                      v-for="episode in episodes">
@@ -28,6 +43,7 @@
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
   import {episodesStore} from '@/store/modules/episodes';
+  import {seriesStore} from '@/store/modules/series';
 
 
   @Component
@@ -37,9 +53,30 @@
 
 
 
+    get seriesId() {
+      return Number.parseInt(this.$route.params.seriesId, 10);
+    }
+
+
+
+    get series() {
+      return seriesStore.items[this.seriesId];
+    }
+
+
+
+    get title() {
+      if (!this.series || !this.series.titles) {
+        return '';
+      }
+
+      return this.series.titles.ru || this.series.titles.en || this.series.titles.romaji || this.series.titles.ja;
+    }
+
+
+
     get episodes() {
-      const seriesId = Number.parseInt(this.$route.params.seriesId, 10);
-      return episodesStore.getForSeries(seriesId);
+      return episodesStore.getForSeries(this.seriesId);
     }
 
 

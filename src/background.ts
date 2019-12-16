@@ -1,6 +1,6 @@
 'use strict';
 
-import {app, BrowserWindow, protocol} from 'electron';
+import {app, BrowserWindow, protocol, shell} from 'electron';
 import {createProtocol, installVueDevtools} from 'vue-cli-plugin-electron-builder/lib';
 
 
@@ -41,6 +41,11 @@ function createWindow() {
     if (!process.env.IS_TEST) {
       win.webContents.openDevTools();
     }
+
+    win.webContents.on('new-window', (event, url) => {
+      event.preventDefault();
+      shell.openExternal(url);
+    });
 
     /**
      * Должен имитировать медленную сеть. Но не работает
