@@ -96,8 +96,8 @@ jobs:
           name: ${{ matrix.os }}-build
           path: dist_electron
 
-      - name: Test on ${{ matrix.os }}
-        env:
-          OS: ${{ matrix.os }}
-        run: npm test
+#      - name: Test on ${{ matrix.os }}
+#        env:
+#          OS: ${{ matrix.os }}
+#        run: npm test
 

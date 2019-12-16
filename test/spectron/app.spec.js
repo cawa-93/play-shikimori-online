@@ -7,9 +7,9 @@ const appPath =
           'dist_electron/mac/Аниме Центр.app/Contents/MacOS/Аниме Центр';
 
 describe('Application launch', function() {
-  this.timeout(1000000);
+  this.timeout(10000);
 
-  beforeEach(function() {
+  before(async function() {
     this.app = new Application({
       // Your electron path can be any binary
       // i.e for OSX an example path could be '/Applications/MyApp.app/Contents/MacOS/MyApp'
@@ -31,10 +31,16 @@ describe('Application launch', function() {
       // and the package.json located 1 level above.
       args: [path.join(__dirname, '../..')],
     });
-    return this.app.start();
+
+    try {
+      return await this.app.start();
+    } catch (e) {
+      console.error(e);
+      return Promise.reject(e);
+    }
   });
 
-  afterEach(function() {
+  after(function() {
     if (this.app && this.app.isRunning()) {
       return this.app.stop();
     }
@@ -45,21 +51,22 @@ describe('Application launch', function() {
     return assert.equal(count, 1);
     // Please note that getWindowCount() will return 2 if `dev tools` are opened.
     // assert.equal(count, 2);
-  });
 
-  it('shows has right title', async function() {
-    const title = await this.app.client.getTitle();
-    return assert.equal(title, 'Медиа центр');
   });
-
-  it('does not have the developer tools open', async function() {
-    const devToolsAreOpen = await this.app.client.waitUntilWindowLoaded().browserWindow.isDevToolsOpened();
-    return assert.equal(devToolsAreOpen, false);
-  });
-
-  it('should have one <v-app-bar> when it starts up', async function() {
-    await this.app.client.waitUntilWindowLoaded();
-    const headers = await this.app.client.$$('header.v-app-bar');
-    return assert.equal(headers.length, 1);
-  });
+  //
+  // it('shows has right title', async function() {
+  //   const title = await this.app.client.getTitle();
+  //   return assert.equal(title, 'Медиа центр');
+  // });
+  //
+  // it('does not have the developer tools open', async function() {
+  //   const devToolsAreOpen = await this.app.client.waitUntilWindowLoaded().browserWindow.isDevToolsOpened();
+  //   return assert.equal(devToolsAreOpen, false);
+  // });
+  //
+  // it('should have one <v-app-bar> when it starts up', async function() {
+  //   await this.app.client.waitUntilWindowLoaded();
+  //   const headers = await this.app.client.$$('header.v-app-bar');
+  //   return assert.equal(headers.length, 1);
+  // });
 });
