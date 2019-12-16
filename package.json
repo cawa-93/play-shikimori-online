@@ -37,7 +37,7 @@
   "devDependencies": {
     "@vue/cli-plugin-typescript": "^4.1.1",
     "@vue/cli-service": "^4.1.1",
-    "electron": "^7.1.5",
+    "electron": "^8.0.0-beta.4",
     "mocha": "^6.2.2",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
@@ -54,6 +54,6 @@
     }
   },
   "browserslist": [
-    "Electron 7.0.1"
+    "Chrome 80"
   ]
 }
