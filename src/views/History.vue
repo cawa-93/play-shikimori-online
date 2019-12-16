@@ -1,11 +1,13 @@
 <template>
   <v-container class="grid-container" fluid role="feed">
-    <section class="d-grid">
+    <section class="d-grid pt-3">
+
+      <search-field/>
 
       <template v-if="groups.length">
 
         <template v-for="group in groups">
-          <h2 class="mt-3">{{group.title}}</h2>
+          <h2>{{group.title}}</h2>
           <anime :key="group.title+malId" :malId="malId" v-for="malId in group.ids" v-if="malMap[malId]"/>
           <v-skeleton-loader height="314"
                              type="image"
@@ -33,6 +35,7 @@
   import {shikimori} from '@/plugins/shikimori.axios';
   import Anime from '@/components/Anime.vue';
   import {seriesStore} from '@/store/modules/series';
+  import SearchField from '@/components/SearchField.vue';
 
 
   const WEEK = 604800000;
@@ -45,6 +48,7 @@
 
   @Component({
     components: {
+      SearchField,
       Anime,
       AnimeSlider,
     },
