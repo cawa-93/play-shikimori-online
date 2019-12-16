@@ -11,7 +11,9 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 let win: BrowserWindow | null;
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: false, standard: true}}]);
+protocol.registerSchemesAsPrivileged([
+  {scheme: 'app', privileges: {secure: false, standard: true}},
+]);
 
 
 function createWindow() {
@@ -40,15 +42,19 @@ function createWindow() {
       win.webContents.openDevTools();
     }
 
-    if (isDevelopment) {
-      console.warn('Network Throttling is Enabled');
-      win.webContents.session.enableNetworkEmulation({
-        offline: true,
-        latency: 6400,
-        downloadThroughput: 1,
-        uploadThroughput: 1,
-      });
-    }
+    /**
+     * Должен имитировать медленную сеть. Но не работает
+     * @see https://github.com/electron/electron/issues/21250
+     */
+    // if (isDevelopment) {
+    // console.warn('Network Throttling is Enabled');
+    // win.webContents.session.enableNetworkEmulation({
+    //   offline: true,
+    //   latency: 6400,
+    //   downloadThroughput: 1,
+    //   uploadThroughput: 1,
+    // });
+    // }
 
 
   } else {
