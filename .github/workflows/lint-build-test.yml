@@ -23,9 +23,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@master
+      - uses: actions/setup-node@v1
         with:
           node-version: 12.13
 
@@ -58,11 +58,9 @@ jobs:
         os: [macOS-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@master
-        with:
-          ref: v2.0.x
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@master
+      - uses: actions/setup-node@v1
         with:
           node-version: 12.13
 

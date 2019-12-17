@@ -2,10 +2,10 @@
 name: Compile app
 # this will help you specify where to run
 on:
-  release: 
+  release:
     types: # This configuration does not affect the page_build event above
       - created
-    
+
 
 jobs:
   build:
@@ -16,11 +16,9 @@ jobs:
         os: [macOS-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@master
-        with:
-          ref: v2.0.x
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@master
+      - uses: actions/setup-node@v1
         with:
           node-version: 12.13
 
