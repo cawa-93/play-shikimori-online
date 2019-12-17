@@ -12,10 +12,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "DEBUG=electron-builder vue-cli-service build",
+    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "mocha ./test/**/*.spec.js",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "DEBUG=electron-builder vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve --remote-debugging-port=9222 --inspect=9223",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
