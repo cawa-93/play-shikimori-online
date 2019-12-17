@@ -1,7 +1,7 @@
 <template>
   <section class="component-root video-player-component-root">
 
-    <video :src="streamUrl" autoplay controls key="main-video" preload v-if="streamUrl"/>
+    <video :autoplay="autoplay" :src="streamUrl" controls key="main-video" preload v-if="streamUrl"/>
     <div class="stretchy-wrapper" v-else-if="loading">
       <v-skeleton-loader class="video-loader" type="image"/>
     </div>
@@ -41,7 +41,7 @@
     public embed: Embed | null = null;
     public loading = true;
 
-
+    public autoplay = process.env.NODE_ENV !== 'development';
 
     get episodeMap() {
       return episodesStore.episodeMap(this.$route);
