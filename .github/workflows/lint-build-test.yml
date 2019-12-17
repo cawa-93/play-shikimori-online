@@ -92,8 +92,8 @@ jobs:
       - name: Build on ${{ matrix.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          CSC_LINK: join( ${{ runner.os }}, '_CSC_LINK')
-          CSC_KEY_PASSWORD: ${{ join( runner.os, '_CSC_KEY_PASSWORD') }}
+          CSC_LINK: ${{ join( ${{ runner.os }}, '_CSC_LINK') }}
+          CSC_KEY_PASSWORD: ${{ format( '${0}_CSC_KEY_PASSWORD', runner.os) }}
         run: |
           echo "$CSC_LINK"
           echo "$CSC_KEY_PASSWORD"
