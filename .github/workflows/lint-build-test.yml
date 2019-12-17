@@ -85,9 +85,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+
       - name: Build on ${{ matrix.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_LINK: ${{ secrets[ format( '{0}_CSC_LINK', runner.os) ] }}
+          CSC_KEY_PASSWORD: ${{ secrets[ format( '{0}_CSC_KEY_PASSWORD', runner.os) ] }}
         run: npm run electron:build
 
       - name: Upload build artifact
