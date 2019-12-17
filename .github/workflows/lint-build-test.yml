@@ -24,8 +24,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-        with:
-          ref: v2.0.x
 
       - uses: actions/setup-node@master
         with:
