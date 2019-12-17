@@ -30,7 +30,7 @@ module.exports = {
           electronLanguages: 'ru',
           category: 'public.app-category.video',
 
-          identity: null,
+          // identity: null,
           hardenedRuntime: true,
           entitlements: 'build/entitlements.mac.plist',
           entitlementsInherit: 'build/entitlements.mac.plist',

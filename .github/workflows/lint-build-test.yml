@@ -88,6 +88,8 @@ jobs:
       - name: Build on ${{ matrix.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_LINK: ${{ secrets[ join(runner.os, '_CSC_LINK') ] }}
+          CSC_KEY_PASSWORD: ${{ secrets[ join(runner.os, '_CSC_KEY_PASSWORD') ] }}
         run: npm run electron:build
 
       - name: Upload build artifact
