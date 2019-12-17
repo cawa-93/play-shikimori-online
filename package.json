@@ -46,7 +46,8 @@
     "vue-cli-plugin-electron-builder": "^1.4.3",
     "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.4.3"
+    "vuetify-loader": "^1.4.3",
+    "lint-staged": "^9.4.3"
   },
   "postcss": {
     "plugins": {
@@ -55,5 +56,18 @@
   },
   "browserslist": [
     "Chrome 80"
-  ]
+  ],
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  }
 }
