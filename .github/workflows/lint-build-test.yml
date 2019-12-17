@@ -91,12 +91,12 @@ jobs:
 
       - name: Build on ${{ matrix.os }}
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          CSC_LINK: ${{ join( ${{ runner.os }}, '_CSC_LINK') }}
-          CSC_KEY_PASSWORD: ${{ format( '${0}_CSC_KEY_PASSWORD', runner.os) }}
+        #          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        #          CSC_LINK: ${{ join( runner.os, '_CSC_LINK') }}
+        #          CSC_KEY_PASSWORD: ${{ format( '${0}_CSC_KEY_PASSWORD', runner.os) }}
         run: |
-          echo "$CSC_LINK"
-          echo "$CSC_KEY_PASSWORD"
+          echo ${{ join( runner.os, '_CSC_LINK') }}
+          echo ${{ format( '${0}_CSC_KEY_PASSWORD', runner.os) }}
 
 #      - name: Upload build artifact
 #        uses: actions/upload-artifact@v1
