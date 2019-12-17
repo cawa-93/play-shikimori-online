@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="component-root translations-list-component-root">
     <v-btn @click="drawer = !drawer" class="toggle-translation-drawer" icon>
       <v-icon>mdi-translate</v-icon>
     </v-btn>

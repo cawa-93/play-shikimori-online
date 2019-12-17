@@ -1,13 +1,10 @@
 <template>
-  <section>
+  <section class="component-root video-player-component-root">
 
     <video :src="streamUrl" autoplay controls key="main-video" preload v-if="streamUrl"/>
-
-
     <div class="stretchy-wrapper" v-else-if="loading">
       <v-skeleton-loader class="video-loader" type="image"/>
     </div>
-
     <p v-else>
 
       <span>Невозможно загрузить видео</span>
@@ -16,6 +13,8 @@
       <br>
       {{embed}}
     </p>
+
+    {{embed}}
 
 
   </section>
@@ -168,18 +167,19 @@
     width: 100%;
   }
 
+
   .stretchy-wrapper {
-    width: 100%;
     padding-bottom: calc(100% / (16 / 9)); /* Соотношение сторон 16:9 */
     position: relative;
-
+    width: 100%;
   }
 
-  .stretchy-wrapper > .video-loader {
-    position: absolute;
-    top: 0;
+  .video-loader {
     bottom: 0;
     left: 0;
+    position: absolute;
     right: 0;
+    top: 0;
   }
+
 </style>

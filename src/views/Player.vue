@@ -1,5 +1,5 @@
 <template>
-  <div class="player-view py-3 px-12">
+  <div class="component-root view-component-root player-view-component py-3 px-12">
     <video-player/>
     <episodes-list/>
     <translations-list/>
@@ -100,10 +100,3 @@
     return episodes.find((e) => e.episodeInt === '1');
   }
 </script>
-
-
-<style>
-  .player-view {
-
-  }
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="grid-container" fluid role="feed">
+  <v-container class="component-root view-component-root history-view-component grid-container" fluid role="feed">
     <section class="d-grid pt-3">
 
       <search-field/>

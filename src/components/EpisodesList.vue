@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="component-root episodes-list-component-root">
     <v-btn @click="drawer = !drawer" class="toggle-episode-drawer" icon>
       <v-icon>mdi-format-list-bulleted</v-icon>
     </v-btn>

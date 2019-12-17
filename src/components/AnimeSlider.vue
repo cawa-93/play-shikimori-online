@@ -1,5 +1,5 @@
 <template>
-  <section class="d-grid mt-3">
+  <section class="component-root anime-slider-component-root d-grid mt-3">
     <h2>{{title}}</h2>
     {{ids}}
     <!--    <anime :key="group.title+malId" :malId="malId" v-for="malId in ids" v-if="malMap[malId]"/>-->

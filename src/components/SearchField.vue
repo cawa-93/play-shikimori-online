@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit="runSearch" class="search-field" lazy-validation>
+  <v-form @submit="runSearch" class="component-root search-field-component-root" lazy-validation>
     <v-text-field
       :disabled="loading"
       :error-messages="errorText"
@@ -80,7 +80,7 @@
 </script>
 
 <style scoped>
-  .search-field {
+  .search-field-component-root {
     grid-column: container;
     width: 100%;
   }

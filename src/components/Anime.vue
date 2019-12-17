@@ -5,7 +5,7 @@
       }"
     :img="series.posterUrl"
     :to="route"
-    class="anime-item anime-poster"
+    class="component-root anime-component-root anime-item anime-poster"
     height="314"
     v-if="!loading"
     width="225"
