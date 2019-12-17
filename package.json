@@ -12,7 +12,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "DEBUG=electron-builder vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "mocha ./test/**/*.spec.js",
     "electron:build": "vue-cli-service electron:build",

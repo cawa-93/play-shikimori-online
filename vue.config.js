@@ -30,9 +30,13 @@ module.exports = {
           electronLanguages: 'ru',
           category: 'public.app-category.video',
 
-          // hardenedRuntime: true,
-          // entitlements: 'build/entitlements.mac.plist',
-          // entitlementsInherit: 'build/entitlements.mac.plist',
+          hardenedRuntime: true,
+          entitlements: 'build/entitlements.mac.plist',
+          entitlementsInherit: 'build/entitlements.mac.plist',
+        },
+
+        dmg: {
+          sign: false,
         },
 
         linux: {
