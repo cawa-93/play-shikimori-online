@@ -1,9 +1,9 @@
 <template>
-  <div class="component-root view-component-root player-view-component py-3 px-12">
+  <v-container class="component-root view-component-root player-view-component py-3 px-12">
     <video-player/>
     <episodes-list/>
     <translations-list/>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">

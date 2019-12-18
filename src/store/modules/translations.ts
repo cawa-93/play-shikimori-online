@@ -36,7 +36,7 @@ export class TranslationsStore extends VuexModule {
 
 
 
-  get getForEpisode() {
+  get getForEpisode(): (episodeId: number) => E[] {
     const map = new Map();
 
     // tslint:disable-next-line:no-unused-expression
@@ -56,7 +56,17 @@ export class TranslationsStore extends VuexModule {
       }
 
       if (translations.length) {
-        translations = translations.sort((t1, t2) => t1.priority - t2.priority);
+        translations = translations.sort((t1, t2) => {
+          if (t1.qualityType === 'dvd' || t1.qualityType === 'bd' && t2.qualityType === 'tv') {
+            return -1;
+          }
+
+          if (t2.qualityType === 'dvd' || t2.qualityType === 'bd' && t1.qualityType === 'tv') {
+            return 1;
+          }
+
+          return t2.height - t1.height;
+        });
         map.set(episodeId, translations);
       }
 
