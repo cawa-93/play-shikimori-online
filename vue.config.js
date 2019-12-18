@@ -25,7 +25,6 @@ module.exports = {
         },
 
         mac: {
-          target: 'dmg',
           darkModeSupport: true,
           electronLanguages: 'ru',
           category: 'public.app-category.video',

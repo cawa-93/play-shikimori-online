@@ -126,3 +126,8 @@ if (isDevelopment) {
     });
   }
 }
+
+
+// Asks the server whether there is an update, download and notify if update available
+import('electron-updater')
+  .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify());
