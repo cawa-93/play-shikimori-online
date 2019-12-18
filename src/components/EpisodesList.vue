@@ -8,8 +8,9 @@
       clipped
       v-model="drawer"
     >
-      <v-list dense subheader two-line v-if="episodes.length">
-        <v-subheader v-if="title">{{title}}
+      <v-list subheader v-if="episodes.length">
+        <v-subheader v-if="title">
+          <span class="text-no-wrap overflow-hidden text-overflow-ellipsis">{{title}}</span>
           <v-spacer/>
           <v-tooltip :open-delay="500" right transition="slide-x-transition">
             <template v-slot:activator="{on, attr}">
@@ -29,7 +30,6 @@
                      v-for="episode in episodes">
           <v-list-item-content>
             <v-list-item-title>{{episode.episodeInt}} Серия</v-list-item-title>
-            <v-list-item-subtitle>{{episode.episodeType}}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -108,5 +108,9 @@
     position: absolute;
     left: 0;
     top: 0
+  }
+
+  .text-overflow-ellipsis {
+    text-overflow: ellipsis;
   }
 </style>
