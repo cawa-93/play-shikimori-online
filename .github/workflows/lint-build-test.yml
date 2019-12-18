@@ -82,7 +82,7 @@ jobs:
       - name: Save CSC_LINK to file
         env:
           CSC_LINK: ${{ secrets[ format( '{0}_CSC_LINK', runner.os) ] }}
-        run: echo "$CSC_LINK" > ${{ runner.temp }}/CSC_LINK.txt
+        run: echo "$CSC_LINK" > ${{ runner.temp }}/CSC_LINK.p12
 
 
 
@@ -90,7 +90,7 @@ jobs:
       - name: Build on ${{ matrix.os }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          CSC_LINK: ${{ runner.temp }}/CSC_LINK.txt
+          CSC_LINK: ${{ runner.temp }}/CSC_LINK.p12
           CSC_KEY_PASSWORD: ${{ secrets[ format( '{0}_CSC_KEY_PASSWORD', runner.os) ] }}
         run: npm run electron:build
 
