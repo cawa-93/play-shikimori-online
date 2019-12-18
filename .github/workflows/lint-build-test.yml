@@ -80,7 +80,8 @@ jobs:
         run: npm ci
 
       - name: Save CSC_LINK to file
-        CSC_LINK: ${{ secrets[ format( '{0}_CSC_LINK', runner.os) ] }}
+        env:
+          CSC_LINK: ${{ secrets[ format( '{0}_CSC_LINK', runner.os) ] }}
         run: echo "$CSC_LINK" > ${{ runner.temp }}/CSC_LINK.txt
 
 
