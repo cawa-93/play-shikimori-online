@@ -8,7 +8,6 @@
       clipped
       right
       v-model="drawer"
-      width="300"
     >
       <v-list subheader v-if="listItems.length">
         <template v-for="listItem in listItems">

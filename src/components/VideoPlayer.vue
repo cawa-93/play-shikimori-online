@@ -1,7 +1,9 @@
 <template>
   <section class="component-root video-player-component-root">
 
-    <video :autoplay="autoplay" :src="streamUrl" controls key="main-video" preload v-if="streamUrl"/>
+    <video :autoplay="autoplay" :src="streamUrl" controls key="main-video" preload v-if="streamUrl">
+      <track :src="embed.subtitlesVttUrl" kind="subtitles">
+    </video>
     <div class="stretchy-wrapper" v-else-if="loading">
       <v-skeleton-loader class="video-loader" type="image"/>
     </div>
