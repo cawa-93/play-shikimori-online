@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit="runSearch" class="component-root search-field-component-root" lazy-validation>
+  <v-form @submit.prevent="runSearch" class="component-root search-field-component-root" lazy-validation>
     <v-text-field
       :disabled="loading"
       :error-messages="errorText"
