@@ -8,7 +8,7 @@
   },
   "homepage": "https://t.me/playshikionline",
   "repository": "github:cawa-93/play-shikimori-online",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
