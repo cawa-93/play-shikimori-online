@@ -76,7 +76,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_LINK: ${{ secrets[ format( '{0}_CSC_LINK', runner.os) ] }}
           CSC_KEY_PASSWORD: ${{ secrets[ format( '{0}_CSC_KEY_PASSWORD', runner.os) ] }}
-        run: npm run electron:build -- --publish always
+        run: npm run electron:build -- --publish onTagOrDraft
 
 #      - name: Test on ${{ matrix.os }}
 #        env:
