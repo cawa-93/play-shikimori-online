@@ -2,6 +2,27 @@ module.exports = {
   'transpileDependencies': [
     'vuetify',
   ],
+  pwa: {
+    workboxOptions: {
+      importWorkboxFrom: 'local',
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: new RegExp('^https:\/\/smotret-anime\.online\/api\/series'),
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'anime365-series-cache',
+            expiration: {
+              maxAgeSeconds: 30 * 24 * 60 * 60, // 30 дней
+            },
+            matchOptions: {
+              ignoreSearch: false,
+            },
+          },
+        },
+      ],
+    },
+  },
 
   pluginOptions: {
     electronBuilder: {
