@@ -12,7 +12,8 @@
 Это браузерное расширение, которое позволяет вам смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори.
 
 
-## [Установка](https://github.com/cawa-93/play-shikimori-online/wiki/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D1%8F-%D0%BF%D0%BE-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B5)
+## Установка
+Инструкции и ссылки на скачивание для разных браузеров вы можете найти по [ссылке](https://github.com/cawa-93/play-shikimori-online/wiki/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D1%8F-%D0%BF%D0%BE-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B5)
 
 ## Возможности
 
@@ -25,13 +26,21 @@
 * Вы можете начать просмотр серии на одном устройстве, а продолжить на другом. Время на котором вы остановились синхронизируется между всеми вашими устройствами
 * Ведётся учет в каком переводе вы смотрите. Благодаря этому, когда вы открываете новый сериал, доступен более интелектуальный выбор переводов на основе всех ваших предпочтений.
 
-## [Ответы на возникающие вопросы](https://github.com/cawa-93/play-shikimori-online/wiki/FAQ)
+## Ответы на возникающие вопросы
+Более подробная информация о расширении и ответы на  часто задаваемые вопросы находятся на странице [FAQ](https://github.com/cawa-93/play-shikimori-online/wiki/FAQ). 
 
+## Помощь и Контакты 
+Если вы не нашли нужной информациии вы можете обратится за помощью в [Telegram канал](https://t.me/playshikionline_chat) 
 
-## [Дорожная карта](https://github.com/cawa-93/play-shikimori-online/projects/1)
+## Дорожная карта
+Дорожная карта находится по [ссылке](https://github.com/cawa-93/play-shikimori-online/projects/1)
+
 
 ## Сборка из исходников
+### Clone and install dependencies
 ```
+git clone git@github.com:cawa-93/play-shikimori-online.git
+cd ./play-shikimori-online
 npm ci
 ```
 
@@ -51,4 +60,5 @@ npm run lint
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [Build Configuration Reference](https://cli.vuejs.org/config/)
+and [Compile Configuration Reference](https://www.electron.build/configuration/configuration/).
