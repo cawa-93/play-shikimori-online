@@ -1,5 +1,5 @@
 module.exports = {
-  'transpileDependencies': [
+  transpileDependencies: [
     'vuetify',
   ],
 
@@ -7,15 +7,13 @@ module.exports = {
     electronBuilder: {
       builderOptions: {
         productName: 'Аниме Центр',
+        publish: ['github'],
 
         win: {
           target: [
             {
               target: 'nsis',
-              arch: [
-                'x64',
-                'ia32',
-              ],
+              arch: ['x64', 'ia32'],
             },
           ],
         },

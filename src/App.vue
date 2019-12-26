@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <app-header></app-header>
+    <app-header/>
     <v-content>
       <keep-alive include="History">
         <router-view/>

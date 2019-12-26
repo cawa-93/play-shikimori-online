@@ -12,23 +12,22 @@ let win: BrowserWindow | null;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  {scheme: 'app', privileges: {secure: false, standard: true}},
+  {scheme: 'app', privileges: {secure: true, standard: true}},
 ]);
 
 
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1800,
+    height: 1600,
     backgroundColor: '#fafafa',
+    fullscreen: true,
     // titleBarStyle: 'hiddenInset',
     title: 'Медиа центр',
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
-      webgl: false,
-      scrollBounce: true,
     },
   });
 
@@ -52,13 +51,13 @@ function createWindow() {
      * @see https://github.com/electron/electron/issues/21250
      */
     // if (isDevelopment) {
-    // console.warn('Network Throttling is Enabled');
-    // win.webContents.session.enableNetworkEmulation({
-    //   offline: true,
-    //   latency: 6400,
-    //   downloadThroughput: 1,
-    //   uploadThroughput: 1,
-    // });
+    //   console.warn('Network Throttling is Enabled');
+    //   win.webContents.session.enableNetworkEmulation({
+    //     offline: true,
+    //     latency: 6400,
+    //     downloadThroughput: 1,
+    //     uploadThroughput: 1,
+    //   });
     // }
 
 

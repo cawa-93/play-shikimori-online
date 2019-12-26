@@ -1,24 +1,22 @@
 {
   "name": "anime-center",
+  "version": "2.0.0",
+  "private": true,
   "description": "Ваш аниме-центр",
   "author": {
     "name": "Alex Kozack",
     "email": "kozackunisoft@gmail.com",
     "url": "https://t.me/kozack"
   },
-  "homepage": "https://t.me/playshikionline",
-  "repository": "github:cawa-93/play-shikimori-online",
-  "version": "2.0.0",
-  "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "mocha ./test/**/*.spec.js",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "test": "mocha ./test/**/*.spec.js"
   },
   "main": "background.js",
   "dependencies": {
@@ -39,6 +37,7 @@
     "@vue/cli-plugin-typescript": "^4.1.1",
     "@vue/cli-service": "^4.1.1",
     "electron": "^8.0.0-beta.5",
+    "lint-staged": "^9.4.3",
     "mocha": "^6.2.2",
     "sass": "^1.24.0",
     "sass-loader": "^8.0.0",
@@ -47,8 +46,7 @@
     "vue-cli-plugin-electron-builder": "^1.4.4",
     "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.4.3",
-    "lint-staged": "^9.4.3"
+    "vuetify-loader": "^1.4.3"
   },
   "postcss": {
     "plugins": {
@@ -61,6 +59,7 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
+  "homepage": "https://t.me/playshikionline",
   "lint-staged": {
     "*.ts": [
       "vue-cli-service lint",
@@ -70,5 +69,6 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "repository": "github:cawa-93/play-shikimori-online"
 }
