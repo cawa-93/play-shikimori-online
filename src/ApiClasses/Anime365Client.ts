@@ -3,6 +3,7 @@ import {
   Anime365Response,
   Episode as EpisodeFull,
   Series as SeriesFull,
+  SeriesSearchQuery,
   Translation as TranslationFull,
 } from '@/types/anime365';
 import {ApiClass} from '@/ApiClasses/ApiClass';
@@ -72,7 +73,7 @@ class Anime365Client extends ApiClass {
    * @param fields
    */
   public getSeriesCollection<T extends keyof SeriesFull>(
-    searchParams: Partial<Record<keyof SeriesFull, any>> = {},
+    searchParams: SeriesSearchQuery = {},
     fields: T[] = [],
   ) {
 

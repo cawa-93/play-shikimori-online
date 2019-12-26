@@ -112,6 +112,17 @@ export interface Series {
 
 
 
+export interface SearchParams {
+  chips: string;
+  limit: number;
+}
+
+
+
+export type SeriesSearchQuery = Partial<Record<keyof Series, any> & SearchParams>;
+
+
+
 export interface Embed {
   download: DownloadItem[];
   embedUrl: string;

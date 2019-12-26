@@ -41,12 +41,12 @@
 
 
       try {
-        const series = await seriesStore.search(this.searchParams);
-
-        if (series) {
-          series.forEach(({id}) => idsSet.add(id));
-          this.ids = [...idsSet].filter((id) => !!id);
-        }
+        // const series = await seriesStore.search(this.searchParams);
+        //
+        // if (series) {
+        //   series.forEach(({id}) => idsSet.add(id));
+        //   this.ids = [...idsSet].filter((id) => !!id);
+        // }
       } finally {
         // this.loading = false;
       }

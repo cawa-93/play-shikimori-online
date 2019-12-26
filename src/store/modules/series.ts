@@ -18,7 +18,6 @@ type Fields =
 type S = Pick<Series, Fields>;
 
 
-
 @Module({
   dynamic: true,
   namespaced: true,
@@ -78,14 +77,14 @@ export class SeriesStore extends VuexModule {
 
 
   @Action
-  public async search(params: Partial<Record<keyof Series, any>>) {
-    const copyParams: Partial<Record<keyof Series, any>> = JSON.parse(JSON.stringify(params));
+  public async search(params: any = {}): Promise<number[]> {
+    const copyParams: typeof params = JSON.parse(JSON.stringify(params));
     if (
       copyParams.id
       && !Array.isArray(copyParams.id)
       && this.items[copyParams.id]
     ) {
-      return;
+      return [params.id];
     }
 
     if (
@@ -95,7 +94,7 @@ export class SeriesStore extends VuexModule {
       copyParams.id = copyParams.id.filter((id: number) => !this.items[id]);
 
       if (!copyParams.id.length) {
-        return;
+        return params.id;
       }
     }
 
@@ -104,7 +103,7 @@ export class SeriesStore extends VuexModule {
       && !Array.isArray(copyParams.myAnimeListId)
       && this.malMap[copyParams.myAnimeListId]
     ) {
-      return;
+      return [this.malMap[params.myAnimeListId]];
     }
 
     if (
@@ -116,7 +115,7 @@ export class SeriesStore extends VuexModule {
         .filter((myAnimeListId: number) => !this.malMap[myAnimeListId]);
 
       if (!copyParams.myAnimeListId.length) {
-        return;
+        return params.myAnimeListId.map((malId: number) => this.malMap[malId]);
       }
     }
 
@@ -136,10 +135,13 @@ export class SeriesStore extends VuexModule {
     ];
 
     const series = await anime365Client.getSeriesCollection(copyParams, fields);
+    const idsToReturn: number[] = [];
+    series.forEach((s) => {
+      this.set(s);
+      idsToReturn.push(s.id);
+    });
 
-    series.forEach((s) => this.set(s));
-
-    return series;
+    return idsToReturn;
   }
 
 }

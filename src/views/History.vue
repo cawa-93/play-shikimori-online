@@ -38,11 +38,16 @@
   import SearchField from '@/components/SearchField.vue';
 
 
-  const WEEK = 604800000;
-  const now = new Date(Date.now() - (WEEK * 3)); // Вычисляем текущий сезон с отставанием на месяц
+  // const WEEK = 604800000;
+  // const now = new Date(Date.now() - (WEEK * 3)); // Вычисляем текущий сезон с отставанием на месяц
+  const now = new Date();
   const year = now.getFullYear();
-  const m = now.getMonth();
-  const season = m <= 1 ? 'winter' : m <= 4 ? 'spring' : m <= 7 ? 'summer' : m <= 10 ? 'fall' : 'winter';
+  const month = now.getMonth();
+  const season =
+    month <= 3 ? 'winter'
+      : month <= 6 ? 'spring'
+      : month <= 9 ? 'summer'
+        : 'autumn';
 
 
 
@@ -126,21 +131,30 @@
       }
 
 
-      const {data} = await shikimori.get('/animes', {
-        params: {
-          limit: 12,
-          order: 'popularity',
-          season: `${season}_${year}`,
-        },
+      // const {data} = await shikimori.get('/animes', {
+      //   params: {
+      //     limit: 12,
+      //     order: 'popularity',
+      //     season: `${season}_${year}`,
+      //   },
+      // });
+
+      // const ids = data.map((item: any) => item.id);
+
+      // await this.loadSeries(ids);
+
+      const seriesIds = await seriesStore.search({
+        chips: `yearseason=${season}_${year};rating=top100`,
+        limit: 12,
       });
 
-      const ids = data.map((item: any) => item.id);
-
-      await this.loadSeries(ids);
+      if (!seriesIds.length) {
+        return;
+      }
 
       let rusSeasonName;
       switch (season) {
-        case 'fall':
+        case 'autumn':
           rusSeasonName = 'осеннем';
           break;
         case 'winter':
@@ -158,7 +172,7 @@
 
       this.groups.push({
         title: `Популярно в ${rusSeasonName} сезоне ${year}`,
-        ids,
+        ids: seriesIds.map((id) => seriesStore.items[id].myAnimeListId),
       });
     }
 
