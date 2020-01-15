@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import History from '../views/History.vue';
-import Player from '@/views/Player.vue';
 
+
+const History = () => import(/* webpackChunkName: "HistoryView" */ '@/views/History.vue');
+const Player = () => import(/* webpackChunkName: "PlayerView" */ '@/views/Player.vue');
 
 Vue.use(VueRouter);
 
@@ -12,20 +13,9 @@ const routes = [
     name: 'history',
     component: History,
   },
-  //
-  // {
-  //   path: '/',
-  //   name: 'history',
-  //   component: () => import(/* webpackChunkName: "history" */'@/views/History.vue'),
-  // },
   {
     path: '/player/:seriesId/:episodeId?/:translationId?',
     name: 'player',
-
-
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Player,
   },
 
