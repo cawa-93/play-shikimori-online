@@ -41,7 +41,7 @@
     "sass": "^1.24.5",
     "sass-loader": "^8.0.2",
     "lint-staged": "^9.4.3",
-    "spectron": "^9.0.0",
+    "spectron": "^10.0.0",
     "typescript": "^3.7.4",
     "vue-cli-plugin-electron-builder": "^1.4.4",
     "vue-cli-plugin-vuetify": "^2.0.3",
