@@ -40,7 +40,7 @@
     "mocha": "^7.0.0",
     "sass": "^1.24.5",
     "sass-loader": "^8.0.2",
-    "lint-staged": "^9.4.3",
+    "lint-staged": "^10.0.6",
     "spectron": "^9.0.0",
     "typescript": "^3.7.4",
     "vue-cli-plugin-electron-builder": "^1.4.4",
