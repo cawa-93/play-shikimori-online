@@ -1,5 +1,5 @@
 # name of your github action
-name: Build and publish
+name: Build and test
 # this will help you specify where to run
 on:
   push:
