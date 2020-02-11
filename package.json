@@ -34,7 +34,7 @@
     "vuex-module-decorators": "^0.11.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-typescript": "^4.1.2",
+    "@vue/cli-plugin-typescript": "^4.2.2",
     "@vue/cli-service": "^4.1.2",
     "electron": "^8.0.0",
     "mocha": "^7.0.1",
