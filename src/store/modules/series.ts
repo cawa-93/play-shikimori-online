@@ -1,21 +1,21 @@
 import store from '@/store';
 import {Action, getModule, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 import Vue from 'vue';
-import {Series} from '@/types/anime365';
+import {Series} from '@/classes/Series';
 import {anime365Client} from '@/ApiClasses/Anime365Client';
 
-
-type Fields =
-  'id'
-  | 'myAnimeListId'
-  | 'numberOfEpisodes'
-  | 'posterUrl'
-  | 'posterUrlSmall'
-  | 'titles'
-  | 'url'
-  | 'type'
-  | 'isActive';
-type S = Pick<Series, Fields>;
+//
+// type Fields =
+//   'id'
+//   | 'myAnimeListId'
+//   | 'numberOfEpisodes'
+//   | 'posterUrl'
+//   | 'posterUrlSmall'
+//   | 'titles'
+//   | 'url'
+//   | 'type'
+//   | 'isActive';
+// type S = Pick<Series, Fields>;
 
 
 @Module({
@@ -27,17 +27,17 @@ type S = Pick<Series, Fields>;
 
 export class SeriesStore extends VuexModule {
   public items: {
-    [key: number]: S,
+    [key: number]: Series,
   } = {};
 
   public malMap: {
-    [key: number]: S['id'],
+    [key: number]: Series['id'],
   } = {};
 
 
 
   @Mutation
-  public set(series: S) {
+  public set(series: Series) {
     Vue.set(this.items, series.id, series);
     Vue.set(this.malMap, series.myAnimeListId, series.id);
   }
@@ -52,7 +52,7 @@ export class SeriesStore extends VuexModule {
     }
 
 
-    const fields: Fields[] = [
+    const fields = [
       'numberOfEpisodes',
       'posterUrl',
       'posterUrlSmall',
@@ -67,7 +67,7 @@ export class SeriesStore extends VuexModule {
     });
 
     if (s) {
-      this.set(s);
+      this.set(new Series(s));
     }
 
 
