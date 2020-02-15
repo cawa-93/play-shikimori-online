@@ -9,7 +9,11 @@
     ]
   },
   "rules": {
-    "indent": [true, "spaces", 2],
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
     "interface-name": false,
     "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
@@ -19,6 +23,10 @@
       "table"
     ],
     "ordered-imports": false,
-    "quotemark": [true, "single"]
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "no-namespace": false
   }
 }

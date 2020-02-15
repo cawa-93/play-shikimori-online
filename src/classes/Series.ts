@@ -1,45 +1,41 @@
-import {Titles, TitlesContext} from '@/classes/Titles';
-import {Anime365Item} from '@/classes/Anime365Item';
+import {Series, SeriesTypes} from '@/interfaces/Series';
+import {Title} from '@/interfaces/Title';
 
 
 
-export interface SeriesContext {
-  id: number;
-  isActive: boolean;
-  myAnimeListId: number;
-  numberOfEpisodes: number;
-  type: string;
-  titles: TitlesContext;
-  posterUrl: string;
-  posterUrlSmall: string;
-  url: string;
-  // episodes?: EpisodeContext[];
-}
+export class Anime365Series implements Series {
 
 
 
-export class Series extends Anime365Item {
-  public readonly myAnimeListId: SeriesContext['myAnimeListId'];
-  public readonly numberOfEpisodes: SeriesContext['numberOfEpisodes'];
-  public readonly posterUrl: SeriesContext['posterUrl'];
-  public readonly posterUrlSmall: SeriesContext['posterUrlSmall'];
-  public readonly titles: Titles;
-  public readonly url: SeriesContext['url'];
-  public readonly type: SeriesContext['type'];
+  public static isType(t: string): t is SeriesTypes {
+    return Object.values(SeriesTypes).includes(t as SeriesTypes) !== undefined;
+  }
 
 
 
-  constructor(context: SeriesContext) {
-    super(context);
-    this.myAnimeListId = context.myAnimeListId;
-    this.numberOfEpisodes = context.numberOfEpisodes;
-    this.posterUrl = context.posterUrl;
-    this.posterUrlSmall = context.posterUrlSmall;
-    this.url = context.url;
-    this.type = context.type;
 
-    this.titles = new Titles(context.titles);
+  public readonly id: number;
+  public readonly title: Title;
+  public readonly type: SeriesTypes;
+
+
+
+  constructor(context: anime356API.Series) {
+    this.id = context.id;
+
+    if (Anime365Series.isType(context.type)) {
+      this.type = SeriesTypes[context.type];
+    } else {
+      throw new Error(`Unexpected series type: ${context.type}. Allowed values: ${Object.values(SeriesTypes)}`);
+    }
+
+    this.title = {
+      full: context.titles.ru || context.titles.en || context.titles.ja || context.titles.short,
+      short: context.titles.short,
+    };
 
     Object.freeze(this);
   }
+
 }
+
