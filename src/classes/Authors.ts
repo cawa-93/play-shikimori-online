@@ -5,19 +5,14 @@ export interface AuthorContext {
 
 
 
+
 export class Author {
-
-
-
-  get id() {
-    return this.list.map(Author.clearName).join('');
-  }
-
 
 
   public static clearName(name: string) {
     return name.trim().toLowerCase();
   }
+
 
 
   public readonly list: string[];
@@ -32,4 +27,12 @@ export class Author {
     Object.freeze(this);
   }
 
+
+
+  get id() {
+    return this.list.map(Author.clearName).join('');
+  }
+
 }
+
+
