@@ -36,7 +36,7 @@
   "devDependencies": {
     "@vue/cli-plugin-typescript": "^4.2.2",
     "@vue/cli-service": "^4.2.2",
-    "electron": "^8.0.1",
+    "electron": "^8.0.2",
     "mocha": "^7.0.1",
     "sass": "^1.26.0",
     "sass-loader": "^8.0.2",
