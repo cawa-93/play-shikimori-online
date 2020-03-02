@@ -38,7 +38,7 @@
     "@vue/cli-service": "^4.2.2",
     "electron": "^8.0.2",
     "mocha": "^7.0.1",
-    "sass": "^1.26.0",
+    "sass": "^1.26.2",
     "sass-loader": "^8.0.2",
     "lint-staged": "^9.4.3",
     "spectron": "^10.0.1",
