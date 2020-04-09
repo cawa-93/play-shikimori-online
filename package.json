@@ -44,7 +44,7 @@
     "spectron": "^10.0.1",
     "typescript": "^3.8.2",
     "vue-cli-plugin-electron-builder": "^1.4.5",
-    "vue-cli-plugin-vuetify": "^2.0.4",
+    "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3"
   },
