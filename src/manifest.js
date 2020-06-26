@@ -44,8 +44,6 @@ const manifest = {
         'open_in_tab': false,
     },
 
-    content_security_policy: `script-src 'self' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com https://tagmanager.google.com; object-src 'self'`,
-
     web_accessible_resources: [
         '*',
         'anime365-player-events.js',
