@@ -1,9 +1,10 @@
+
+
 # Play Шикимори Online 
-![Пользователей](https://us-central1-webstore-play-shikimori-online.cloudfunctions.net/getBadge)
 [![Mozilla Add-on](https://img.shields.io/amo/rating/{dd3b05c4-06cb-4775-b47a-a30f3dfe8532}?label=%D0%A0%D0%B5%D0%B9%D1%82%D0%B8%D0%BD%D0%B3)](https://addons.mozilla.org/ru/firefox/addon/play-shikimori/reviews/)
 [![Mozilla Add-on](https://img.shields.io/amo/v/{dd3b05c4-06cb-4775-b47a-a30f3dfe8532}?label=%D0%92%D0%B5%D1%80%D1%81%D0%B8%D1%8F)](https://addons.mozilla.org/ru/firefox/addon/play-shikimori)
 
-
+### Развитие проекта спонсируется на [Patreon](https://www.patreon.com/Kozack) 
 
 ![Внешний вид кнопки "Смотреть онлайн"](promo/Головний%20екран.png) | ![Внешний вид кнопки "Смотреть онлайн"](promo/Коментарі.png)
 --- | --- 
