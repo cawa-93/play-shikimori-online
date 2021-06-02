@@ -1,7 +1,7 @@
 {
   "description": "Расширение позволяет смотреть аниме онлайн и синхронизировать его с вашим списком на Шикимори (shikimori.org и shikimori.one)",
   "name": "play-shiki-online",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "browserslist": [
     "Chrome >= 73",
