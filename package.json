@@ -54,18 +54,5 @@
     "vuex-module-decorators": "^0.10.1",
     "webpack-extension-manifest-plugin": "^0.5.0",
     "worker-loader": "^2.0.0"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
   }
 }

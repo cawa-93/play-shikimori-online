@@ -3,7 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin')
 
 const baseManifest = require('./src/manifest.js').default
 const pkg = require('./package.json')
-process.env.BROWSER = process.env.BROWSER || 'chrome'
+process.env.BROWSER = process.env.BROWSER || 'firefox'
 
 
 module.exports = {
