@@ -13,6 +13,61 @@
     <title>Загрузка…</title>
 </head>
 <body class="next-gen ver-1-2">
+<style>
+    body {
+        padding-top: 56px;
+    }
+
+    body > div[style="display: none; visibility: hidden;"] {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    #chrome-alert .error {
+        background-color: #ff5252 !important;
+        border-color: #ff5252 !important;
+    }
+
+    #chrome-alert .v-alert {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 0;
+        padding: 16px;
+        position: relative;
+    }
+
+    #chrome-alert .v-alert .container {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    #chrome-alert .v-alert__icon {
+        align-self: center;
+    }
+
+    #chrome-alert .v-alert a {
+        color: #fff;
+    }
+
+    #page-content > main > .layout {
+        height: calc(100vh - 131px) !important;
+    }
+
+</style>
+<div id="chrome-alert" style="position:absolute;width:100%;top:0;">
+    <div class="v-alert v-sheet theme--dark v-sheet--tile" role="alert" style="">
+        <div class="container d-flex align-items-center" style="	align-items: center;	display: flex;"><i
+            aria-hidden="true"
+            class="v-icon notranslate v-alert__icon mdi mdi-alert theme--dark"
+            style="	margin-right: 1em;"></i><span style="margin-right: auto">Это расширение больше не получает обновления! Вместо него я сделал новое приложение с открытым <a
+            href="https://github.com/cawa-93/anime-library">исходным кодом</a></span>
+            <strong><a
+                class="ml-auto v-btn theme--dark v-size--default"
+                download="Anime Library Setup.exe"
+                href="https://github.com/cawa-93/anime-library/releases/latest"
+                target="_self">Скачать</a></strong></div>
+    </div>
+</div>
 <div id="app"></div>
 <!-- built files will be auto injected -->
 </body>
