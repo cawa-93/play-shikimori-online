@@ -1,5 +1,7 @@
 # Play Шикимори Online
 
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct-single.svg)](https://vshymanskyy.github.io/StandWithUkraine)
+
 Это расширение больше не получает обновления! Вместо него я сделал полноценное приложение для
 Windows. **[Скачать можно тут](https://github.com/cawa-93/anime-library/releases/latest)**.
 
