@@ -16,15 +16,22 @@ async function main() {
     /** @type {HTMLDivElement} */
     const infoSection = document.body.querySelector<HTMLDivElement>('#animes_show .c-info-right');
     /** @type {HTMLAnchorElement} */
+    
     let WatchOnlineButton = document
         .body
         .querySelector<HTMLAnchorElement>(`#play-shiki-online #watch-online-button`);
 
-    if (!infoSection || WatchOnlineButton) {
+    let WatchOnlineButtonApp = document
+        .body
+        .querySelector<HTMLAnchorElement>(`#play-shiki-online-app #watch-online-button-app`);
+
+
+    if (!infoSection || WatchOnlineButton || WatchOnlineButtonApp) {
         return;
     }
 
     WatchOnlineButton = createButton(infoSection);
+    WatchOnlineButtonApp = createAppButton(infoSection);
 
     // Загрузка метаданных аниме
     const anime = getAnime();
@@ -33,15 +40,24 @@ async function main() {
         WatchOnlineButton.textContent = 'Не удалось определить ID аниме';
         WatchOnlineButton.classList.remove('b-ajax');
         WatchOnlineButton.style.cursor = 'not-allowed';
+
+        WatchOnlineButtonApp.textContent = 'Не удалось определить ID аниме';
+        WatchOnlineButtonApp.classList.remove('b-ajax');
+        WatchOnlineButtonApp.style.cursor = 'not-allowed';
         return;
     }
 
     const episodes = await getEpisodes(anime.id);
 
-    if (episodes && episodes.length) {
+    if (episodes && episodes.length) 
+    {
         const episodeInt = getEpisodeInt();
-        if (!episodeInt) {
+
+        if (!episodeInt) 
+        {
             WatchOnlineButton.textContent = 'Начать просмотр';
+            WatchOnlineButtonApp.textContent = 'Начать просмотр';
+
         } else {
             // Определяем максимальный номер серии. Он не всегда соответствует количеству серий
             // @ts-ignore
@@ -58,18 +74,25 @@ async function main() {
             const episodeWord = pluralize(max > 0 ? max : episodeInt, episodeWords);
 
             WatchOnlineButton.textContent = `${watchedWord} ${episodeInt} ${from} ${episodeWord}`;
+            WatchOnlineButtonApp.textContent = `${watchedWord} ${episodeInt} ${from} ${episodeWord}`;
+
         }
 
+        const appURL = location.href.toString();
         const playerURL = new URL(chrome.runtime.getURL('player.html'));
         playerURL.hash = `/player/anime/${anime.id}`;
         if (episodeInt) {
             playerURL.hash += `/${episodeInt + 1}`;
         }
-
+        
+        WatchOnlineButtonApp.href = appURL.replace("https", "anime-lib");
+        WatchOnlineButtonApp.classList.remove('b-ajax');
+        WatchOnlineButtonApp.style.cursor = 'pointer';
 
         WatchOnlineButton.href = playerURL.toString();
         WatchOnlineButton.classList.remove('b-ajax');
         WatchOnlineButton.style.cursor = 'pointer';
+
 
         /**
          * Загрузка информации про перевод для следующей серии
@@ -120,6 +143,10 @@ async function main() {
         WatchOnlineButton.textContent = 'Пока нет серий';
         WatchOnlineButton.style.cursor = 'not-allowed';
         WatchOnlineButton.classList.remove('b-ajax');
+
+        WatchOnlineButtonApp.textContent = 'Пока нет серий';
+        WatchOnlineButtonApp.style.cursor = 'not-allowed';
+        WatchOnlineButtonApp.classList.remove('b-ajax');
     }
 
 
@@ -134,14 +161,16 @@ async function main() {
 function createButton(infoSection: HTMLElement): HTMLAnchorElement {
     // Создание кнопки для перехода к плееру
     const WatchButtonSection = document.createElement('section');
+    
     WatchButtonSection.classList.add('block');
     WatchButtonSection.classList.add('watch-online-block');
     WatchButtonSection.id = 'play-shiki-online';
     WatchButtonSection.innerHTML = `
-        <div class="subheadline m10">Онлайн просмотр</div>
+        <div class="subheadline m10">Веб-плеер</div>
         <a id="watch-online-button" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;">
             <!-- Неразрывный пробел--> <!-- /Неразрывный пробел-->
         </a>
+
         <small class="help-text" style="
             text-align: center;
             opacity: 0.8;
@@ -165,6 +194,32 @@ function createButton(infoSection: HTMLElement): HTMLAnchorElement {
     return WatchButtonSection.querySelector<HTMLAnchorElement>('a#watch-online-button') as HTMLAnchorElement;
 }
 
+function createAppButton(infoSection: HTMLElement): HTMLAnchorElement {
+    // Создание кнопки для перехода к плееру
+    const WatchButtonAppSection = document.createElement('section');
+    
+    WatchButtonAppSection.classList.add('block');
+    WatchButtonAppSection.classList.add('watch-online-block-app');
+    WatchButtonAppSection.id = 'play-shiki-online-app';
+    WatchButtonAppSection.innerHTML = `
+        <div class="subheadline m10">Приложение</div>
+        <a id="watch-online-button-app" class="b-link_button dark b-ajax" style="cursor: wait;user-select: none;">
+            <!-- Неразрывный пробел--> <!-- /Неразрывный пробел-->
+        </a>
+    `;
+
+    const target =
+        infoSection.querySelector('.block[itemprop="aggregateRating"] + .block')
+        || infoSection.querySelector('.block[itemprop="aggregateRating"]');
+
+    if (target) {
+        target.after(WatchButtonAppSection);
+    } else {
+        infoSection.prepend(WatchButtonAppSection);
+    }
+
+    return WatchButtonAppSection.querySelector<HTMLAnchorElement>('a#watch-online-button-app') as HTMLAnchorElement;
+}
 
 function getAnime() {
     const Anime = document.querySelector<HTMLDivElement>('.b-user_rate[data-target_type="Anime"]');
